@@ -19,8 +19,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import com.ktx.dormitory.core.network.NetworkMonitor
 import com.ktx.dormitory.navigation.AppNavigation
-import com.ktx.dormitory.core.utils.AuthEvent
-import com.ktx.dormitory.core.utils.AuthEventBus
+import com.ktx.dormitory.core.util.AuthEvent
+import com.ktx.dormitory.core.util.AuthEventBus
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
@@ -41,7 +41,7 @@ class MainActivity : FragmentActivity() {
             LaunchedEffect(Unit) {
                 AuthEventBus.events.collectLatest { event ->
                     if (event == AuthEvent.LOGOUT) {
-                        Toast.makeText(this@MainActivity, "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show()
+                        // Toast.makeText(this@MainActivity, "Đã đăng xuất.", Toast.LENGTH_SHORT).show()
                         navController.navigate("login") {
                             popUpTo(0) { inclusive = true }
                             launchSingleTop = true
@@ -74,3 +74,4 @@ class MainActivity : FragmentActivity() {
         }
     }
 }
+

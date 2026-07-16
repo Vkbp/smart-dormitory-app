@@ -13,3 +13,16 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Android Signing & Secrets
+*.jks
+*.keystore
+*.p12
+google-services.json
+
+# Binaries
+*.apk
+*.aab
+
+# Logs
+*.log

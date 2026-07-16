@@ -1,0 +1,19 @@
+# Handle line endings automatically for files detected as text
+# and perform LF normalization.
+* text=auto
+
+# Standard patterns for Android projects
+*.kt     text diff=kotlin
+*.java   text diff=java
+*.xml    text
+*.gradle text
+*.kts    text
+*.properties text
+*.md     text
+*.txt    text
+*.png    binary
+*.jpg    binary
+*.webp   binary
+*.jar    binary
+*.jks    binary
+*.keystore binary

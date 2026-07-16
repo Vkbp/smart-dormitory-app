@@ -1,6 +1,6 @@
 package com.ktx.dormitory.core.network
 
-import com.ktx.dormitory.core.utils.IdempotencyUtils
+import com.ktx.dormitory.core.util.IdempotencyUtils
 import okhttp3.Interceptor
 import okhttp3.Response
 

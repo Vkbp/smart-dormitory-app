@@ -3,12 +3,25 @@
   <component name="PlanningModeManager">
     <option name="approvalStates">
       <map>
-        <entry key="20260523-144642-d796fa27-7dcc-468c-a8b0-ef3e12f13090" value="true" />
-        <entry key="20260602-144723-83439e10-66e5-4274-a422-3b03ff9f10b5" value="true" />
-        <entry key="20260608-145034-bf4be286-0048-4ea7-a3f5-adfd82312d79" value="true" />
         <entry key="20260624-181656-f33bdbd3-6d2a-4eaf-9979-03c224dc60ef" value="true" />
         <entry key="20260625-140139-e4494400-a952-4728-8a04-2f6235e15ace" value="true" />
         <entry key="20260626-103705-931de884-3281-4430-bc52-7022a3ce7624" value="true" />
+        <entry key="20260706-134534-bf565097-6f87-4247-9be1-179f38a5277f" value="true" />
+        <entry key="20260707-093750-2326eb23-4a8d-4801-a27e-b66def9cc2b3" value="true" />
+        <entry key="20260708-161631-05a49bc7-f89e-43be-b93a-2cba07116861" value="true" />
+        <entry key="20260709-082314-ec7cc6ee-fd14-4ccb-a458-727ae6c68a4c" value="true" />
+        <entry key="20260710-083145-1c84f2f4-7b89-4d1d-a41f-3275477fdb92" value="true" />
+        <entry key="20260710-121533-cbfecb04-fb00-4fc8-8386-c8923fae3a0a" value="true" />
+        <entry key="20260710-130130-c1b08287-03cb-4bff-aff5-0699792d43ee" value="true" />
+        <entry key="20260710-140540-4f328d1c-a3ce-4cee-ad3e-3fb89147d5fa" value="true" />
+        <entry key="20260710-145411-603ce47f-32ca-490f-a7f9-64a4b3a48029" value="true" />
+        <entry key="20260711-083704-8ed008da-9a79-4e45-a784-a3a8458a0fba" value="true" />
+        <entry key="20260711-091242-234c6ffe-e726-4eba-8601-380b065808b8" value="true" />
+        <entry key="20260711-100102-a2c60156-518c-4dde-b905-edadbbbee243" value="true" />
+        <entry key="20260711-102723-0cc541a8-36a5-4d23-bd33-a1304e15640f" value="true" />
+        <entry key="20260715-090235-1d2c5616-617f-4085-b477-883f2280ee4c" value="true" />
+        <entry key="20260716-085231-8c0b3c44-29f5-4be0-8790-3ee0840858b4" value="true" />
+        <entry key="20260716-092529-fbe67f43-59d9-4bed-9f5f-b7aec51f6684" value="true" />
       </map>
     </option>
   </component>

@@ -40,13 +40,6 @@ class RoleGuardTest {
     }
 
     @Test
-    fun access_granted_for_valid_staff_role() {
-        uiStateFlow.value = LoginUiState(userData = UserData("staff01", "STAFF", "Can Bo A"))
-        setupRoleGuard(listOf("STAFF"))
-        composeTestRule.onNodeWithText(secretContent).assertExists()
-    }
-
-    @Test
     fun access_granted_for_valid_admin_role() {
         uiStateFlow.value = LoginUiState(userData = UserData("admin01", "ADMIN", "Quan Tri Vien"))
         setupRoleGuard(listOf("ADMIN"))

@@ -95,8 +95,7 @@ class LoginScreenTest {
             val navGraph = navController.createGraph(startDestination = Screen.Login.route) {
                 composable(Screen.Login.route) {}
                 composable(Screen.StudentHome.route) {}
-                composable(Screen.StaffHome.route) {}
-                composable(Screen.AdminHome.route) {}
+                composable(Screen.AdminDashboard.route) {}
             }
             navController.graph = navGraph
 

@@ -6,11 +6,11 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import com.ktx.dormitory.data.common.local.*
-import com.ktx.dormitory.domain.profile.model.UpdateProfileRequest
-import com.ktx.dormitory.domain.auth.repository.*
-import com.ktx.dormitory.domain.profile.repository.*
-import com.ktx.dormitory.domain.payment.repository.*
-import com.ktx.dormitory.domain.access.repository.*
+import com.ktx.dormitory.shared.profile.data.dto.request.UpdateProfileRequest
+import com.ktx.dormitory.shared.profile.domain.repository.*
+import com.ktx.dormitory.student.payment.domain.repository.*
+import com.ktx.dormitory.student.face.domain.repository.FaceRepository
+import java.io.File
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,7 @@ class SyncWorker @AssistedInject constructor(
     private val pendingSyncDao: PendingSyncDao,
     private val paymentRepository: PaymentRepository,
     private val profileRepository: ProfileRepository,
-    private val accessRepository: AccessRepository
+    private val faceRepository: FaceRepository,
 ) : CoroutineWorker(appContext, workerParams) {
 
     private val gson = Gson()
@@ -54,7 +54,7 @@ class SyncWorker @AssistedInject constructor(
                                 payload.billId,
                                 payload.amount,
                                 payload.method,
-                                payload.transactionCode
+                                payload.transactionCode,
                             ).isSuccess
                         }
                         "UPDATE_PROFILE" -> {
@@ -63,7 +63,13 @@ class SyncWorker @AssistedInject constructor(
                         }
                         "REGISTER_FACE" -> {
                             val payload = gson.fromJson(action.payload, RegisterFacePayload::class.java)
-                            accessRepository.registerFaceOnServer(payload.studentId, payload.faceImageUrl).isSuccess
+                            val imageFile = File(payload.imagePath)
+                            if (imageFile.exists()) {
+                                faceRepository.registerFace(payload.studentId, payload.name, imageFile).isSuccess
+                            } else {
+                                // Nếu file không tồn tại, không thể sync, đánh dấu fail để không retry vô tận
+                                true 
+                            }
                         }
                         else -> true
                     }
@@ -79,7 +85,7 @@ class SyncWorker @AssistedInject constructor(
                             hasFailure = true
                         }
                     }
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     hasFailure = true
                     val nextRetry = action.retryCount + 1
                     if (nextRetry >= 5) {
@@ -94,3 +100,4 @@ class SyncWorker @AssistedInject constructor(
         }
     }
 }
+

@@ -16,8 +16,8 @@ android {
         applicationId = "com.ktx.dormitory"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "com.ktx.dormitory.HiltTestRunner"
         
@@ -33,7 +33,7 @@ android {
 
         // IP 192.168.1.11 dành cho điện thoại thật (theo Wi-Fi adapter).
         // IP 10.0.2.2 dành cho máy ảo Android Studio.
-        val baseUrl: String = baseUrlFromProps ?: "http://10.152.127.74:8080/api/"
+        val baseUrl: String = baseUrlFromProps ?: "https://172.21.5.6:8080/api/"
         
         // Đảm bảo URL luôn có dấu / ở cuối để Retrofit không crash
         val formattedBaseUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
@@ -57,7 +57,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -98,6 +98,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.jakewharton.timber:timber:5.0.1")
 
     // Hilt (Dependency Injection)
     implementation("com.google.dagger:hilt-android:2.52")
@@ -146,6 +147,9 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
+
+    implementation(libs.sqlcipher)
+    implementation(libs.sqlite.ktx)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

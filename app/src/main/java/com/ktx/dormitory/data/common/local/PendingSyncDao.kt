@@ -4,6 +4,9 @@ import androidx.room.*
 
 @Dao
 interface PendingSyncDao {
+    @Query("SELECT * FROM pending_sync WHERE syncStatus != 'COMPLETED' AND syncStatus != 'FAILED' ORDER BY createdAt ASC")
+    suspend fun getNotCompletedActions(): List<PendingSyncEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAction(action: PendingSyncEntity)
 
@@ -12,7 +15,4 @@ interface PendingSyncDao {
 
     @Delete
     suspend fun deleteAction(action: PendingSyncEntity)
-
-    @Query("SELECT * FROM pending_sync WHERE syncStatus != 'COMPLETED' AND retryCount < 5")
-    suspend fun getNotCompletedActions(): List<PendingSyncEntity>
 }

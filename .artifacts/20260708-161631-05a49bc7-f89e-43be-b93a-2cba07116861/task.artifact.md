@@ -1,0 +1,30 @@
+# Task Management
+
+- [x] Architecture Analysis & Exploration
+    - [x] Scan top-level project structure
+    - [x] Explore `core`, `data`, `domain`, `presentation`, and `di` packages
+    - [x] Identify features and classify them (Shared, Role-specific)
+    - [x] Identify architectural problems in current implementation
+- [x] Architecture Refactoring Design
+    - [x] Design new `core` structure
+    - [x] Design new `di` structure
+    - [x] Design `data` and `domain` layer organization
+    - [x] Formulate Repository, API, and Local DB strategies
+    - [x] Create Shared vs Role-specific Matrix
+- [x] Implementation Plan Creation
+    - [x] Generate final folder tree
+    - [x] Generate migration plan
+    - [x] Perform architecture audit
+- [x] Verification Plan Research
+    - [x] Identify automated tests (unit, instrumentation)
+    - [x] Identify manual verification steps
+- [x] Execution
+    - [x] Refactor Core
+    - [x] Refactor DI
+    - [x] Refactor Data
+    - [x] Refactor Domain
+    - [x] Refactor Navigation
+    - [x] Final Audit & Cleanup
+- [x] Verification
+    - [x] Gradle Build successful
+    - [x] Package consistency verified

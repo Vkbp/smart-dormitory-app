@@ -1,36 +1,38 @@
 package com.ktx.dormitory.core.network
 
+import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
 
 /**
- * Interceptor tự động thử lại request khi gặp lỗi mạng (IOException)
- * Sử dụng chiến lược Exponential Backoff đơn giản.
+ * Interceptor tự động thử lại request khi gặp lỗi mạng (IOException) hoặc Server (5xx)
  */
 class RetryInterceptor(
-    private val maxRetry: Int = 3
+    private val maxRetry: Int = 2
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        var response = try {
-            chain.proceed(request)
+        val url = request.url.encodedPath
+        
+        var response: Response? = null
+        var lastException: IOException? = null
+        
+        try {
+            response = chain.proceed(request)
         } catch (e: IOException) {
-            null
+            lastException = e
+            Log.e("RETRY", "Initial request failed for $url: ${e.message}")
         }
 
         var tryCount = 0
-        while ((response == null || !response.isSuccessful) && tryCount < maxRetry) {
-            // Chỉ retry với các lỗi server (5xx) hoặc lỗi kết nối (IOException)
-            // Không retry với lỗi client (4xx)
-            if (response != null && response.code < 500) {
-                break
-            }
-
+        while (tryCount < maxRetry && (response == null || response.code >= 500)) {
             tryCount++
             
-            // Đợi trước khi thử lại (Exponential Backoff: 1s, 2s, 4s)
+            // Đợi trước khi thử lại
             val waitTime = Math.pow(2.0, (tryCount - 1).toDouble()).toLong() * 1000
+            Log.d("RETRY", "Retrying ($tryCount/$maxRetry) for $url in ${waitTime}ms...")
+            
             try {
                 Thread.sleep(waitTime)
             } catch (e: InterruptedException) {
@@ -38,13 +40,20 @@ class RetryInterceptor(
             }
 
             response?.close()
-            response = try {
-                chain.proceed(request)
+            try {
+                response = chain.proceed(request)
+                lastException = null
             } catch (e: IOException) {
-                null
+                response = null
+                lastException = e
+                Log.e("RETRY", "Retry $tryCount failed for $url: ${e.message}")
             }
         }
 
-        return response ?: chain.proceed(request) // Nếu vẫn lỗi thì trả về kết quả cuối cùng
+        if (response != null) return response
+        if (lastException != null) throw lastException
+        
+        // Trường hợp bất khả kháng, gọi lại chain lần cuối để ném exception chuẩn của OkHttp
+        return chain.proceed(request)
     }
 }

@@ -1,0 +1,24 @@
+# Task Management
+
+- [/] Research and Planning
+    - [x] Research project structure and existing patterns
+    - [x] Identify necessary changes in all layers
+    - [x] Create implementation plan
+- [ ] Implementation - Domain Layer
+    - [ ] Update `AdminRepository` interface
+    - [ ] Implement `AssignRfidUseCase`
+    - [ ] Update `CheckInStudent` model
+- [ ] Implementation - Data Layer
+    - [ ] Update `AdminApiService` with new endpoint
+    - [ ] Update `CheckInSearchResponseDto` and `AdminMappers`
+    - [ ] Implement `assignRfid` in `AdminRepositoryImpl`
+- [ ] Implementation - Presentation Layer
+    - [ ] Update `CheckInContract` (UiEvent)
+    - [ ] Update `CheckInViewModel` with RFID logic
+    - [ ] Add RFID assignment UI to `CheckInScreen`
+- [ ] Documentation
+    - [ ] Update `API_INTEGRATION_GUIDE.md`
+    - [ ] Update Audit logs
+- [ ] Verification
+    - [ ] Run unit tests (if any)
+    - [ ] Manual verification on device/emulator

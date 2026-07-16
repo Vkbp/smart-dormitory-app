@@ -16,7 +16,8 @@ data class MarkNotificationReadPayload(
 
 data class RegisterFacePayload(
     val studentId: String,
-    val faceImageUrl: String
+    val imagePath: String,
+    val name: String
 )
 
 data class VerifyQrPayload(
