@@ -139,6 +139,11 @@ dependencies {
     // Lifecycle (for collectAsStateWithLifecycle)
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
+    // Paging 3
+    val paging_version = "3.3.2"
+    implementation("androidx.paging:paging-runtime-ktx:$paging_version")
+    implementation("androidx.paging:paging-compose:$paging_version")
+
     // Coil (Image Loading)
     implementation("io.coil-kt:coil-compose:2.7.0")
 

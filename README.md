@@ -60,6 +60,7 @@
 ## 📐 Documentation Hub
 We follow a **Documentation-First** approach. For deep dives into architecture, security, and business rules, visit our internal hub:
 
+- [Current System Health](./docs/PROJECT_HEALTH.md) (**Maturity: 89/100**)
 - [Master Documentation Index](./docs/DOCUMENTATION_INDEX.md)
 - [Architecture Principles](./docs/architecture/ARCHITECTURE_PRINCIPLES.md)
 - [Security Guide](./docs/architecture/SECURITY_GUIDE.md)

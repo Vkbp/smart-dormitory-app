@@ -11,6 +11,7 @@ Dự án coi tài liệu là **Công dân hạng nhất** (First-class citizen).
 4. **Audit Documents là Living Documents**: Các tài liệu Audit, Technical Debt, và Decision Log phải được duy trì liên tục, không bao giờ được coi là "đã xong".
 5. **Cấm xóa lịch sử**: Không bao giờ xóa các bản ghi lịch sử trong `AUDIT_CHANGELOG.md` hay `REFACTOR_HISTORY.md`. Luôn sử dụng cơ chế Append.
 6. **Tính kế thừa**: Các quy tắc trong `PROJECT_RULE.md` và `AGENT.md` là tối cao và được kế thừa bởi mọi module/feature.
+7. **Documentation Governance Workflow**: Mọi task thực thi phải tuân thủ quy trình: `Task Identification -> Implementation -> Verification -> Documentation Synchronization -> Project Health Update`.
 
 ## 1. Architectural Rules
 - **Clean Architecture**: Bắt buộc phân lớp (Presentation -> Domain <- Data).
@@ -31,6 +32,12 @@ Dự án coi tài liệu là **Công dân hạng nhất** (First-class citizen).
 - **Liveness Required**: Đăng ký khuôn mặt phải qua 4 bước Liveness Detection.
 - **Curfew Request Policy**: Sinh viên bị chặn do giới nghiêm phải gửi yêu cầu vào trễ qua App. Việc mở cổng chỉ thực hiện khi có sự phê duyệt của Admin hoặc lệnh Remote Unlock (BR-A01).
 - **Business Logic updates**: Mọi thay đổi nghiệp vụ phải cập nhật [BUSINESS_INDEX.md](./docs/BUSINESS_INDEX.md).
+
+## 4. Production Readiness Rules
+- **No Cleartext**: `android:usesCleartextTraffic` phải luôn là `false`. Mọi giao tiếp API phải qua HTTPS.
+- **TLS Pinning**: Certificate pinning phải được xác thực với server thực tế trước khi release.
+- **Log Stripping**: Timber/Logcat phải được strip bỏ hoặc giới hạn trong bản release (Sử dụng ProGuard/R8).
+- **Security Audit Requirement**: Mọi PR lớn phải đi kèm một bản Security Audit report mini.
 
 ---
 *Phê chuẩn bởi Documentation Architect AI.*

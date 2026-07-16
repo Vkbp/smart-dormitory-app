@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.ktx.dormitory.core.util.ValidationUtils
 import com.ktx.dormitory.navigation.Screen
 
 @Composable
@@ -70,15 +71,19 @@ fun ChangePasswordScreen(
         OutlinedTextField(
             value = newPassword,
             onValueChange = { newPassword = it },
-            label = { Text("Mật khẩu mới (tối thiểu 6 ký tự)") },
+            label = { Text("Mật khẩu mới") },
+            supportingText = {
+                Text("Tối thiểu 8 ký tự, bao gồm chữ hoa, thường, số và ký hiệu.")
+            },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = newPassword.isNotEmpty() && !ValidationUtils.isValidPassword(newPassword)
         )
 
         Button(
             onClick = {
-                if (newPassword.length < 6) {
-                    Toast.makeText(context, "Mật khẩu mới quá ngắn!", Toast.LENGTH_SHORT).show()
+                if (!ValidationUtils.isValidPassword(newPassword)) {
+                    Toast.makeText(context, "Mật khẩu không đạt yêu cầu bảo mật!", Toast.LENGTH_LONG).show()
                     return@Button
                 }
 

@@ -14,12 +14,12 @@ This document tracks unresolved technical, architectural, and security issues.
 ## 🛡️ Security Debt
 | ID | Issue | Priority | Status | Impact |
 | :--- | :--- | :--- | :--- | :--- |
-| SEC-01 | Cleartext traffic permitted in Manifest/Config | P0 | CLOSED | MITM Risk |
+| SEC-01 | Cleartext traffic permitted in Manifest/Config | P0 | CLOSED | Fixed: HTTPS enforced in Manifest & Network Config |
 | SEC-02 | Lack of TLS Pinning | P1 | CLOSED | Fixed: Added `CertificatePinner` in `NetworkModule` |
 | SEC-03 | Room Database is unencrypted | P1 | CLOSED | Fixed: Integrated SQLCipher encryption |
 | SEC-04 | Biometric auth not cryptographically bound | P2 | OPEN | UI-only protection |
 | SEC-05 | Placeholder TLS Pins | P1 | OPEN | `Constants.kt` uses dummy pins |
-| SEC-06 | Cleartext Traffic Permitted | P0 | OPEN | Regression: Manifest still allows HTTP |
+| SEC-06 | Cleartext Traffic Permitted | P0 | CLOSED | Fixed: Manifest and Config hardened |
 
 ## 🚀 Performance Debt
 | ID | Issue | Priority | Status | Impact |
@@ -39,6 +39,14 @@ This document tracks unresolved technical, architectural, and security issues.
 | :--- | :--- | :--- | :--- | :--- |
 | UI-01 | Lack of Dark Mode support | P1 | CLOSED | Fixed: Added `DarkColors` and enabled theme switching |
 | UI-02 | Missing content descriptions for 60% of icons | P2 | OPEN | Poor Accessibility |
+| UI-03 | Missing Client-side Regex validation in forms | P1 | OPEN | Poor UX and invalid data submission risk |
+
+## 📦 Infrastructure Debt
+| ID | Issue | Priority | Status | Impact |
+| :--- | :--- | :--- | :--- | :--- |
+| INFRA-01 | Missing FCM (Firebase Cloud Messaging) | P0 | DEFERRED | Backend support for IN_APP channel is currently pending. |
+| INFRA-02 | Missing Paging 3 in Access/Payment lists | P1 | OPEN | Potential memory issues with large datasets. Backend supports pagination. |
+| ACC-01 | Missing Access QR Fallback (Offline QR) | P1 | DEFERRED | Pending algorithm/spec alignment with Backend. |
 
 ---
 *Maintained by the Documentation Governance System.*

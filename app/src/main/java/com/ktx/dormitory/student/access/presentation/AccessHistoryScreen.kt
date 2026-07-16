@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.ktx.dormitory.student.access.domain.model.UnifiedTimelineEvent
 import com.ktx.dormitory.student.access.domain.model.UnifiedEventType
 import com.ktx.dormitory.ui.components.EmptyView
@@ -35,18 +37,7 @@ fun AccessHistoryScreen(
     navController: NavController,
     viewModel: AccessViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val logs = uiState.logs
-
-    val groupedLogs = remember(logs) {
-        logs.groupBy {
-            (it.timestamp ?: "").substringBefore("T").ifBlank { "Không xác định" }
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.fetchAccessHistory(refresh = true)
-    }
+    val pagingItems = viewModel.accessPagingFlow.collectAsLazyPagingItems()
 
     Scaffold(
         topBar = {
@@ -61,7 +52,7 @@ fun AccessHistoryScreen(
                     IconButton(onClick = { navController.navigate(Screen.CurfewRequest.route) }) {
                         Icon(Icons.Default.AddAlert, contentDescription = "Gửi yêu cầu vào trễ")
                     }
-                    IconButton(onClick = { viewModel.fetchAccessHistory(refresh = true) }) {
+                    IconButton(onClick = { pagingItems.refresh() }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Tải lại")
                     }
                 }
@@ -74,19 +65,20 @@ fun AccessHistoryScreen(
                 .fillMaxSize()
         ) {
             when {
-                uiState.isLoading && logs.isEmpty() -> LoadingView()
-                uiState.error != null && logs.isEmpty() -> ErrorView(
-                    message = uiState.error ?: "Không thể tải lịch sử",
-                    onRetry = { viewModel.fetchAccessHistory(refresh = true) }
+                pagingItems.loadState.refresh is androidx.paging.LoadState.Loading -> LoadingView()
+                pagingItems.loadState.refresh is androidx.paging.LoadState.Error -> ErrorView(
+                    message = "Không thể tải lịch sử",
+                    onRetry = { pagingItems.refresh() }
                 )
-                logs.isEmpty() && !uiState.isLoading -> EmptyHistoryState()
+                pagingItems.itemCount == 0 -> EmptyHistoryState()
                 else -> {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        groupedLogs.forEach { (date, logsInDate) ->
-                            stickyHeader {
-                                DateHeader(DateTimeUtils.formatIsoDate(date))
-                            }
-                            items(logsInDate, key = { it.id }) { log ->
+                        items(
+                            count = pagingItems.itemCount,
+                            key = pagingItems.itemKey { it.id }
+                        ) { index ->
+                            val log = pagingItems[index]
+                            if (log != null) {
                                 UnifiedAccessLogItem(log) {
                                     navController.navigate(Screen.CurfewRequest.route)
                                 }
@@ -98,19 +90,13 @@ fun AccessHistoryScreen(
                             }
                         }
                         
-                        if (!uiState.isLastPage && logs.isNotEmpty()) {
+                        if (pagingItems.loadState.append is androidx.paging.LoadState.Loading) {
                             item {
                                 Box(
                                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    if (uiState.isLoading) {
-                                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                                    } else {
-                                        Button(onClick = { viewModel.fetchAccessHistory(refresh = false) }) {
-                                            Text("Tải thêm")
-                                        }
-                                    }
+                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
                                 }
                             }
                         }

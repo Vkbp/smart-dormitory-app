@@ -63,23 +63,37 @@ Hoàn thành (Finish)
 
 ## 2. Documentation Governance (BẮT BUỘC)
 
-Một task CHỈ được coi là hoàn thành khi toàn bộ tài liệu bị ảnh hưởng đã được đồng bộ hóa.
+Một task CHỈ được coi là hoàn thành khi toàn bộ tài liệu bị ảnh hưởng đã được đồng bộ hóa. Tài liệu không bao giờ "xong", nó tiến hóa cùng mã nguồn.
 
 ### 2.1. Quy trình đồng bộ hóa (MANDATORY SYNC)
-Sau mỗi task, Agent PHẢI tự động kiểm tra và cập nhật các tài liệu sau nếu chúng bị ảnh hưởng bởi thay đổi trong Code hoặc phát hiện trong quá trình Audit:
+Sau mỗi task, Agent PHẢI thực hiện:
+1. **Xác định tài liệu bị ảnh hưởng**: Dựa trên "Ma trận cập nhật tài liệu".
+2. **Đồng bộ hóa**: Cập nhật nội dung tài liệu theo thực tế Code.
+3. **Cập nhật Project Health**: Phản ánh trạng thái mới nhất vào `docs/PROJECT_HEALTH.md`.
+4. **Cập nhật AUDIT_CHANGELOG.md**: Ghi lại lịch sử thay đổi (Date, Task, Docs affected).
+5. **Kiểm tra tính nhất quán**: Đảm bảo không có link hỏng, không mâu thuẫn giữa các tài liệu.
 
-1. **README.md**: Nếu thêm module tài liệu hoặc feature lớn.
-2. **PROJECT_RULE.md**: Nếu thay đổi quy tắc tối cao.
-3. **DOCUMENTATION_INDEX.md**: Nếu cấu trúc tài liệu thay đổi.
-4. **Architecture/Security/API Guides**: Phải khớp với thực tế Implementation (SQLCipher, RFID, v.v.).
-5. **Business/Feature/Package Index**: Cập nhật khi có logic mới, feature mới hoặc đổi cấu trúc folder.
-6. **Audit Reports & CHANGELOG**: Cập nhật lịch sử và điểm số.
-7. **TECH_DEBT.md / REFACTOR_HISTORY.md / DECISION_LOG.md**: Ghi lại nợ kỹ thuật, lịch sử refactor hoặc các ADR mới.
+### 2.2. Ma trận cập nhật tài liệu (Document Update Matrix)
 
-> [!IMPORTANT]
-> Việc cập nhật tài liệu hướng dẫn (Guides) và danh mục (Indexes) là **tự động và bắt buộc**, không đợi người dùng nhắc. Tài liệu lỗi thời (Stale) được coi là một bug nghiêm trọng.
+| Thay đổi | Tài liệu cần cập nhật |
+| :--- | :--- |
+| **Authentication** | `API_INDEX.md`, `FEATURE_INDEX.md`, `PROJECT_HEALTH.md`, `AUDIT_CHANGELOG.md` |
+| **Navigation** | `ARCHITECTURE_INDEX.md`, `FEATURE_INDEX.md`, `PROJECT_HEALTH.md` |
+| **Repository** | `ARCHITECTURE_INDEX.md`, `PROJECT_HEALTH.md`, `TECH_DEBT.md` (nếu cần) |
+| **API Interface** | `API_INDEX.md`, `PROJECT_HEALTH.md`, `README.md` (nếu API public) |
+| **Business Rules** | Business Docs, `PROJECT_RULE.md`, `PROJECT_HEALTH.md` |
+| **Security** | `SECURITY_GUIDE.md`, `PROJECT_RULE.md`, `PROJECT_HEALTH.md` |
+| **Thêm Feature** | `FEATURE_INDEX.md`, `DOCUMENTATION_INDEX.md`, `PROJECT_HEALTH.md`, `README.md` |
+| **Xóa Feature** | Đánh dấu `Deprecated` trong `FEATURE_INDEX.md`, `PROJECT_HEALTH.md` |
+| **Architecture** | `ARCHITECTURE_INDEX.md`, `PROJECT_RULE.md`, `PROJECT_HEALTH.md` |
+| **Hoàn thành Audit** | `AUDIT_CHANGELOG.md`, `TECH_DEBT.md`, `PROJECT_HEALTH.md` |
 
-### 2.2. Điều hướng tài liệu Backend (Backend Routing)
+### 2.3. Chính sách cập nhật (Update Policy)
+- **Append Only**: Luôn thêm mới, không ghi đè lịch sử (Audit, Changelog, Refactor).
+- **Traceability**: Mỗi thay đổi tài liệu phải tham chiếu đến Feature/Audit/API liên quan.
+- **Project Health SSOT**: `docs/PROJECT_HEALTH.md` phải luôn phản ánh trạng thái thực tế nhất.
+
+### 2.4. Điều hướng tài liệu Backend (Backend Routing)
 Khi thực hiện các tính năng liên quan đến Backend:
 - **KHÔNG** quét toàn bộ thư mục backend.
 - **MỞ** `docs/smart-dormitory-management-system-main/.agents/AGENTS.md` làm hub điều hướng.

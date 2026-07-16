@@ -1,5 +1,12 @@
 package com.ktx.dormitory.student.access.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.ktx.dormitory.student.access.data.paging.AccessHistoryPagingSource
+import com.ktx.dormitory.student.access.data.remote.AccessApiService
+import com.ktx.dormitory.student.face.data.remote.FaceApiService
+import com.ktx.dormitory.student.access.domain.model.UnifiedTimelineEvent
 import com.ktx.dormitory.student.access.data.mapper.toDomain
 import com.ktx.dormitory.student.access.data.mapper.toEntity
 import com.ktx.dormitory.student.access.data.remote.AccessRemoteDataSource
@@ -21,6 +28,8 @@ import javax.inject.Singleton
 @Singleton
 class AccessRepositoryImpl @Inject constructor(
     private val remoteDataSource: AccessRemoteDataSource,
+    private val apiService: AccessApiService,
+    private val faceApiService: FaceApiService,
     private val logDao: AccessLogDao,
     private val curfewDao: CurfewRequestDao
 ) : AccessRepository {
@@ -30,6 +39,13 @@ class AccessRepositoryImpl @Inject constructor(
 
     override val curfewRequests: Flow<List<CurfewRequest>> = curfewDao.getAllRequests()
         .map { list -> list.map { it.toDomain() } }
+
+    override fun getAccessHistoryPaging(studentId: String): Flow<PagingData<UnifiedTimelineEvent>> {
+        return Pager(
+            config = PagingConfig(pageSize = 15, enablePlaceholders = false),
+            pagingSourceFactory = { AccessHistoryPagingSource(apiService, faceApiService) }
+        ).flow
+    }
 
     override suspend fun getAccessHistory(page: Int, size: Int): Result<PageResponse<AccessLogDto>> {
         return try {

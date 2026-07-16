@@ -2,14 +2,13 @@ package com.ktx.dormitory.student.access.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.ktx.dormitory.student.access.domain.model.UnifiedEventType
 import com.ktx.dormitory.student.access.domain.model.UnifiedTimelineEvent
 import com.ktx.dormitory.student.access.data.dto.response.AccessLogDto
 import com.ktx.dormitory.student.face.data.dto.response.VerificationAttemptDto
-import com.ktx.dormitory.student.access.domain.usecase.GetAccessHistoryUseCase
-import com.ktx.dormitory.student.access.domain.usecase.GetCurfewRequestsUseCase
-import com.ktx.dormitory.student.access.domain.usecase.ObserveCurfewRequestsUseCase
-import com.ktx.dormitory.student.access.domain.usecase.SubmitCurfewRequestUseCase
+import com.ktx.dormitory.student.access.domain.usecase.*
 import com.ktx.dormitory.student.face.domain.usecase.GetFaceVerificationsUseCase
 import com.ktx.dormitory.shared.profile.domain.usecase.GetProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +24,7 @@ import kotlin.math.abs
 @HiltViewModel
 class AccessViewModel @Inject constructor(
     private val getAccessHistoryUseCase: GetAccessHistoryUseCase,
+    private val getAccessHistoryPagingUseCase: GetAccessHistoryPagingUseCase,
     private val getFaceVerificationsUseCase: GetFaceVerificationsUseCase,
     private val getProfileUseCase: GetProfileUseCase,
     private val getCurfewRequestsUseCase: GetCurfewRequestsUseCase,
@@ -35,12 +35,26 @@ class AccessViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AccessUiState())
     val uiState: StateFlow<AccessUiState> = _uiState.asStateFlow()
 
+    private val _accessPagingFlow = MutableStateFlow<PagingData<UnifiedTimelineEvent>>(PagingData.empty())
+    val accessPagingFlow: Flow<PagingData<UnifiedTimelineEvent>> = _accessPagingFlow.asStateFlow()
+
     private val isoDateTimeFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
     init {
         observeCurfewRequests()
-        fetchAccessHistory(refresh = true)
+        initPaging()
         fetchCurfewRequests()
+    }
+
+    private fun initPaging() {
+        viewModelScope.launch {
+            val studentId = getProfileUseCase().getOrNull()?.id ?: ""
+            getAccessHistoryPagingUseCase(studentId)
+                .cachedIn(viewModelScope)
+                .collectLatest { pagingData ->
+                    _accessPagingFlow.value = pagingData
+                }
+        }
     }
 
     private fun observeCurfewRequests() {
