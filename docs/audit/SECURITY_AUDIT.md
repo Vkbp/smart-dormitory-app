@@ -45,6 +45,7 @@ The security audit of the SDMS Android application reveals a **sophisticated and
     3. Updates both Access and Refresh tokens in secure storage.
     4. Retries the original request with the new token.
 - **Security Logic**: If the Refresh Token itself is expired, it clears all tokens and emits a `LOGOUT` event via `AuthEventBus`.
+- **Manual Logout**: Integrated with `AuthEventBus` to ensure consistent session termination across all UI components.
 
 ---
 

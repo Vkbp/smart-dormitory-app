@@ -57,11 +57,28 @@ The testing infrastructure has seen minor progress with the introduction of the 
 
 ---
 
-## 5. Testing Roadmap & Recommendations
+## 🏗️ Full System Test Matrix (v6.0.0)
 
-1.  **Phase 1 (Immediate)**: Continue adding unit tests for UseCases in the `payment` and `face` modules.
-2.  **Phase 2 (Coverage)**: Aim for 100% coverage of ViewModels using Turbine.
-3.  **Phase 3 (Integration)**: Implement Repository tests using `MockWebServer`.
+### 1. Student Features Flow
+- [ ] **Auth**: Login, Persistence, Logout logic (Redirection verified).
+- [ ] **Profile**: Field editing, Avatar upload (Cloudinary), State restoration (Parcelize).
+- [ ] **Room**: Available rooms picker (BottomSheet), Transfer request (UUID sync).
+- [ ] **Access**: Logs fetching, Curfew request submission (Standardized error parsing).
+- [ ] **Face**: Multi-step registration, Verification history, Liveness check logic.
+- [ ] **Finance**: Dynamic QR generation, Payment verification flow.
+- [ ] **Notification**: Read/Unread status, Maintenance issue reporting (BaseResponse sync).
+
+### 2. Admin Features Flow
+- [ ] **Dashboard**: Real-time stats visualization (Pull-based).
+- [ ] **IoT Control**: Remote gate unlock, Emergency override protocol.
+- [ ] **Workflows**: Face approval, Request review (Accept/Reject with Reason).
+- [ ] **Management**: CCCD search, RFID assignment logic.
+
+### 3. Reliability & Resilience
+- [ ] **Network**: Auto-detection of offline/online states (NetworkCapabilities).
+- [ ] **Security**: TLS 1.2 enforcement, Encrypted SharedPreferences, SQLCipher.
+- [ ] **Stability**: No crashes during "Process Death" (SavedStateHandle verified).
+- [ ] **API Consistency**: All endpoints using `toUserFriendlyMessage()` and `BaseResponse`.
 
 ---
 

@@ -48,7 +48,7 @@ class ExtensionRepositoryImpl @Inject constructor(
                 Result.success(false)
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 

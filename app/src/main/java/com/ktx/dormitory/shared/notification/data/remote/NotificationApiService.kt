@@ -8,16 +8,16 @@ import retrofit2.http.*
 
 interface NotificationApiService {
     @GET("v1/notifications/unread-count")
-    suspend fun getUnreadCount(): Response<Long>
+    suspend fun getUnreadCount(): Response<BaseResponse<Long>>
 
     @GET("v1/notifications")
-    suspend fun getNotifications(): Response<List<NotificationResponse>>
+    suspend fun getNotifications(): Response<BaseResponse<List<NotificationResponse>>>
 
     @PATCH("v1/notifications/{id}/read")
-    suspend fun markAsRead(@Path("id") id: Long): Response<Unit>
+    suspend fun markAsRead(@Path("id") id: Long): Response<BaseResponse<Unit>>
 
     @PATCH("v1/notifications/read-all")
-    suspend fun markAllRead(): Response<Unit>
+    suspend fun markAllRead(): Response<BaseResponse<Unit>>
 
     @POST("v1/notifications/issues")
     suspend fun reportIssue(

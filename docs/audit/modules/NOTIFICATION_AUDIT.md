@@ -22,17 +22,17 @@ graph TD
 ```
 
 ## Current Flow
-1. **Unread Check**: App periodically (or on screen open) calls `getUnreadCount()` to show the badge.
-2. **Read Notifications**: Student opens notification list -> `getNotifications()` -> Displays list.
-3. **Mark Read**: Student clicks notification -> `markAsRead(id)` called to update server state.
+1. **Unread Check**: App periodically (or on screen open) calls `getUnreadCount()` -> Parsed from `BaseResponse<Long>`.
+2. **Read Notifications**: Student opens notification list -> `getNotifications()` -> Displays list from `BaseResponse<List>`.
+3. **Mark Read**: Student clicks notification -> `markAsRead(id)` called.
 4. **Report Issue**: Student fills report form -> `reportIssue()` POSTs to `v1/notifications/issues`.
 
 ## Problems Found
-| Problem | Evidence | Severity | Recommendation |
-| :--- | :--- | :--- | :--- |
-| **Lack of Offline Support** | Notifications are fetched directly from the API without local caching in Room. | Medium | Implement local storage for notifications to allow students to read previously loaded messages without an internet connection. |
-| **Missing Push Integration** | No visible FCM (Firebase Cloud Messaging) service found in the core or notification package. | High | Implement a `FirebaseMessagingService` to enable real-time push notifications, which is essential for urgent dorm alerts. |
-| **Unread Count Sync** | Unread count is pull-based; may become stale if not refreshed frequently. | Low | Use a `SharedFlow` or `LiveEvent` triggered by push notifications to update the unread count in real-time. |
+| Problem | Evidence | Severity | Status | Recommendation |
+| :--- | :--- | :--- | :--- | :--- |
+| **API Parsing Inconsistency** | Endpoint returned raw list but app expected BaseResponse object. | Medium | FIXED | All Notification API endpoints synchronized with `BaseResponse<T>` wrapper. |
+| **Lack of Offline Support** | Notifications are fetched directly from the API without local caching in Room. | Medium | OPEN | Implement local storage for notifications. |
+| **Missing Push Integration** | No FCM service found. | High | OPEN | Implement FCM for real-time alerts. |
 
 ## Technical Debt
 - **Real-time Updates**: Status changes for issue reports should be pushed via FCM or WebSocket rather than requiring the user to refresh.

@@ -25,15 +25,17 @@ graph TD
 
 ## Current Flow
 1. **View Room**: Student opens the Room screen -> `GetRoomInfoUseCase` -> Fetches from `v1/student/room/current`.
-2. **Transfer Request**: Student fills out transfer form -> `SubmitTransferRequestUseCase` -> POST to `v1/student/change-room`.
-3. **History**: Student views history -> `GetTransferHistoryUseCase` -> Fetches from `v1/student/change-room` (GET).
+2. **Room Selection**: Student clicks "Choose Room" in transfer form -> `GetAvailableRoomsUseCase` -> Fetches from `v1/student/rooms/available`.
+3. **Transfer Request**: Student fills out transfer form (Dynamic Picker) -> `SubmitTransferRequestUseCase` -> POST to `v1/student/change-room`.
+4. **History**: Student views history -> `GetTransferHistoryUseCase` -> Fetches from `v1/student/change-room` (GET).
 
 ## Problems Found
-| Problem | Evidence | Severity | Recommendation |
-| :--- | :--- | :--- | :--- |
-| **Lack of Offline Support** | No local storage found for Room information in `data/local`. | Medium | Implement Room caching to allow students to view their room info without an active internet connection, consistent with the "Offline First" principle. |
-| **Input Validation** | `RoomTransferRequest` reason length validation is not explicitly visible in the Repository. | Low | Ensure the ViewModel or UseCase validates the reason length before submission to prevent API errors. |
-| **Sync with Profile** | Room changes may not immediately reflect in the cached Profile if not manually triggered. | Low | Trigger a Profile refresh or update the cached `UserProfileEntity` after a room transfer is approved. |
+| Problem | Evidence | Severity | Status | Recommendation |
+| :--- | :--- | :--- | :--- | :--- |
+| **Lack of Offline Support** | No local storage found for Room information in `data/local`. | Medium | OPEN | Implement Room caching to allow students to view their room info without an active internet connection. |
+| **Input Validation** | `RoomTransferRequest` reason length validation is not explicitly visible in the Repository. | Low | FIXED | ViewModel now validates reason and UUID format for target rooms. |
+| **UX: Room UUID Input** | Student had to manually enter UUID for rooms. | Medium | FIXED | Implemented ModalBottomSheet with Building-based grouping and "Available Beds" display. |
+| **Payload Desync** | `targetRoomId` was sent as Null because of missing mapping in Data Layer. | High | FIXED | Corrected `RoomMapper.kt` to map `roomId` and `availableBeds` fields. |
 
 ## Technical Debt
 - **Paging**: Room transfer history should ideally use Paging if the history becomes large.

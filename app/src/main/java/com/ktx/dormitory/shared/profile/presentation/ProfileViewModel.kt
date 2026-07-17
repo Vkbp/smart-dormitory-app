@@ -6,6 +6,7 @@ import com.ktx.dormitory.core.base.BaseViewModel
 import com.ktx.dormitory.shared.profile.domain.usecase.GetProfileUseCase
 import com.ktx.dormitory.shared.profile.domain.usecase.UpdateProfileUseCase
 import com.ktx.dormitory.shared.profile.domain.usecase.UploadAvatarUseCase
+import com.ktx.dormitory.shared.auth.domain.usecase.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,6 +16,7 @@ class ProfileViewModel @Inject constructor(
     private val getProfileUseCase: GetProfileUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
     private val uploadAvatarUseCase: UploadAvatarUseCase,
+    private val logoutUseCase: LogoutUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel<ProfileUiState, ProfileUiEvent, ProfileUiEffect>(
     savedStateHandle.get<ProfileUiState>("uiState") ?: ProfileUiState()
@@ -37,6 +39,13 @@ class ProfileViewModel @Inject constructor(
             is ProfileUiEvent.UpdateProfile -> updateProfile(event.fullName, event.phone, event.email)
             is ProfileUiEvent.UploadAvatar -> uploadAvatar(event.filePath)
             ProfileUiEvent.ClearUploadStatus -> updateState { it.copy(uploadSuccess = false) }
+            ProfileUiEvent.Logout -> logout()
+        }
+    }
+
+    private fun logout() {
+        viewModelScope.launch {
+            logoutUseCase()
         }
     }
 

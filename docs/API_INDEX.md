@@ -7,7 +7,7 @@
 | **Auth** | `AuthApiService` | `AuthRepository` | `LoginUseCase`, `RefreshTokenUseCase` |
 | **Face** | `FaceApiService` | `FaceRepository` | `RegisterFaceUseCase`, `GetFaceProfileUseCase` |
 | **Payment** | `PaymentApiService` | `PaymentRepository` | `GetInvoicesUseCase`, `VerifyPaymentUseCase` |
-| **Room** | `RoomApiService` | `RoomRepository` | `GetRoomInfoUseCase`, `SubmitTransferRequestUseCase`, `GetTransferHistoryUseCase` |
+| **Room** | `RoomApiService` | `RoomRepository` | `GetRoomInfoUseCase`, `GetAvailableRoomsUseCase`, `SubmitTransferRequestUseCase`, `GetTransferHistoryUseCase` |
 | **Access** | `AccessApiService` | `AccessRepository` | `GetAccessHistoryUseCase`, `SubmitCurfewRequestUseCase` |
 | **Checkout** | `CheckoutApiService` | `CheckoutRepository` | `SubmitCheckoutRequestUseCase` |
 | **Extension**| `ExtensionApiService` | `ExtensionRepository` | `RequestExtensionUseCase` |

@@ -31,13 +31,15 @@ graph TD
 3. **Sync**: On success, data is saved to `UserProfileEntity` in Room.
 4. **Fallback**: If network is unavailable, the repository fetches the `firstOrNull()` entry from Room.
 5. **Update**: `UpdateProfile` event sends a PATCH request to `v1/students/me`.
+6. **Logout**: `Logout` event triggers `LogoutUseCase`, clearing local session and redirecting to Login.
 
 ## Problems Found
-| Problem | Evidence | Severity | Recommendation |
-| :--- | :--- | :--- | :--- |
-| **Profile Overwrite** | `AuthRepositoryImpl` saves profile to local Room regardless of existing data. | Low | Consider using a "sync" logic that only updates changed fields if conflict resolution is needed. |
-| **Emergency Contact Validation** | Validation for `emergencyContact` phone numbers appears minimal in `UpdateProfileRequest`. | Medium | Add regex validation for phone numbers in the `ProfileViewModel` or UseCase. |
-| **Avatar URL Hardcoding** | Avatar URLs are stored as full strings. | Low | Ensure the image loading library (Coil) handles potential base URL changes correctly. |
+| Problem | Evidence | Severity | Status | Recommendation |
+| :--- | :--- | :--- | :--- | :--- |
+| **Missing Logout Button** | No clear UI element for session termination in Profile. | Medium | FIXED | Added Red Logout icon in TopAppBar. |
+| **State Persistence Crash** | `ProfileUiState` was not Parcelable. | High | FIXED | Implemented `@Parcelize`. |
+| **Emergency Contact Validation** | Validation for `emergencyContact` phone numbers appears minimal. | Medium | OPEN | Add regex validation. |
+| **Profile Overwrite** | Saves profile to Room regardless of existing data. | Low | OPEN | Implement sync logic. |
 
 ## Technical Debt
 - **Pagination**: Profile-related lists (if any future ones are added, e.g., siblings) should use Paging 3.

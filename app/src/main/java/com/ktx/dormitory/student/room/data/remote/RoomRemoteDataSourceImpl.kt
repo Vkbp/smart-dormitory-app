@@ -10,6 +10,8 @@ class RoomRemoteDataSourceImpl @Inject constructor(
 ) : RoomRemoteDataSource {
     override suspend fun getMyRoom() = api.getMyRoom()
 
+    override suspend fun getAvailableRooms() = api.getAvailableRooms()
+
     override suspend fun submitTransferRequest(request: RoomTransferRequest) = 
         api.submitTransferRequest(request)
 

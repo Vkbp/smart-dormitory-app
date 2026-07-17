@@ -2,6 +2,7 @@ package com.ktx.dormitory.student.room.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
+import com.ktx.dormitory.student.room.domain.usecase.GetAvailableRoomsUseCase
 import com.ktx.dormitory.student.room.domain.usecase.GetTransferHistoryUseCase
 import com.ktx.dormitory.student.room.domain.usecase.SubmitTransferRequestUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,13 +12,15 @@ import javax.inject.Inject
 @HiltViewModel
 class RoomTransferViewModel @Inject constructor(
     private val submitTransferRequestUseCase: SubmitTransferRequestUseCase,
-    private val getTransferHistoryUseCase: GetTransferHistoryUseCase
+    private val getTransferHistoryUseCase: GetTransferHistoryUseCase,
+    private val getAvailableRoomsUseCase: GetAvailableRoomsUseCase
 ) : BaseViewModel<RoomTransferUiState, RoomTransferUiEvent, RoomTransferUiEffect>(
     RoomTransferUiState()
 ) {
 
     init {
         loadHistory()
+        loadAvailableRooms()
     }
 
     override fun onEvent(event: RoomTransferUiEvent) {
@@ -25,8 +28,8 @@ class RoomTransferViewModel @Inject constructor(
             is RoomTransferUiEvent.ReasonChanged -> {
                 updateState { it.copy(reason = event.reason) }
             }
-            is RoomTransferUiEvent.TargetRoomChanged -> {
-                updateState { it.copy(targetRoomId = event.targetRoomId) }
+            is RoomTransferUiEvent.RoomSelected -> {
+                updateState { it.copy(targetRoomId = event.roomId, targetRoomCode = event.roomCode) }
             }
             is RoomTransferUiEvent.TabSelected -> {
                 updateState { it.copy(selectedTab = event.index) }
@@ -36,7 +39,20 @@ class RoomTransferViewModel @Inject constructor(
             }
             RoomTransferUiEvent.SubmitRequest -> submitRequest()
             RoomTransferUiEvent.LoadHistory -> loadHistory()
+            RoomTransferUiEvent.LoadAvailableRooms -> loadAvailableRooms()
             RoomTransferUiEvent.ClearError -> updateState { it.copy(error = null) }
+        }
+    }
+
+    private fun loadAvailableRooms() {
+        viewModelScope.launch {
+            getAvailableRoomsUseCase().fold(
+                onSuccess = { rooms ->
+                    val grouped = rooms.groupBy { it.buildingName ?: "Khác" }
+                    updateState { it.copy(availableRooms = rooms, groupedAvailableRooms = grouped) }
+                },
+                onFailure = { /* Silent fail for available rooms */ }
+            )
         }
     }
 
@@ -68,7 +84,7 @@ class RoomTransferViewModel @Inject constructor(
                 targetRoomId = currentState.targetRoomId.takeIf { it.isNotBlank() }
             ).fold(
                 onSuccess = {
-                    updateState { it.copy(isSubmitting = false, reason = "", targetRoomId = "") }
+                    updateState { it.copy(isSubmitting = false, reason = "", targetRoomId = "", targetRoomCode = "") }
                     sendEffect(RoomTransferUiEffect.ShowToast("Gửi yêu cầu thành công"))
                     sendEffect(RoomTransferUiEffect.SubmissionSuccess)
                     // Chuyển sang tab lịch sử để xem kết quả

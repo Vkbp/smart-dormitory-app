@@ -96,6 +96,9 @@ fun ProfileScreen(
                         IconButton(onClick = { isEditing = true }) {
                             Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
+                        IconButton(onClick = { viewModel.onEvent(ProfileUiEvent.Logout) }) {
+                            Icon(Icons.Default.Logout, contentDescription = "Logout", tint = MaterialTheme.colorScheme.error)
+                        }
                     }
                 }
             )

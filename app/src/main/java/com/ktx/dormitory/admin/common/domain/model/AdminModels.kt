@@ -4,7 +4,7 @@ import java.util.UUID
 
 data class CheckInStudent(
     val assignmentId: UUID,
-    val studentId: UUID,
+    val studentId: UUID?,
     val studentName: String,
     val studentCode: String,
     val cccd: String,

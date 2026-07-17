@@ -151,11 +151,13 @@ class AuthRepositoryImpl @Inject constructor(
             remoteDataSource.logout()
             localDataSource.clearTokens(keepRefreshToken = false)
             localDataSource.saveLoginStatus(false)
+            com.ktx.dormitory.core.util.AuthEventBus.emit(com.ktx.dormitory.core.util.AuthEvent.LOGOUT)
             android.util.Log.d("AUTH_REPO", "Logout successful")
         } catch (e: Exception) {
             android.util.Log.e("AUTH_REPO", "Logout API failed, but clearing local session: ${e.message}")
             localDataSource.clearTokens(keepRefreshToken = false)
             localDataSource.saveLoginStatus(false)
+            com.ktx.dormitory.core.util.AuthEventBus.emit(com.ktx.dormitory.core.util.AuthEvent.LOGOUT)
         }
     }
 

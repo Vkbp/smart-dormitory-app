@@ -1,5 +1,6 @@
 package com.ktx.dormitory.student.room.data.repository
 
+import com.ktx.dormitory.core.network.toUserFriendlyMessage
 import com.ktx.dormitory.student.room.data.dto.request.RoomTransferRequest
 import com.ktx.dormitory.student.room.data.mapper.toDomain
 import com.ktx.dormitory.student.room.data.remote.RoomRemoteDataSource
@@ -23,7 +24,20 @@ class RoomRepositoryImpl @Inject constructor(
                 Result.failure(Exception(response.message))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
+        }
+    }
+
+    override suspend fun getAvailableRooms(): Result<List<RoomInfo>> {
+        return try {
+            val response = remoteDataSource.getAvailableRooms()
+            if (response.success && response.data != null) {
+                Result.success(response.data.map { it.toDomain() })
+            } else {
+                Result.failure(Exception(response.message))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 
@@ -36,7 +50,7 @@ class RoomRepositoryImpl @Inject constructor(
                 Result.failure(Exception(response.message))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 
@@ -49,7 +63,7 @@ class RoomRepositoryImpl @Inject constructor(
                 Result.failure(Exception(response.message))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 }

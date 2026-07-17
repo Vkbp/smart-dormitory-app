@@ -64,7 +64,7 @@ class PaymentRepositoryImpl @Inject constructor(
             val response = remoteDataSource.getPaymentInstructions()
             Result.success(response.toDomain())
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 }

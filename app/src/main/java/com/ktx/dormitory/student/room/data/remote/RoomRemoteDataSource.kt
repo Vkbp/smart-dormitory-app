@@ -7,6 +7,7 @@ import com.ktx.dormitory.student.room.data.dto.response.RoomTransferHistoryDto
 
 interface RoomRemoteDataSource {
     suspend fun getMyRoom(): BaseResponse<RoomInfoDto>
+    suspend fun getAvailableRooms(): BaseResponse<List<RoomInfoDto>>
     suspend fun submitTransferRequest(request: RoomTransferRequest): BaseResponse<Unit>
     suspend fun getTransferHistory(): BaseResponse<List<RoomTransferHistoryDto>>
 }

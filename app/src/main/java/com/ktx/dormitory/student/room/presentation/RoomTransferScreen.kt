@@ -1,13 +1,16 @@
 package com.ktx.dormitory.student.room.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.MeetingRoom
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,9 +23,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ktx.dormitory.core.util.DateTimeUtils
+import com.ktx.dormitory.student.room.domain.model.RoomInfo
 import com.ktx.dormitory.student.room.domain.model.RoomTransferHistory
 import com.ktx.dormitory.ui.components.EmptyView
 import com.ktx.dormitory.ui.components.LoadingView
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,6 +36,9 @@ fun RoomTransferScreen(
     viewModel: RoomTransferViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState()
+    var showRoomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -59,9 +67,26 @@ fun RoomTransferScreen(
             }
 
             when (state.selectedTab) {
-                0 -> RequestForm(state, viewModel)
+                0 -> RequestForm(state, viewModel) { showRoomSheet = true }
                 1 -> HistoryList(state)
             }
+        }
+    }
+
+    if (showRoomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showRoomSheet = false },
+            sheetState = sheetState
+        ) {
+            RoomSelectionContent(
+                groupedRooms = state.groupedAvailableRooms,
+                onRoomSelected = { id, code ->
+                    viewModel.onEvent(RoomTransferUiEvent.RoomSelected(id, code))
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        showRoomSheet = false
+                    }
+                }
+            )
         }
     }
 
@@ -80,7 +105,11 @@ fun RoomTransferScreen(
 }
 
 @Composable
-fun RequestForm(state: RoomTransferUiState, viewModel: RoomTransferViewModel) {
+fun RequestForm(
+    state: RoomTransferUiState,
+    viewModel: RoomTransferViewModel,
+    onShowRooms: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,12 +128,24 @@ fun RequestForm(state: RoomTransferUiState, viewModel: RoomTransferViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = state.targetRoomId,
-            onValueChange = { viewModel.onEvent(RoomTransferUiEvent.TargetRoomChanged(it)) },
-            label = { Text("Phòng muốn chuyển đến (Nếu có)") },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Nhập mã phòng (Không bắt buộc)") },
-            singleLine = true
+            value = state.targetRoomCode,
+            onValueChange = { },
+            label = { Text("Phòng mong muốn (Không bắt buộc)") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onShowRooms() },
+            placeholder = { Text("Bấm để chọn phòng trống") },
+            readOnly = true,
+            trailingIcon = {
+                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+            },
+            enabled = false, // Vẫn clickable do Modifier.clickable phía trên
+            colors = OutlinedTextFieldDefaults.colors(
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -121,6 +162,70 @@ fun RequestForm(state: RoomTransferUiState, viewModel: RoomTransferViewModel) {
                 Icon(Icons.Default.Send, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("GỬI YÊU CẦU", fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+@Composable
+fun RoomSelectionContent(
+    groupedRooms: Map<String, List<RoomInfo>>,
+    onRoomSelected: (String, String) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp)) {
+        Text(
+            "Chọn phòng muốn chuyển đến",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp),
+            fontWeight = FontWeight.Bold
+        )
+
+        if (groupedRooms.isEmpty()) {
+            EmptyView(message = "Không có phòng trống nào phù hợp với bạn")
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                groupedRooms.forEach { (building, rooms) ->
+                    item {
+                        Surface(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Tòa $building",
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        }
+                    }
+
+                    items(rooms) { room ->
+                        ListItem(
+                            headlineContent = { Text("Phòng ${room.roomCode}") },
+                            supportingContent = { 
+                                Text("Tầng ${room.floor} - Còn ${room.availableBeds ?: 0} giường trống") 
+                            },
+                            leadingContent = {
+                                Icon(Icons.Default.MeetingRoom, contentDescription = null)
+                            },
+                            modifier = Modifier.clickable {
+                                onRoomSelected(room.roomId ?: "", room.roomCode ?: "")
+                            }
+                        )
+                    }
+                }
+
+                item {
+                    ListItem(
+                        headlineContent = { Text("Bỏ chọn / Để Admin sắp xếp") },
+                        leadingContent = {
+                            Icon(Icons.Default.History, contentDescription = null)
+                        },
+                        modifier = Modifier.clickable {
+                            onRoomSelected("", "")
+                        }
+                    )
+                }
             }
         }
     }

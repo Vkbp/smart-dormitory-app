@@ -7,13 +7,16 @@ import com.ktx.dormitory.student.room.domain.model.RoomTransferHistory
 
 fun RoomInfoDto.toDomain(): RoomInfo {
     return RoomInfo(
+        roomId = roomId,
         building = building,
+        buildingName = buildingName,
         floor = floor,
         roomCode = roomCode,
         bedCode = bedCode,
         status = status,
         checkInAt = checkInAt,
-        expectedCheckOutAt = expectedCheckOutAt
+        expectedCheckOutAt = expectedCheckOutAt,
+        availableBeds = availableBeds
     )
 }
 

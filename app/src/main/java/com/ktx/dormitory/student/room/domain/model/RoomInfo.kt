@@ -8,11 +8,14 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class RoomInfo(
-    val building: String?,
-    val floor: Int?,
-    val roomCode: String?,
-    val bedCode: String?,
-    val status: String?,
-    val checkInAt: String?,
-    val expectedCheckOutAt: String?
+    val roomId: String? = null,
+    val building: String? = null,
+    val buildingName: String? = null,
+    val floor: Int? = null,
+    val roomCode: String? = null,
+    val bedCode: String? = null,
+    val status: String? = null,
+    val checkInAt: String? = null,
+    val expectedCheckOutAt: String? = null,
+    val availableBeds: Int? = null
 ) : Parcelable

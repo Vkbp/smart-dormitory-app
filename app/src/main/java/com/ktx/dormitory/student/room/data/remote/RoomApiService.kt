@@ -12,6 +12,9 @@ interface RoomApiService {
     @GET("v1/student/room/current")
     suspend fun getMyRoom(): BaseResponse<RoomInfoDto>
 
+    @GET("v1/student/rooms/available")
+    suspend fun getAvailableRooms(): BaseResponse<List<RoomInfoDto>>
+
     @POST("v1/student/change-room")
     suspend fun submitTransferRequest(
         @Body request: RoomTransferRequest

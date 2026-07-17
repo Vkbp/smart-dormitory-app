@@ -25,14 +25,17 @@ data class StayExtensionResponseDto(
 )
 
 data class CheckInSearchResponseDto(
-    val assignmentId: UUID,
-    val studentId: UUID,
-    val studentName: String,
-    val studentCode: String,
-    val citizenId: String,
-    val roomCode: String,
-    val bedCode: String,
-    val status: String
+    val assignmentId: UUID?,
+    val studentId: UUID?,
+    val studentName: String?,
+    val studentCode: String?,
+    val citizenId: String?,
+    val gender: String?,
+    val portraitUrl: String?,
+    val buildingName: String?,
+    val floorName: String?,
+    val roomName: String?,
+    val bedName: String?
 )
 
 data class BroadcastResponse(

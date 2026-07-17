@@ -93,12 +93,15 @@ Sau mỗi task, Agent PHẢI thực hiện:
 - **Traceability**: Mỗi thay đổi tài liệu phải tham chiếu đến Feature/Audit/API liên quan.
 - **Project Health SSOT**: `docs/PROJECT_HEALTH.md` phải luôn phản ánh trạng thái thực tế nhất.
 
-### 2.4. Điều hướng tài liệu Backend (Backend Routing)
-Khi thực hiện các tính năng liên quan đến Backend:
-- **KHÔNG** quét toàn bộ thư mục backend.
-- **MỞ** `docs/smart-dormitory-management-system-main/.agents/AGENTS.md` làm hub điều hướng.
-- Theo các liên kết trong đó để chỉ đọc các tài liệu cần thiết cho feature đang làm.
+### 2.5. Chữ ký xác thực hoàn tất (Mandatory Completion Signature)
+BẮT BUỘC Agent phải xuất bảng sau ở cuối mỗi task có thay đổi code:
 
+---
+**AGENT SYNC VERIFICATION:**
+- [ ] **Code Integrity**: Build/Logic verified?
+- [ ] **Documentation**: List of updated files (e.g., `ROOM_AUDIT.md`, `API_INDEX.md`).
+- [ ] **Project Health**: New Score & Trend.
+- [ ] **Next Action**: What should be done next?
 ---
 
 ## 3. Tối ưu hóa ngữ cảnh (Context Optimization)

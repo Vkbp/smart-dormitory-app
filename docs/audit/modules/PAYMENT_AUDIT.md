@@ -30,11 +30,11 @@ graph TD
 3. **Verify**: Student pays via external app (Banking/Momo) -> Returns to SDMS -> Enters transaction code -> `verifyPayment()` POSTs data to backend.
 
 ## Problems Found
-| Problem | Evidence | Severity | Recommendation |
-| :--- | :--- | :--- | :--- |
-| **API Endpoint Duplication** | `getInvoices` and `getPaymentHistory` both call `v1/bills/me`. | Low | Verify if `v1/bills/me` returns both paid and unpaid bills and filter accordingly in the repository or UseCase to avoid redundant calls. |
-| **Verification Payload** | `verifyPayment` uses `HashMap<String, Any>` instead of a typed DTO. | Medium | Define a `VerifyPaymentRequest` DTO to ensure type safety and document the required fields (billId, amount, code). |
-| **Instruction Data Model** | `getPaymentInstructions` returns a direct DTO instead of `BaseResponse<T>`. | Low | Ensure backend response format is consistent across all endpoints for easier error handling in the common layer. |
+| Problem | Evidence | Severity | Status | Recommendation |
+| :--- | :--- | :--- | :--- | :--- |
+| **Instruction Data Model** | `getPaymentInstructions` returned direct DTO. | Low | FIXED | Standardized API error parsing via `toUserFriendlyMessage()`. |
+| **Verification Payload** | `verifyPayment` uses `HashMap`. | Medium | OPEN | Define a `VerifyPaymentRequest` DTO. |
+| **API Endpoint Duplication** | Redundant calls to `v1/bills/me`. | Low | OPEN | Verify and filter accordingly. |
 
 ## Technical Debt
 - **Pagination**: Large payment histories should be paginated using Paging 3.

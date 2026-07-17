@@ -3,6 +3,7 @@ package com.ktx.dormitory.admin.common.data.repository
 import com.google.gson.Gson
 import com.ktx.dormitory.core.common.BaseResponse
 import com.ktx.dormitory.core.common.PageResponse
+import com.ktx.dormitory.core.network.toUserFriendlyMessage
 import com.ktx.dormitory.admin.common.data.remote.AdminApiService
 import com.ktx.dormitory.admin.common.data.dto.request.*
 import com.ktx.dormitory.admin.common.data.dto.response.*
@@ -10,6 +11,7 @@ import com.ktx.dormitory.admin.common.domain.model.DashboardStats
 import com.ktx.dormitory.admin.common.data.mapper.toDomain
 import com.ktx.dormitory.admin.smartaccess.domain.repository.AdminRepository
 import com.ktx.dormitory.student.face.data.dto.response.FaceProfileDto
+import retrofit2.HttpException
 import retrofit2.Response
 import java.util.UUID
 import javax.inject.Inject
@@ -33,17 +35,10 @@ class AdminRepositoryImpl @Inject constructor(
                     Result.failure(Exception(body?.message ?: "Lỗi hệ thống"))
                 }
             } else {
-                val errorMsg = try {
-                    val errorBody = response.errorBody()?.string()
-                    val apiResponse = Gson().fromJson(errorBody, BaseResponse::class.java)
-                    apiResponse.message
-                } catch (e: Exception) {
-                    null
-                }
-                Result.failure(Exception(errorMsg ?: "Lỗi kết nối: ${response.code()}"))
+                Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 
@@ -57,17 +52,10 @@ class AdminRepositoryImpl @Inject constructor(
                     Result.failure(Exception(body?.message ?: "Thao tác thất bại"))
                 }
             } else {
-                val errorMsg = try {
-                    val errorBody = response.errorBody()?.string()
-                    val apiResponse = Gson().fromJson(errorBody, BaseResponse::class.java)
-                    apiResponse.message
-                } catch (e: Exception) {
-                    null
-                }
-                Result.failure(Exception(errorMsg ?: "Lỗi: ${response.code()}"))
+                Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 
@@ -156,10 +144,10 @@ class AdminRepositoryImpl @Inject constructor(
                     Result.failure(Exception(body?.message ?: "Lỗi hệ thống"))
                 }
             } else {
-                Result.failure(Exception("Lỗi kết nối: ${response.code()}"))
+                Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 }

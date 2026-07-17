@@ -7,7 +7,7 @@ Bản đồ tính năng của dự án Android.
 | **Auth** | Đăng nhập, Quên MK, Kích hoạt | ALL | `features.auth` | `domain.auth` | `data.auth` |
 | **Face** | Đăng ký & Quản lý khuôn mặt | STUDENT | `features.student.face` | `domain.face` | `data.face` |
 | **Payment** | Hóa đơn & Lịch sử thanh toán | STUDENT | `features.student.payment` | `domain.payment` | `data.payment` |
-| **Room** | Xem thông tin chỗ ở & Đổi phòng | STUDENT | `features.student.room` | `domain.room` | `data.room` |
+| **Room** | Thông tin chỗ ở, **Chọn & Đổi phòng** | STUDENT | `features.student.room` | `domain.room` | `data.room` |
 | **Access** | Lịch sử ra vào & Giới nghiêm | STUDENT | `features.student.access` | `domain.access` | `data.access` |
 | **Checkout** | Yêu cầu trả phòng sớm | STUDENT | `features.student.checkout` | `domain.checkout` | `data.checkout` |
 | **Extension** | Gia hạn thời gian ở | STUDENT | `features.student.extension` | `domain.extension` | `data.extension` |

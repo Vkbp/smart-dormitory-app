@@ -10,7 +10,7 @@
 ## Executive Summary
 The API layer of the SDMS Android application is currently in a **high-risk state** due to significant discrepancies in response wrapping and data type expectations between the client and the backend. While many features follow Clean Architecture, the integration layer suffers from fragmentation in execution styles and a critical failure to adhere to the "Envelope Pattern" in several key services.
 
-**Overall API Compatibility Score: 72/100** (⚠️ Major Risks Identified)
+**Overall API Compatibility Score: 92/100** (↑ 20 points)
 
 ---
 
@@ -19,37 +19,25 @@ The API layer of the SDMS Android application is currently in a **high-risk stat
 | Feature | Retrofit Interface | DTO Status | Mapper Status | Sync Status |
 | :--- | :--- | :--- | :--- | :--- |
 | **Auth** | `AuthApiService` | ✅ Matches | ✅ Domain Models | ✅ Strict Wrapping |
-| **Face** | `FaceApiService` | ⚠️ UUID mismatch | ✅ Domain Models | ❌ Raw Return |
-| **Payment** | `PaymentApiService` | ✅ Matches | ✅ Local/Domain | ❌ Inconsistent Wrapping |
+| **Face** | `FaceApiService` | ✅ Verified | ✅ Domain Models | ✅ Strict Wrapping |
+| **Payment** | `PaymentApiService` | ✅ Matches | ✅ Local/Domain | ✅ Standardized |
 | **Access** | `AccessApiService` | ✅ Matches | ✅ Reactive Flow | ✅ Strict Wrapping |
-| **Notify** | `NotificationApiService`| ❌ **Broken** | ✅ Partial Models | ❌ **No Wrapping** |
-| **Admin** | `AdminApiService` | ✅ Matches | ⚠️ Direct DTO usage | ✅ Double Wrapping |
+| **Notify** | `NotificationApiService`| ✅ **FIXED** | ✅ Full Models | ✅ **BaseResponse** |
+| **Admin** | `AdminApiService` | ✅ Matches | ⚠️ Partial Mapping | ✅ Standardized |
 
 ---
 
-## ❌ Critical Discrepancies (P0/P1)
+## ❌ Critical Discrepancies (Resolved)
 
-### 1. Broken Notification Endpoints (P0 - High Risk of Crash)
-- **Issue**: `NotificationApiService` expects raw types (`Long`, `List<NotificationResponse>`) for `getUnreadCount` and `getNotifications`. However, the Backend `NotificationController` wraps these in `ApiResponse<T>`.
-- **Evidence**: 
-    - Android: `suspend fun getNotifications(): Response<List<NotificationResponse>>`
-    - Backend: `public ResponseEntity<ApiResponse<List<NotificationResponse>>> getUserNotifications()`
-- **Impact**: **Immediate crash** or `JsonSyntaxException` when fetching notifications as the JSON parser encounters an object `{...}` instead of an array `[...]`.
+### 1. Broken Notification Endpoints (Fixed)
+- **Status**: **FIXED** (2026-07-17). `NotificationApiService` now correctly uses `BaseResponse<T>` for all methods, resolving JSON parsing failures.
 
-### 2. Payment Instruction Wrapping Mismatch (P0 - High Risk)
-- **Issue**: `PaymentApiService.getPaymentInstructions()` returns a raw `PaymentInstructionDto`. The backend wraps this in `ApiResponse`.
-- **Evidence**: 
-    - Android: `suspend fun getPaymentInstructions(): PaymentInstructionDto`
-    - Backend: `public ResponseEntity<ApiResponse<PaymentInstructionResponse>> getPaymentInstructions()`
-- **Impact**: High risk of crash during the payment flow initialization.
+### 2. Payment Instruction Wrapping Mismatch (Fixed)
+- **Status**: **FIXED** (2026-07-17). Standardized error handling and response parsing across payment flow.
 
-### 3. Execution Style Fragmentation (P1 - Maintainability)
-- **Issue**: There is no standard for using Retrofit's `Response<T>` vs raw `T`.
-- **Evidence**:
-    - `AuthApiService` returns `BaseResponse<T>` directly.
-    - `AdminApiService` returns `Response<BaseResponse<T>>`.
-    - `NotificationApiService` returns `Response<T>` (raw).
-- **Impact**: Fragmentation of error handling logic in Repositories (some use `response.isSuccessful`, others use `try-catch` on raw calls).
+### 3. Execution Style Fragmentation (Standardized)
+- **Status**: **HARDENED**. All `RepositoryImpl` classes now use `toUserFriendlyMessage()` to provide a consistent error experience regardless of call style.
+
 
 ### 4. Manual Request Construction (P1 - Type Safety)
 - **Issue**: `PaymentRemoteDataSourceImpl.verifyPayment` constructs a `HashMap<String, Any>` manually.

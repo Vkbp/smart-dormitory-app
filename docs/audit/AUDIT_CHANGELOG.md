@@ -4,6 +4,17 @@ Permanent history of system audits and score trends. **Never recreate this file;
 
 ## Audit Timeline
 
+### [2026-07-17] Feature: Admin Check-in Scanner (QR CCCD) Integration
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Feature Implementation**: Developed "Admin Check-in Scanner" featuring a split-screen UI with live Camera preview and manual search fallback.
+    - **AI/ML Integration**: Utilized **Google ML Kit Barcode Scanning** and **CameraX** for real-time QR detection.
+    - **Utility**: Implemented `QrParser.kt` to extract 12-digit CCCD data from Vietnam's chip-based ID QR codes.
+    - **UI/UX**: Integrated **ModalBottomSheet** for displaying student search results and a custom **SuccessCheckInDialog** for confirmation.
+    - **Data Hardening**: Updated `CheckInSearchResponseDto` and `AdminMappers.kt` to ensure full data parity with the Backend API.
+- **Academic Support**: Created detailed Implementation Report `docs/implementation/004_ADMIN_CHECKIN_SCANNER.md` with Backend Fix Prompt.
+- **Maturity**: Score maintained at **95/100** with enhanced Admin utility capabilities.
+
 ### [2026-07-11] Feature: Student RFID Assignment Integration
 - **Contributor**: Development Agent
 - **Actions Taken**:
@@ -84,6 +95,74 @@ Permanent history of system audits and score trends. **Never recreate this file;
     - Created `CurfewRequestScreen` for submitting late entry requests and viewing history.
     - Updated `AccessHistoryScreen` to navigate to Curfew Request form.
     - Synchronized documentation: Updated `PROJECT_RULE.md`, `BUSINESS_INDEX.md`, `PACKAGE_INDEX.md`, và `DECISION_LOG.md`.
+
+### [2026-07-17] Refactor: Room Transfer UI/UX & API Protocol Alignment
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **UI/UX Refactor**: Replaced manual input with a mandatory **BottomSheet Picker** for room selection.
+    - **Data Integration**: Added `availableBeds` field to `RoomInfoDto` and `RoomInfo` to match backend response.
+    - **Display Logic**: Updated picker to show "Phòng [Code] - Còn [X] giường trống" as per backend requirement.
+    - **Payload Sync**: Verified `RoomTransferRequest` uses `targetRoomId` key and sends UUID strings.
+    - **Bug Fix**: Fixed missing `roomId` mapping in `RoomMapper.kt` which caused Null payloads.
+- **Maturity**: Score maintained at **95/100** with high API protocol compliance.
+
+### [2026-07-17] Bug Fix: Room Transfer Payload Synchronization
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Data Mapper Fix**: Fixed `RoomMapper.kt` where `roomId` and `buildingName` were not being mapped from `RoomInfoDto` to the `RoomInfo` domain model. This caused the UI to send empty/null IDs to the backend.
+    - **Payload Verification**: Confirmed `RoomTransferRequest` uses the exact JSON key `targetRoomId` as required by the backend API.
+    - **Logic Consistency**: Verified that `RoomTransferViewModel` correctly passes the selected room's UUID to the UseCase.
+- **Maturity**: Score maintained at **95/100** with resolved data integration issue.
+
+### [2026-07-17] Refactor: Standardized Error Handling Across All Modules
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Global Refactor**: Updated all `RepositoryImpl` classes (Admin, Auth, Access, Face, Payment, extension, etc.) to use `toUserFriendlyMessage()` for API error parsing.
+    - **UX Consistency**: Ensured that business rule violations (e.g., 400 Bad Request) from the backend are displayed as clear, localized messages to the user instead of generic HTTP codes.
+    - **Robustness**: Hardened `catch` blocks in all data layer components to prevent raw exceptions from reaching the UI.
+- **Maturity**: Score maintained at **95/100** with industry-standard error handling.
+
+### [2026-07-17] Feature: Authentication Persistence & Logout Redirection
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Logout Flow**: Integrated `AuthEventBus.LOGOUT` into `AuthRepositoryImpl.logout()`. This ensures that manual logout correctly triggers a global redirection to the Login screen via `MainActivity`.
+    - **UI Enhancement**: Added a Logout button to the `ProfileScreen` TopAppBar.
+    - **Robustness**: Verified `TokenAuthenticator` flow. The app now correctly "kicks" the user back to the Login screen when both Access and Refresh tokens are expired or revoked.
+    - **MVI Sync**: Updated `ProfileContract` and `ProfileViewModel` to handle the `Logout` event.
+- **Maturity**: Score maintained at **94/100** with hardened session management.
+
+### [2026-07-17] Feature: Student Room Transfer UX Enhancement
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **API Integration**: Integrated `GET /api/v1/student/rooms/available` for dynamic room selection.
+    - **UX/UI**: Replaced manual UUID input with a **ModalBottomSheet** room picker.
+    - **Logic**: Implemented building-based grouping (`groupBy`) for available rooms to improve navigability.
+    - **Validation**: Hardened submission logic to handle both specific room requests and "Admin-assigned" requests.
+- **Maturity**: Score reached **94/100** due to improved feature completeness and UX.
+
+### [2026-07-17] Bug Fix: Network Monitoring & Stability Hardening
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Network Monitor**: Refactored `NetworkMonitor.kt` to use `onCapabilitiesChanged` for real-time validation of `NET_CAPABILITY_INTERNET` and `NET_CAPABILITY_VALIDATED`. This ensures the "Offline" bar correctly disappears when internet is actually available.
+    - **Stability**: Migrated `MainActivity.kt` to use `collectAsStateWithLifecycle` for better resource management and lifecycle awareness.
+    - **Maturity**: Improved "Production Ready" score due to more robust connectivity handling.
+
+### [2026-07-17] Bug Fix: Stability & API Integration Hardening
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Crash Fix**: Implementation of `Parcelable` for `ProfileUiState` to support `SavedStateHandle` persistence.
+    - **API Fix**: Aligned `NotificationApiService` with `BaseResponse<T>` wrapper to resolve JSON parsing errors (Issue #4).
+    - **Validation**: Added UUID regex validation in `RoomTransferViewModel` to prevent 400 Bad Request errors from invalid user input.
+    - **Robustness**: Verified error handling for 500 Internal Server Errors in Issue History.
+- **Maturity**: Average score maintained at **92/100** with improved stability.
+
+### [2026-07-17] Bug Fix: Network Security Policy Bypass for Dev
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - Resolved `java.net.UnknownServiceException: CLEARTEXT communication not permitted`.
+    - Updated `network_security_config.xml` to allow HTTP traffic for local development IPs (`10.152.127.74`, `10.24.7.74`, and `10.24.4.74`).
+    - Synchronized `BASE_URL` across project configurations.
+    - Maintained strict HTTPS enforcement for production domains as per `PROJECT_RULE.md`.
 
 ### [2026-07-16] Repository Audit: GitHub Readiness
 - **Auditor**: Senior Android Architect (AI)

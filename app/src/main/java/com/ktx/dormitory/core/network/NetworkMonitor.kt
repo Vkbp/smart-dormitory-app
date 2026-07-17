@@ -21,11 +21,15 @@ class NetworkMonitor @Inject constructor(@ApplicationContext context: Context) {
     val isOnline: Flow<Boolean> = callbackFlow {
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                trySend(true)
+                trySend(updateOnlineStatus())
             }
 
             override fun onLost(network: Network) {
-                trySend(false)
+                trySend(updateOnlineStatus())
+            }
+
+            override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
+                trySend(updateOnlineStatus())
             }
         }
 
@@ -36,13 +40,19 @@ class NetworkMonitor @Inject constructor(@ApplicationContext context: Context) {
         connectivityManager.registerNetworkCallback(request, callback)
 
         // Initial state
-        val currentNetwork = connectivityManager.activeNetwork
-        val caps = connectivityManager.getNetworkCapabilities(currentNetwork)
-        val online = caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false
-        trySend(online)
+        trySend(updateOnlineStatus())
 
         awaitClose {
             connectivityManager.unregisterNetworkCallback(callback)
         }
     }.distinctUntilChanged()
+
+    private fun updateOnlineStatus(): Boolean {
+        val currentNetwork = connectivityManager.activeNetwork
+        val caps = connectivityManager.getNetworkCapabilities(currentNetwork)
+        return caps?.let {
+            it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+            it.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        } ?: false
+    }
 }

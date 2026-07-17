@@ -19,7 +19,7 @@ class NotificationRepositoryImpl @Inject constructor(
         return try {
             val response = apiService.getUnreadCount()
             if (response.isSuccessful) {
-                Result.success(response.body() ?: 0L)
+                Result.success(response.body()?.data ?: 0L)
             } else {
                 Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
             }
@@ -32,7 +32,7 @@ class NotificationRepositoryImpl @Inject constructor(
         return try {
             val response = apiService.getNotifications()
             if (response.isSuccessful) {
-                val list = response.body()?.map { it.toDomain() } ?: emptyList()
+                val list = response.body()?.data?.map { it.toDomain() } ?: emptyList()
                 Result.success(list)
             } else {
                 Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))

@@ -6,18 +6,19 @@ import com.ktx.dormitory.admin.common.domain.model.CheckInStudent
 import com.ktx.dormitory.admin.common.domain.model.DashboardStats
 import com.ktx.dormitory.admin.common.domain.model.FaceProfile
 import com.ktx.dormitory.student.face.data.dto.response.FaceProfileDto
+import java.util.UUID
 
 fun CheckInSearchResponseDto.toDomain() = CheckInStudent(
-    assignmentId = assignmentId,
+    assignmentId = assignmentId ?: UUID.randomUUID(), // Should not be null if search was successful
     studentId = studentId,
-    studentName = studentName,
-    studentCode = studentCode,
-    cccd = citizenId,
-    portraitUrl = null, // Backend doesn't provide it in this DTO yet
-    gender = "MALE", // Default, as backend doesn't provide it
-    buildingName = null,
-    roomName = roomCode,
-    bedName = bedCode
+    studentName = studentName ?: "N/A",
+    studentCode = studentCode ?: "N/A",
+    cccd = citizenId ?: "N/A",
+    portraitUrl = portraitUrl,
+    gender = gender ?: "MALE",
+    buildingName = buildingName,
+    roomName = roomName,
+    bedName = bedName
 )
 
 fun FaceProfileDto.toDomain() = FaceProfile(

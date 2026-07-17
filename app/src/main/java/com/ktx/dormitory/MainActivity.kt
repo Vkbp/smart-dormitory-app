@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.ktx.dormitory.core.network.NetworkMonitor
 import com.ktx.dormitory.navigation.AppNavigation
@@ -35,7 +36,7 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            val isOnline by networkMonitor.isOnline.collectAsState(initial = true)
+            val isOnline by networkMonitor.isOnline.collectAsStateWithLifecycle(initialValue = true)
 
             // Lắng nghe sự kiện Logout toàn cục
             LaunchedEffect(Unit) {

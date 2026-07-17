@@ -3,6 +3,7 @@ package com.ktx.dormitory.student.access.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.ktx.dormitory.core.network.toUserFriendlyMessage
 import com.ktx.dormitory.student.access.data.paging.AccessHistoryPagingSource
 import com.ktx.dormitory.student.access.data.remote.AccessApiService
 import com.ktx.dormitory.student.face.data.remote.FaceApiService
@@ -22,6 +23,7 @@ import com.ktx.dormitory.core.common.PageResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -59,7 +61,7 @@ class AccessRepositoryImpl @Inject constructor(
                 Result.failure(Exception(response.message))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 
@@ -79,7 +81,7 @@ class AccessRepositoryImpl @Inject constructor(
                 Result.failure(Exception(response.message))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 
@@ -104,7 +106,7 @@ class AccessRepositoryImpl @Inject constructor(
                 Result.failure(Exception(response.message))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
 }

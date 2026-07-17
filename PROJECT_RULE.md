@@ -11,7 +11,8 @@ Dự án coi tài liệu là **Công dân hạng nhất** (First-class citizen).
 4. **Audit Documents là Living Documents**: Các tài liệu Audit, Technical Debt, và Decision Log phải được duy trì liên tục, không bao giờ được coi là "đã xong".
 5. **Cấm xóa lịch sử**: Không bao giờ xóa các bản ghi lịch sử trong `AUDIT_CHANGELOG.md` hay `REFACTOR_HISTORY.md`. Luôn sử dụng cơ chế Append.
 6. **Tính kế thừa**: Các quy tắc trong `PROJECT_RULE.md` và `AGENT.md` là tối cao và được kế thừa bởi mọi module/feature.
-7. **Documentation Governance Workflow**: Mọi task thực thi phải tuân thủ quy trình: `Task Identification -> Implementation -> Verification -> Documentation Synchronization -> Project Health Update`.
+7. **Documentation Governance Workflow**: Mọi task thực thi phải tuân thủ quy trình: `Task Identification -> Implementation -> Verification -> Documentation Synchronization -> Completion Signature`.
+8. **Failsafe Protocol**: Agent không được phép báo hoàn thành nếu chưa có bảng "AGENT SYNC VERIFICATION" đồng bộ giữa Code và Docs.
 
 ## 1. Architectural Rules
 - **Clean Architecture**: Bắt buộc phân lớp (Presentation -> Domain <- Data).

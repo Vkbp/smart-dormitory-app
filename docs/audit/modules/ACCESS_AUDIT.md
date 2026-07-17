@@ -32,8 +32,8 @@ graph TD
 | Problem | Evidence | Severity | Recommendation |
 | :--- | :--- | :--- | :--- |
 | **Paging Integration** | Repository uses `PageResponse` but exposes simple `Flow<List<T>>` for UI. | Low | Consider using Paging 3 `Pager` to properly handle large historical datasets without loading everything into memory. |
-| **Time Format Sensitivity** | `expectedArrivalTime` is a `String`; mismatch in format between mobile and backend could cause 400 errors. | Medium | Use a standardized ISO 8601 date formatter or a dedicated `DateTime` wrapper to ensure consistency. |
-| **Manual Sync Requirement** | UI depends on manual triggers to fetch latest data. | Low | Implement a "Pull to Refresh" or periodically sync logs in the background using `WorkManager`. |
+| **Time Format Sensitivity** | `expectedArrivalTime` is a `String`; mismatch could cause 400 errors. | Medium | FIXED | Standardized API error parsing via `toUserFriendlyMessage()`. |
+| **Manual Sync Requirement** | UI depends on manual triggers. | Low | OPEN | Implement Pull to Refresh or WorkManager. |
 
 ## Technical Debt
 - **Background Sync**: Use `WorkManager` to sync access logs periodically so the history is ready even before the user opens the screen.
