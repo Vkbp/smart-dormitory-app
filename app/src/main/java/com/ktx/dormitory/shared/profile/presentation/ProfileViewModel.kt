@@ -37,7 +37,15 @@ class ProfileViewModel @Inject constructor(
     override fun onEvent(event: ProfileUiEvent) {
         when (event) {
             ProfileUiEvent.LoadProfile -> loadProfile()
-            is ProfileUiEvent.UpdateProfile -> updateProfile(event.fullName, event.phone, event.email)
+            is ProfileUiEvent.UpdateProfile -> updateProfile(
+                event.phone,
+                event.permanentAddress,
+                event.emergencyContact,
+                event.fatherName,
+                event.fatherPhone,
+                event.motherName,
+                event.motherPhone
+            )
             is ProfileUiEvent.UploadAvatar -> uploadAvatar(event.filePath)
             ProfileUiEvent.ClearUploadStatus -> updateState { it.copy(uploadSuccess = false) }
             ProfileUiEvent.Logout -> logout()
@@ -64,9 +72,16 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun updateProfile(fullName: String, phone: String, email: String) {
+    private fun updateProfile(
+        phone: String,
+        permanentAddress: String,
+        emergencyContact: String,
+        fatherName: String,
+        fatherPhone: String,
+        motherName: String,
+        motherPhone: String
+    ) {
         viewModelScope.launch {
-            // STEP 2: UI Hardening - Client side validation
             var hasError = false
             if (!ValidationUtils.isValidPhone(phone)) {
                 updateState { it.copy(phoneError = "Số điện thoại không hợp lệ (10 số, bắt đầu bằng 0)") }
@@ -75,32 +90,35 @@ class ProfileViewModel @Inject constructor(
                 updateState { it.copy(phoneError = null) }
             }
 
-            if (!ValidationUtils.isValidEmail(email)) {
-                updateState { it.copy(emailError = "Email không đúng định dạng") }
-                hasError = true
-            } else {
-                updateState { it.copy(emailError = null) }
-            }
-
             if (hasError) return@launch
 
             updateState { it.copy(isLoading = true) }
-            updateProfileUseCase(phone, email)
-                .onSuccess {
-                    updateState { state ->
-                        state.copy(
-                            profile = state.profile?.copy(
-                                fullName = fullName,
-                                phone = phone,
-                                email = email
-                            )
+            updateProfileUseCase(
+                phone = phone,
+                permanentAddress = permanentAddress,
+                emergencyContact = emergencyContact,
+                fatherName = fatherName,
+                fatherPhone = fatherPhone,
+                motherName = motherName,
+                motherPhone = motherPhone
+            ).onSuccess {
+                updateState { state ->
+                    state.copy(
+                        profile = state.profile?.copy(
+                            phone = phone,
+                            permanentAddress = permanentAddress,
+                            emergencyContact = emergencyContact,
+                            fatherName = fatherName,
+                            fatherPhone = fatherPhone,
+                            motherName = motherName,
+                            motherPhone = motherPhone
                         )
-                    }
-                    sendEffect(ProfileUiEffect.ShowToast("Cập nhật thành công"))
+                    )
                 }
-                .onFailure { e ->
-                    updateState { it.copy(error = e.message) }
-                }
+                sendEffect(ProfileUiEffect.ShowToast("Cập nhật thành công"))
+            }.onFailure { e ->
+                updateState { it.copy(error = e.message) }
+            }
             updateState { it.copy(isLoading = false) }
         }
     }

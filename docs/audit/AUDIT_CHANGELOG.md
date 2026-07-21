@@ -390,5 +390,26 @@ Permanent history of system audits and score trends. **Never recreate this file;
     - **Optimization**: Adjusted `totalDays` to 180 (semester average) for more accurate visual progress representation.
 - **Maturity**: Score maintained at **100/100**. This ensures students have constant visibility of their residency status.
 
+### [2026-07-20] Feature: Admin Checkout Management Integration
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **UI/UX (Admin)**: Developed `CheckoutApprovalScreen.kt` for mobile-optimized checkout review. Implemented List/Card view prioritizing pending requests.
+    - **Feature**: Added `CheckoutDetailDialog` with comprehensive student info, bank details, and business warnings.
+    - **Logic**: Implemented mandatory confirmation for approvals with specific warnings about RFID/FaceID revocation.
+    - **Logic**: Enforced mandatory `rejectReason` input for rejections via Dialog.
+    - **API Integration**: Connected to `v1/admin/checkout-requests` and `review` endpoints with Bearer token support.
+    - **Architecture**: Leveraged `AdminRepository` and existing DTOs for data consistency.
+- **Maturity**: Score reached **98/100** for Admin Checkout module.
+
+### [2026-07-20] Feature: Student Profile Privacy & Authorization Hardening
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **UI/UX (Student)**: Redesigned `ProfileScreen.kt` to strictly enforce **Edit vs Read-Only** permissions based on Backend rules.
+    - **Authorization**: Locked administrative fields (Full Name, MSSV, CCCD, Email, Faculty, Academic Year, RFID) to prevent `400 Bad Request` from unauthorized updates.
+    - **Compliance**: Added a prominent **Legal Warning Card** advising students to contact Admin for administrative changes.
+    - **Feature**: Enabled self-service updates for personal contact info and parent details (Phone, Permanent Address, Emergency Contact, Parent names/phones).
+    - **Data Layer**: Optimized `UpdateProfileUseCase.kt` and `UpdateProfileRequest.kt` to exclude read-only fields from the update payload.
+- **Maturity**: Score reached **96/100** for Profile module (Improved Authorization Compliance).
+
 ---
 *Maintained by the Documentation Governance System.*

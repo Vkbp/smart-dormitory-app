@@ -18,7 +18,15 @@ data class ProfileUiState(
 
 sealed class ProfileUiEvent : BaseContract.Event {
     data object LoadProfile : ProfileUiEvent()
-    data class UpdateProfile(val fullName: String, val phone: String, val email: String) : ProfileUiEvent()
+    data class UpdateProfile(
+        val phone: String,
+        val permanentAddress: String,
+        val emergencyContact: String,
+        val fatherName: String,
+        val fatherPhone: String,
+        val motherName: String,
+        val motherPhone: String
+    ) : ProfileUiEvent()
     data class UploadAvatar(val filePath: String) : ProfileUiEvent()
     data object ClearUploadStatus : ProfileUiEvent()
     data object Logout : ProfileUiEvent()
