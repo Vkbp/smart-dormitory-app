@@ -15,7 +15,7 @@ import javax.inject.Inject
 class FaceApprovalViewModel @Inject constructor(
     private val getPendingFaceProfilesUseCase: GetPendingFaceProfilesUseCase,
     private val approveFaceUseCase: ApproveFaceUseCase,
-    private val rejectFaceUseCase: RejectFaceUseCase
+    private val rejectFaceUseCase: RejectFaceUseCase,
 ) : BaseViewModel<FaceApprovalUiState, FaceApprovalUiEvent, FaceApprovalUiEffect>(FaceApprovalUiState()) {
 
     init {
@@ -27,6 +27,7 @@ class FaceApprovalViewModel @Inject constructor(
             FaceApprovalUiEvent.LoadPendingProfiles -> loadPending()
             is FaceApprovalUiEvent.ApproveProfile -> approve(event.profileId)
             is FaceApprovalUiEvent.RejectProfile -> reject(event.profileId, event.reason)
+            FaceApprovalUiEvent.ClearMessages -> updateState { it.copy(successMessage = null, errorMessage = null) }
         }
     }
 
@@ -36,9 +37,11 @@ class FaceApprovalViewModel @Inject constructor(
             try {
                 getPendingFaceProfilesUseCase(0, 20)
                     .onSuccess { page ->
-                        updateState { it.copy(
-                            pendingProfiles = page.content?.map { it.toDomain() } ?: emptyList()
-                        ) }
+                        updateState { state ->
+                            state.copy(
+                                pendingProfiles = page.content?.map { it.toDomain() } ?: emptyList()
+                            )
+                        }
                     }
                     .onFailure { error ->
                         updateState { it.copy(errorMessage = error.message) }

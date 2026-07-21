@@ -78,11 +78,10 @@ fun RoomScreen(navController: NavController, viewModel: RoomViewModel) {
 fun StayProgressSection(expectedCheckOutAt: String?) {
     val daysRemaining = DateTimeUtils.calculateDaysRemaining(expectedCheckOutAt)
     
-    // CHỈ HIỆN KHI SẮP HẾT HẠN (Trong vòng 30 ngày cuối)
-    // Nếu còn trên 30 ngày thì ẩn hoàn toàn để tránh gây rối mắt
-    if (daysRemaining < 0 || daysRemaining > 30) return
+    // Chỉ ẩn khi ngày không hợp lệ (nhỏ hơn 0)
+    if (daysRemaining < 0) return
 
-    val totalDays = 300f
+    val totalDays = 180f // Giả định một học kỳ khoảng 180 ngày để tính progress
     val progress = (daysRemaining.toFloat() / totalDays).coerceIn(0f, 1f)
     val color = if (daysRemaining < 15) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
 
@@ -161,12 +160,6 @@ fun QuickActionSection(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            QuickActionButton(
-                "Lịch sử hỏng",
-                Icons.Default.History,
-                Modifier.weight(1f)
-            ) { navController.navigate(Screen.IssueHistory.route) }
-            
             QuickActionButton(
                 "Đổi phòng",
                 Icons.Default.SwapHoriz,

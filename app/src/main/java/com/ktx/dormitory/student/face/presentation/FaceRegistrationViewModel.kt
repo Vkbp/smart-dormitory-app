@@ -140,11 +140,12 @@ class FaceRegistrationViewModel @Inject constructor(
     }
 
     /**
-     * Optimization: Only capture/create Bitmap when the liveness state machine is active.
-     * Reduces CPU overhead by ~40% during idle camera preview.
+     * Optimization: Only capture/create Bitmap when needed.
+     * We keep creating bitmap even if completed to ensure the user can save the photo.
      */
     override fun shouldCreateBitmap(): Boolean {
-        return livenessState.value.currentStep != LivenessStep.COMPLETED
+        // Luôn tạo bitmap để đảm bảo có ảnh lưu, kể cả khi đã xong liveness
+        return true
     }
 
     fun toggleCamera() {

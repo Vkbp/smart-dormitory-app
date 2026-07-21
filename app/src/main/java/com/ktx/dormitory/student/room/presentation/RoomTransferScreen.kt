@@ -118,11 +118,19 @@ fun RequestForm(
     ) {
         OutlinedTextField(
             value = state.reason,
-            onValueChange = { viewModel.onEvent(RoomTransferUiEvent.ReasonChanged(it)) },
+            onValueChange = { 
+                viewModel.onEvent(RoomTransferUiEvent.ReasonChanged(it)) 
+            },
             label = { Text("Lý do xin đổi phòng (Bắt buộc)") },
             modifier = Modifier.fillMaxWidth().height(150.dp),
             placeholder = { Text("Ví dụ: Phòng hiện tại quá ồn ào và hay bị dột nước") },
-            maxLines = 5
+            maxLines = 5,
+            isError = state.reasonError != null,
+            supportingText = {
+                if (state.reasonError != null) {
+                    Text(state.reasonError!!, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -137,7 +145,7 @@ fun RequestForm(
             placeholder = { Text("Bấm để chọn phòng trống") },
             readOnly = true,
             trailingIcon = {
-                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                Icon(Icons.Default.ArrowDropDown, contentDescription = "Chọn từ danh sách")
             },
             enabled = false, // Vẫn clickable do Modifier.clickable phía trên
             colors = OutlinedTextFieldDefaults.colors(
@@ -159,7 +167,7 @@ fun RequestForm(
             if (state.isSubmitting) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
             } else {
-                Icon(Icons.Default.Send, contentDescription = null)
+                Icon(Icons.Default.Send, contentDescription = "Gửi")
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("GỬI YÊU CẦU", fontWeight = FontWeight.Bold)
             }

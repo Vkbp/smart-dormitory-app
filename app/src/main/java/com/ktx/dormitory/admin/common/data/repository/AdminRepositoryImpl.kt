@@ -11,6 +11,7 @@ import com.ktx.dormitory.admin.common.domain.model.DashboardStats
 import com.ktx.dormitory.admin.common.data.mapper.toDomain
 import com.ktx.dormitory.admin.smartaccess.domain.repository.AdminRepository
 import com.ktx.dormitory.student.face.data.dto.response.FaceProfileDto
+import com.ktx.dormitory.shared.profile.data.mapper.toDomain
 import retrofit2.HttpException
 import retrofit2.Response
 import java.util.UUID
@@ -89,8 +90,8 @@ class AdminRepositoryImpl @Inject constructor(
     override suspend fun reviewCheckoutRequest(requestId: UUID, status: String, rejectReason: String?) =
         handleResponse(apiService.reviewCheckoutRequest(requestId, CheckoutRequestReviewDto(status, rejectReason)))
 
-    override suspend fun getStayExtensions(page: Int, size: Int) =
-        handleResponse(apiService.getStayExtensions(page, size))
+    override suspend fun getStayExtensions(status: String?, page: Int, size: Int) =
+        handleResponse(apiService.getStayExtensions(status, page, size))
 
     override suspend fun reviewStayExtension(id: UUID, status: String, rejectReason: String?) =
         handleResponse(apiService.reviewStayExtension(id, StayExtensionReviewRequest(status, rejectReason)))
@@ -136,6 +137,24 @@ class AdminRepositoryImpl @Inject constructor(
     override suspend fun getDashboardStats(): Result<DashboardStats> {
         return try {
             val response = apiService.getDashboardStats()
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.success && body.data != null) {
+                    Result.success(body.data.toDomain())
+                } else {
+                    Result.failure(Exception(body?.message ?: "Lỗi hệ thống"))
+                }
+            } else {
+                Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception(e.toUserFriendlyMessage()))
+        }
+    }
+
+    override suspend fun getStudentProfile(studentId: UUID): Result<com.ktx.dormitory.shared.profile.domain.model.UserProfile> {
+        return try {
+            val response = apiService.getStudentProfile(studentId)
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null && body.success && body.data != null) {

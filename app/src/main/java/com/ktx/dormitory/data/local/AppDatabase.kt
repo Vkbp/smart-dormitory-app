@@ -21,7 +21,7 @@ import com.ktx.dormitory.data.common.local.PendingSyncEntity
         CurfewRequestEntity::class,
         PendingSyncEntity::class
     ],
-    version = 1,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

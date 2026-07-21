@@ -3,6 +3,7 @@ package com.ktx.dormitory.admin.notification.presentation
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
 import com.ktx.dormitory.admin.common.domain.usecase.BroadcastNotificationUseCase
+import com.ktx.dormitory.core.util.ValidationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,6 +21,15 @@ class NotificationBroadcastViewModel @Inject constructor(
     }
 
     private fun broadcast(title: String, message: String, target: String) {
+        if (title.isBlank()) {
+            updateState { it.copy(errorMessage = "Tiêu đề không được để trống") }
+            return
+        }
+        if (message.isBlank()) {
+            updateState { it.copy(errorMessage = "Nội dung thông báo không được để trống") }
+            return
+        }
+
         viewModelScope.launch {
             updateState { it.copy(isLoading = true) }
             broadcastNotificationUseCase(title, message, target)

@@ -5,6 +5,7 @@ import com.ktx.dormitory.core.base.BaseViewModel
 import com.ktx.dormitory.shared.auth.domain.usecase.ChangePasswordUseCase
 import com.ktx.dormitory.shared.auth.domain.usecase.ForgotPasswordUseCase
 import com.ktx.dormitory.shared.auth.domain.usecase.ResetPasswordUseCase
+import com.ktx.dormitory.core.util.ValidationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,6 +27,11 @@ class AccountViewModel @Inject constructor(
     }
 
     private fun performChangePassword(oldPass: String, newPass: String) {
+        if (!ValidationUtils.isValidPassword(newPass)) {
+            updateState { it.copy(error = "Mật khẩu mới không đủ mạnh (Cần ít nhất 8 ký tự, 1 hoa, 1 thường, 1 số, 1 ký tự đặc biệt)") }
+            return
+        }
+
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, error = null) }
             changePasswordUseCase(oldPass, newPass)
@@ -42,6 +48,11 @@ class AccountViewModel @Inject constructor(
     }
 
     private fun performForgotPassword(email: String) {
+        if (!ValidationUtils.isValidEmail(email)) {
+            updateState { it.copy(error = "Email không đúng định dạng") }
+            return
+        }
+
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, error = null) }
             forgotPasswordUseCase(email)
@@ -57,6 +68,11 @@ class AccountViewModel @Inject constructor(
     }
 
     private fun performResetPassword(token: String, newPass: String) {
+        if (!ValidationUtils.isValidPassword(newPass)) {
+            updateState { it.copy(error = "Mật khẩu mới không đủ mạnh") }
+            return
+        }
+
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, error = null) }
             resetPasswordUseCase(token, newPass)

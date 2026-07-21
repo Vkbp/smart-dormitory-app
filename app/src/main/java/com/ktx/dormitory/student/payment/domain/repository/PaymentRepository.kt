@@ -1,12 +1,32 @@
 package com.ktx.dormitory.student.payment.domain.repository
 
-import com.ktx.dormitory.student.payment.domain.model.Invoice
-import com.ktx.dormitory.student.payment.domain.model.PaymentInstruction
-import com.ktx.dormitory.student.payment.domain.model.Transaction
+import androidx.paging.PagingData
+import com.ktx.dormitory.student.payment.domain.model.*
+import kotlinx.coroutines.flow.Flow
 
 interface PaymentRepository {
-    suspend fun getInvoices(): Result<List<Invoice>>
-    suspend fun verifyPayment(billId: String, amount: Double, paymentMethod: String, transactionCode: String): Result<Unit>
-    suspend fun getPaymentHistory(): Result<List<Transaction>>
+    /**
+     * Lấy thông tin hóa đơn theo Application ID.
+     */
+    suspend fun getBillByApplication(applicationId: String): Result<Bill>
+
+    /**
+     * Lấy danh sách hóa đơn của tôi.
+     */
+    suspend fun getInvoices(): Result<List<Bill>>
+
+    /**
+     * Khởi tạo thanh toán Online (Smart QR).
+     */
+    suspend fun createSmartQR(billId: String, amount: Double): Result<PaymentResult>
+
+    /**
+     * Lấy lịch sử thanh toán phân trang.
+     */
+    fun getPaymentHistoryPaging(): Flow<PagingData<Bill>>
+
+    /**
+     * Lấy hướng dẫn thanh toán.
+     */
     suspend fun getPaymentInstructions(): Result<PaymentInstruction>
 }

@@ -1,8 +1,47 @@
 package com.ktx.dormitory.admin.common.domain.usecase
 
+import com.ktx.dormitory.admin.common.data.dto.response.BuildingResponseDto
+import com.ktx.dormitory.admin.common.data.dto.response.GateResponseDto
 import com.ktx.dormitory.admin.smartaccess.domain.repository.AdminRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import java.util.UUID
 import javax.inject.Inject
+
+data class SmartAccessResources(
+    val buildings: List<BuildingResponseDto>,
+    val gates: List<GateResponseDto>
+)
+
+class GetSmartAccessResourcesUseCase @Inject constructor(
+    private val repository: AdminRepository
+) {
+    suspend operator fun invoke(): Result<SmartAccessResources> = coroutineScope {
+        try {
+            val buildingsDef = async { repository.getBuildings() }
+            val gatesDef = async { repository.getGates() }
+
+            val buildingsRes = buildingsDef.await()
+            val gatesRes = gatesDef.await()
+
+            if (buildingsRes.isSuccess && gatesRes.isSuccess) {
+                Result.success(
+                    SmartAccessResources(
+                        buildings = buildingsRes.getOrDefault(emptyList()),
+                        gates = gatesRes.getOrDefault(emptyList())
+                    )
+                )
+            } else {
+                val error = buildingsRes.exceptionOrNull()?.message 
+                    ?: gatesRes.exceptionOrNull()?.message 
+                    ?: "Không thể tải danh sách tài nguyên"
+                Result.failure(Exception(error))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+}
 
 class RemoteUnlockUseCase @Inject constructor(private val repository: AdminRepository) {
     suspend operator fun invoke(gateId: UUID, buildingId: UUID) = repository.remoteUnlock(gateId, buildingId)
@@ -47,7 +86,7 @@ class ReviewCheckoutRequestUseCase @Inject constructor(private val repository: A
 }
 
 class GetStayExtensionsUseCase @Inject constructor(private val repository: AdminRepository) {
-    suspend operator fun invoke(page: Int, size: Int) = repository.getStayExtensions(page, size)
+    suspend operator fun invoke(status: String?, page: Int, size: Int) = repository.getStayExtensions(status, page, size)
 }
 
 class ReviewStayExtensionUseCase @Inject constructor(private val repository: AdminRepository) {
@@ -83,4 +122,8 @@ class GetGatesUseCase @Inject constructor(private val repository: AdminRepositor
 
 class GetDashboardStatsUseCase @Inject constructor(private val repository: AdminRepository) {
     suspend operator fun invoke() = repository.getDashboardStats()
+}
+
+class GetDetailedStudentProfileUseCase @Inject constructor(private val repository: AdminRepository) {
+    suspend operator fun invoke(studentId: UUID) = repository.getStudentProfile(studentId)
 }

@@ -7,7 +7,9 @@ import androidx.room.PrimaryKey
 data class CurfewRequestEntity(
     @PrimaryKey val id: String,
     val studentId: String,
+    val requestType: String,
     val reason: String,
+    val startDate: String?,
     val expectedArrivalTime: String,
     val note: String?,
     val status: String, // PENDING, APPROVED, REJECTED

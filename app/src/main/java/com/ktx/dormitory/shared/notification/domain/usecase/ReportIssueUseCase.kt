@@ -9,7 +9,7 @@ import javax.inject.Inject
 class ReportIssueUseCase @Inject constructor(
     private val repository: NotificationRepository
 ) {
-    suspend operator fun invoke(description: String, roomId: String, imageUrl: String? = null): Result<String> {
-        return repository.reportIssue(description, roomId, imageUrl)
+    suspend operator fun invoke(description: String, isCommonArea: Boolean): Result<String> {
+        return repository.reportIssue(description, isCommonArea)
     }
 }

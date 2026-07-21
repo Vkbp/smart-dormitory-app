@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.student.extension.domain.usecase.CheckEligibilityUseCase
 import com.ktx.dormitory.student.extension.domain.usecase.CheckExtensionPeriodUseCase
 import com.ktx.dormitory.student.extension.domain.usecase.RequestExtensionUseCase
+import com.ktx.dormitory.core.util.ValidationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -73,6 +74,11 @@ class ExtensionViewModel @Inject constructor(
     }
 
     private fun checkEligibility(cccd: String) {
+        if (!ValidationUtils.isValidCCCD(cccd)) {
+            updateUiState { it.copy(error = "CCCD phải bao gồm 12 chữ số") }
+            return
+        }
+
         viewModelScope.launch {
             updateUiState { it.copy(isCheckingEligibility = true, error = null) }
             checkEligibilityUseCase(cccd).onSuccess { result ->
@@ -84,6 +90,15 @@ class ExtensionViewModel @Inject constructor(
     }
 
     private fun submitExtension(reason: String, description: String) {
+        if (reason.isBlank()) {
+            updateUiState { it.copy(error = "Vui lòng chọn lý do gia hạn") }
+            return
+        }
+        if (description.length < 10) {
+            updateUiState { it.copy(error = "Vui lòng nhập mô tả chi tiết (tối thiểu 10 ký tự)") }
+            return
+        }
+
         viewModelScope.launch {
             updateUiState { it.copy(isLoading = true, error = null) }
             try {

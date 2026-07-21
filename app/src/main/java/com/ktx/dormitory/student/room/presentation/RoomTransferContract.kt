@@ -17,6 +17,7 @@ data class RoomTransferUiState(
     val targetRoomCode: String = "",
     val isSubmitting: Boolean = false,
     val error: String? = null,
+    val reasonError: String? = null,
     val selectedTab: Int = 0 // 0: Gửi yêu cầu, 1: Lịch sử
 ) : BaseContract.State, Parcelable
 

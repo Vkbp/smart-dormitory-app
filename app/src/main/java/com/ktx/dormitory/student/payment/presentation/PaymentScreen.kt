@@ -1,5 +1,6 @@
 package com.ktx.dormitory.student.payment.presentation
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,18 +8,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Assignment
-import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.FlashOn
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MiscellaneousServices
-import androidx.compose.material.icons.filled.ReportProblem
-import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -27,14 +23,15 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import java.util.Locale
+import com.ktx.dormitory.navigation.Screen
+import com.ktx.dormitory.student.payment.domain.model.Bill
+import com.ktx.dormitory.student.payment.domain.model.BillStatus
+import com.ktx.dormitory.student.payment.domain.model.BillType
+import com.ktx.dormitory.student.payment.presentation.components.SmartQRBottomSheet
 import com.ktx.dormitory.ui.components.EmptyView
 import com.ktx.dormitory.ui.components.ErrorView
 import com.ktx.dormitory.ui.components.LoadingView
-import com.ktx.dormitory.student.payment.domain.model.Invoice
-import com.ktx.dormitory.student.payment.domain.model.InvoiceType
-import com.ktx.dormitory.student.payment.domain.model.PaymentStatus
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,30 +40,18 @@ fun PaymentScreen(
     viewModel: PaymentViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // billId là UUID String (không còn là Long)
-    var selectedInvoice by remember { mutableStateOf<Invoice?>(null) }
+    val context = LocalContext.current
 
-    selectedInvoice?.let { invoice ->
-        AlertDialog(
-            onDismissRequest = { selectedInvoice = null },
-            title = { Text("Xác nhận thanh toán") },
-            text = { Text("Bạn có chắc chắn đã chuyển khoản ${formatCurrency(invoice.remainingAmount ?: invoice.amount ?: 0.0)} cho hóa đơn \"${invoice.description ?: "Không có mô tả"}\"? Hành động này sẽ gửi yêu cầu đối soát tới ban quản lý.") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.verifyPayment(invoice.id, invoice.remainingAmount ?: invoice.amount ?: 0.0)
-                        selectedInvoice = null
-                    },
-                    modifier = Modifier.testTag("payment_confirm_dialog_confirm")
-                ) { Text("Xác nhận") }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { selectedInvoice = null },
-                    modifier = Modifier.testTag("payment_confirm_dialog_cancel")
-                ) { Text("Hủy") }
+    LaunchedEffect(Unit) {
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                is PaymentUiEffect.ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                is PaymentUiEffect.NavigateToSuccess -> {
+                    // Chuyển đến màn hình thành công hoặc thông báo
+                    Toast.makeText(context, "Thanh toán thành công!", Toast.LENGTH_LONG).show()
+                }
             }
-        )
+        }
     }
 
     Scaffold(
@@ -76,6 +61,14 @@ fun PaymentScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { viewModel.loadInvoices() }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Tải lại")
+                    }
+                    IconButton(onClick = { navController.navigate(Screen.PaymentHistory.route) }) {
+                        Icon(Icons.Default.History, contentDescription = "History")
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -89,14 +82,29 @@ fun PaymentScreen(
             .padding(padding)
             .fillMaxSize()
             .testTag("payment_screen_container")) {
+            
             when (val state = uiState) {
-                is PaymentUiState.Loading -> Box(Modifier.testTag("payment_loading_view")) { LoadingView() }
-                is PaymentUiState.Error -> Box(Modifier.testTag("payment_error_view")) { ErrorView(message = state.message, onRetry = { viewModel.loadInvoices() }) }
+                is PaymentUiState.Loading -> LoadingView()
+                is PaymentUiState.Error -> ErrorView(message = state.message, onRetry = { viewModel.loadInvoices() })
                 is PaymentUiState.Success -> {
-                    if (state.invoices.isEmpty()) {
-                        Box(Modifier.testTag("payment_empty_view")) { EmptyView(message = "Không có hóa đơn nào cần thanh toán") }
+                    if (state.bills.isEmpty()) {
+                        EmptyView(message = "Không có hóa đơn nào cần thanh toán")
                     } else {
-                        PaymentContent(state) { invoice -> selectedInvoice = invoice }
+                        PaymentContent(
+                            state = state,
+                            navController = navController,
+                            onPayClick = { bill -> 
+                                viewModel.createSmartQR(bill.id, bill.remainingAmount ?: bill.amount ?: 0.0)
+                            }
+                        )
+
+                        // Hiển thị BottomSheet QR nếu có kết quả
+                        state.smartQR?.let { qrResult ->
+                            SmartQRBottomSheet(
+                                paymentResult = qrResult,
+                                onDismiss = { viewModel.stopPolling() }
+                            )
+                        }
                     }
                 }
             }
@@ -105,9 +113,13 @@ fun PaymentScreen(
 }
 
 @Composable
-fun PaymentContent(state: PaymentUiState.Success, onInvoiceClick: (Invoice) -> Unit) {
+fun PaymentContent(
+    state: PaymentUiState.Success,
+    navController: NavController,
+    onPayClick: (Bill) -> Unit
+) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().testTag("payment_list"),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -117,50 +129,62 @@ fun PaymentContent(state: PaymentUiState.Success, onInvoiceClick: (Invoice) -> U
 
         item {
             Text(
-                text = "Chi tiết hóa đơn",
+                text = "Hóa đơn cần thanh toán",
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp),
+                fontWeight = FontWeight.Bold
             )
         }
 
-        items(state.invoices) { invoice ->
-            InvoiceCard(
-                invoice = invoice,
-                isVerifying = state.isVerifying,
-                onVerify = { onInvoiceClick(invoice) }
+        items(state.bills) { bill ->
+            BillCard(
+                bill = bill,
+                isProcessing = state.isProcessing,
+                onPay = { onPayClick(bill) }
             )
         }
-
-        if (state.totalUnpaid > 0) {
-            item {
-                DynamicQrPaymentCard(state.totalUnpaid)
+        
+        item {
+            Spacer(Modifier.height(16.dp))
+            OutlinedCard(
+                onClick = { navController.navigate(Screen.PaymentInstruction.route) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.width(16.dp))
+                    Text("Hướng dẫn chuyển khoản thủ công", style = MaterialTheme.typography.bodyMedium)
+                }
             }
         }
     }
 }
 
 @Composable
-fun InvoiceCard(invoice: Invoice, isVerifying: Boolean, onVerify: () -> Unit) {
-    val statusColor = if (invoice.status == PaymentStatus.PAID) Color(0xFF4CAF50) else Color(0xFFF44336)
+fun BillCard(bill: Bill, isProcessing: Boolean, onPay: () -> Unit) {
+    val statusColor = when (bill.status) {
+        BillStatus.PAID -> Color(0xFF4CAF50)
+        BillStatus.PARTIALLY_PAID -> Color(0xFFFFC107)
+        BillStatus.OVERDUE -> Color(0xFFF44336)
+        BillStatus.CANCELLED -> Color.Gray
+        else -> MaterialTheme.colorScheme.error
+    }
 
     Card(
-        modifier = Modifier.fillMaxWidth().testTag("invoice_card_${invoice.id}"),
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val icon = when(invoice.type) {
-                    InvoiceType.ROOM -> Icons.Default.Home
-                    InvoiceType.ELECTRICITY -> Icons.Default.FlashOn
-                    InvoiceType.WATER -> Icons.Default.WaterDrop
-                    InvoiceType.SERVICE -> Icons.Default.MiscellaneousServices
-                    InvoiceType.APPLICATION -> Icons.AutoMirrored.Filled.Assignment
-                    InvoiceType.PENALTY -> Icons.Default.ReportProblem
-                    InvoiceType.DEPOSIT -> Icons.Default.AccountBalanceWallet
-                    null -> Icons.Default.Description
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val icon = when (bill.type) {
+                    BillType.ACCOMMODATION_FEE -> Icons.Default.Home
+                    BillType.ELECTRIC_FEE -> Icons.Default.FlashOn
+                    BillType.WATER_FEE -> Icons.Default.WaterDrop
+                    BillType.APPLICATION_FEE -> Icons.AutoMirrored.Filled.Assignment
+                    BillType.PENALTY_FEE -> Icons.Default.ReportProblem
+                    BillType.DEPOSIT_FEE -> Icons.Default.AccountBalanceWallet
+                    else -> Icons.Default.Description
                 }
 
                 Icon(
@@ -173,29 +197,22 @@ fun InvoiceCard(invoice: Invoice, isVerifying: Boolean, onVerify: () -> Unit) {
                 Spacer(Modifier.width(16.dp))
 
                 Column(Modifier.weight(1f)) {
-                    Text(invoice.description ?: "Hóa đơn", fontWeight = FontWeight.Bold)
-                    Text("Hạn: ${invoice.dueDate ?: "N/A"}", style = MaterialTheme.typography.bodySmall)
+                    Text(bill.description ?: "Hóa đơn KTX", fontWeight = FontWeight.Bold)
+                    Text("Hạn: ${bill.dueDate ?: "N/A"}", style = MaterialTheme.typography.bodySmall)
                 }
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = formatCurrency(invoice.amount ?: 0.0),
+                        text = formatCurrency(bill.remainingAmount ?: bill.amount ?: 0.0),
                         fontWeight = FontWeight.ExtraBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                    if ((invoice.remainingAmount ?: 0.0) > 0) {
-                        Text(
-                            text = "Còn lại: ${formatCurrency(invoice.remainingAmount ?: 0.0)}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFFF44336)
-                        )
-                    }
                     Text(
-                        text = when (invoice.status) {
-                            PaymentStatus.PAID -> "Đã thanh toán"
-                            PaymentStatus.PARTIALLY_PAID -> "Thanh toán một phần"
-                            PaymentStatus.OVERDUE -> "Quá hạn"
-                            else -> "Chưa thanh toán"
+                        text = when (bill.status) {
+                            BillStatus.UNPAID -> "Chưa thanh toán"
+                            BillStatus.PARTIALLY_PAID -> "Thanh toán một phần"
+                            BillStatus.OVERDUE -> "Quá hạn"
+                            else -> bill.status.toString()
                         },
                         style = MaterialTheme.typography.labelSmall,
                         color = statusColor
@@ -203,68 +220,23 @@ fun InvoiceCard(invoice: Invoice, isVerifying: Boolean, onVerify: () -> Unit) {
                 }
             }
 
-            if (invoice.status == PaymentStatus.UNPAID || invoice.status == PaymentStatus.PARTIALLY_PAID) {
-                Spacer(Modifier.height(8.dp))
-                OutlinedButton(
-                    onClick = onVerify,
-                    modifier = Modifier.fillMaxWidth().testTag("invoice_verify_button_${invoice.id}"),
-                    contentPadding = PaddingValues(0.dp),
-                    enabled = !isVerifying
+            if (bill.status == BillStatus.UNPAID || bill.status == BillStatus.PARTIALLY_PAID) {
+                Spacer(Modifier.height(16.dp))
+                Button(
+                    onClick = onPay,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    enabled = !isProcessing
                 ) {
-                    if (isVerifying) {
-                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                    if (isProcessing) {
+                        CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
                     } else {
-                        Text("Xác nhận đã chuyển khoản", fontSize = 12.sp)
+                        Icon(Icons.Default.QrCodeScanner, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("TẠO MÃ QR THÔNG MINH", fontWeight = FontWeight.Bold)
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun DynamicQrPaymentCard(amount: Double) {
-    val bankId = "MB"
-    val accountNo = "123456789"
-    val accountName = "KTX SMART DORMITORY"
-    val description = "THANH TOAN HOA DON KTX"
-
-    val qrUrl = "https://img.vietqr.io/image/$bankId-$accountNo-compact2.png" +
-            "?amount=${amount.toInt()}" +
-            "&addInfo=${description.replace(" ", "%20")}" +
-            "&accountName=${accountName.replace(" ", "%20")}"
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-            .testTag("dynamic_qr_card"),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-    ) {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Quét mã QR để thanh toán nhanh", fontWeight = FontWeight.Bold)
-            Text("Tự động điền số tiền & nội dung", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-
-            Spacer(Modifier.height(16.dp))
-
-            AsyncImage(
-                model = qrUrl,
-                contentDescription = "VietQR Payment",
-                modifier = Modifier.size(220.dp),
-                placeholder = null
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Text(
-                text = "Ngân hàng: $bankId\nSTK: $accountNo\nChủ TK: $accountName",
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                lineHeight = 20.sp
-            )
         }
     }
 }
@@ -274,11 +246,11 @@ fun TotalAmountCard(total: Double) {
     Surface(
         color = MaterialTheme.colorScheme.primary,
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxWidth().testTag("total_amount_card"),
+        modifier = Modifier.fillMaxWidth(),
         shadowElevation = 4.dp
     ) {
         Column(Modifier.padding(24.dp)) {
-            Text("Tổng dư nợ hiện tại", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f))
+            Text("Tổng dư nợ cần thanh toán", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f))
             Text(
                 text = formatCurrency(total),
                 style = MaterialTheme.typography.headlineLarge,
@@ -289,4 +261,4 @@ fun TotalAmountCard(total: Double) {
     }
 }
 
-fun formatCurrency(amount: Double): String = String.format(Locale.getDefault(), "%,.0f VNĐ", amount)
+private fun formatCurrency(amount: Double): String = String.format(Locale.getDefault(), "%,.0f VNĐ", amount)

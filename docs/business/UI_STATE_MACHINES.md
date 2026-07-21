@@ -1,48 +1,51 @@
-# UI State Machines & Entity Status Mapping
+# UI State Machines (Comprehensive Inventory)
 
-This document describes how the status of backend entities (e.g., FaceProfile, Bill, CheckoutRequest) translates into visual UI states and transitions in the Android application.
+This document describes how complex business processes and entity statuses translate into visual UI states in the Android application.
 
-## 1. Face Profile Status (BR-I01)
-Mapped from `FaceProfileStatus` enum.
-
+## 1. Face Profile & Liveness (BR-I01)
+### Lifecycle Status
 | Status | UI Visual State | Action Guard |
 | :--- | :--- | :--- |
-| **NONE (404)** | Welcome / "Start Registration" | Enable "Bắt đầu đăng ký" |
-| **PENDING** | "Pending Approval" (Yellow) | Disable registration; Show info |
-| **APPROVED** | "Active" (Green) | Show current face; Enable "Update" |
-| **REJECTED** | "Error" (Red) | Show reason; Enable "Retry" |
+| **NONE** | "Start Registration" | Enable registration button |
+| **PENDING** | Yellow Warning | Disable registration; Show info |
+| **APPROVED** | Green Active | Show photo; Enable "Request Update" |
+| **REJECTED** | Red Error | Show reason; Enable "Retry" |
 
-```mermaid
-stateDiagram-v2
-    [*] --> NONE
-    NONE --> PENDING: Submit Registration
-    PENDING --> APPROVED: Admin Approve
-    PENDING --> REJECTED: Admin Reject
-    APPROVED --> PENDING: Request Replacement
-    REJECTED --> PENDING: Retry Submission
-```
+### Liveness State Machine
+Sequence enforced during face capture:
+1.  **EYE_BLINK**: Detect probability < 0.2
+2.  **TURN_LEFT**: Euler Y > 25 degrees
+3.  **TURN_RIGHT**: Euler Y < -25 degrees
+4.  **SMILE**: Probability > 0.7
+5.  **COMPLETED**: Trigger API call
 
-## 2. Bill / Payment Status (BR-R02)
-Mapped from `BillStatus` / `PaymentStatus`.
+## 2. Residency Request Lifecycle
+Applies to Room Transfer and Stay Extension.
 
-| Status | UI Visual State | Impact on Flows |
+| Status | Color | User Interaction |
 | :--- | :--- | :--- |
-| **UNPAID** | Alert / "Pay Now" | Blocks Checkout flow |
-| **OVERDUE** | Critical Alert (Red) | Blocks Checkout; High Priority in List |
-| **PAID** | Success (Green) | Allows Checkout flow |
-| **CANCELLED**| Strikethrough / Inactive | Ignored in debt checking |
+| **PENDING** | Amber | View details; Action disabled |
+| **APPROVED** | Green | Room info/Dates update automatically |
+| **REJECTED** | Red | View Admin reason; Can resubmit |
+| **CANCELLED**| Gray | Archived in history |
 
-## 3. Checkout Request Status
-Transitions for the Early Checkout flow.
-
-| Status | UI Color | User Interaction |
+## 3. Bill & Payment Lifecycle (BR-R02)
+| Status | UX Impact | Logic |
 | :--- | :--- | :--- |
-| **PENDING** | Amber | Can view details; Cannot submit new request |
-| **APPROVED** | Green | Show checkout instructions / final date |
-| **REJECTED** | Red | Show rejection reason; Can resubmit |
-| **COMPLETED**| Gray | Request archived in history |
+| **UNPAID** | Alert Card | Included in Total Debt |
+| **OVERDUE** | Critical Red | Priority #1 in list; Blocks Checkout |
+| **PAID** | Success Icon | Ignored by debt guards |
+| **CANCELLED**| Strikethrough| Ignored |
+
+## 4. Unified Access Timeline
+Derived status from AI Face Verification + IoT Gate Logs.
+
+| Result | Visual | Logic |
+| :--- | :--- | :--- |
+| **SUCCESS** | Green | AI Success AND Gate Granted |
+| **ACCESS_DENIED**| Red | AI Success AND Gate Denied (Curfew) |
+| **VERIFY_FAIL** | Amber | AI failed to recognize face |
+| **UNKNOWN** | Gray | Desync or missing hardware log |
 
 ---
-
-> [!TIP]
-> Use standard Material 3 color tokens (`error`, `primary`, `tertiary`) to represent these statuses consistently across the application.
+*Maintained for Thesis Documentation Standards.*

@@ -14,6 +14,6 @@ interface CheckoutApiService {
         @Body request: CheckoutRequest
     ): Response<BaseResponse<CheckoutResponse>>
 
-    @GET("v1/students/checkout-requests")
+    @GET("v1/students/checkout-requests/my-requests")
     suspend fun getCheckoutHistory(): Response<BaseResponse<List<CheckoutResponse>>>
 }

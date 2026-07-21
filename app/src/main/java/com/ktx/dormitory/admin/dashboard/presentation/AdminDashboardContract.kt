@@ -6,6 +6,9 @@ import com.ktx.dormitory.core.base.BaseContract
 data class AdminDashboardUiState(
     val isLoading: Boolean = false,
     val stats: DashboardStats? = null,
+    val pendingFaces: Int = 0,
+    val pendingCheckouts: Int = 0,
+    val pendingExtensions: Int = 0,
     val error: String? = null
 ) : BaseContract.State
 

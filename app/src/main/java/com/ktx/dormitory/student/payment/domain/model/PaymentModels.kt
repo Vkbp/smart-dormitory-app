@@ -4,46 +4,59 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 /**
- * Model giao dịch thanh toán
+ * Model đại diện cho Hóa đơn (Bill).
+ * Đồng bộ với tài liệu payment_mobile_api.md
  */
 @Parcelize
-data class Transaction(
-    val transactionId: String?,
+data class Bill(
+    val id: String,
+    val type: BillType?,
     val amount: Double?,
-    val method: String?,
-    val status: String?,
-    val createdAt: String?,
-    val type: String? = null,
-    val message: String? = null,
-    val transactionCode: String? = null
-) : Parcelable
-
-@Parcelize
-data class Invoice(
-    val id: String,   // UUID from backend
-    val type: InvoiceType?,
-    val amount: Double?,
-    val paidAmount: Double?,
-    val remainingAmount: Double?,
-    val status: PaymentStatus?,
+    val paidAmount: Double? = 0.0,
+    val remainingAmount: Double? = 0.0,
+    val status: BillStatus?,
     val dueDate: String?,
     val description: String?,
+    val assignmentId: String? = null,
     val roomCode: String? = null,
     val bedCode: String? = null
 ) : Parcelable
 
 /**
- * Loại hóa đơn (Đồng bộ với BillType của Backend)
+ * Model đại diện cho kết quả tạo thanh toán Online.
  */
 @Parcelize
-enum class InvoiceType : Parcelable {
-    ROOM, ELECTRICITY, WATER, SERVICE, APPLICATION, PENALTY, DEPOSIT
+data class PaymentResult(
+    val paymentId: String?,
+    val billId: String?,
+    val transactionCode: String?,
+    val amount: Double?,
+    val paymentMethod: PaymentMethod?,
+    val paymentStatus: String?,
+    val paymentUrl: String?,
+    val paidAt: String? = null
+) : Parcelable
+
+/**
+ * Loại hóa đơn (BillType).
+ */
+@Parcelize
+enum class BillType : Parcelable {
+    APPLICATION_FEE, ACCOMMODATION_FEE, ELECTRIC_FEE, WATER_FEE, PENALTY_FEE, DEPOSIT_FEE
 }
 
 /**
- * Trạng thái thanh toán (Đồng bộ với BillStatus của Backend)
+ * Trạng thái hóa đơn (BillStatus).
  */
 @Parcelize
-enum class PaymentStatus : Parcelable {
+enum class BillStatus : Parcelable {
     UNPAID, PARTIALLY_PAID, PAID, OVERDUE, CANCELLED
+}
+
+/**
+ * Phương thức thanh toán (PaymentMethod).
+ */
+@Parcelize
+enum class PaymentMethod : Parcelable {
+    BANK_TRANSFER, CASH
 }

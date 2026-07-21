@@ -22,9 +22,10 @@ fun CheckInSearchResponseDto.toDomain() = CheckInStudent(
 )
 
 fun FaceProfileDto.toDomain() = FaceProfile(
-    profileId = profileId,
-    studentId = studentId,
-    studentName = null,
+    profileId = profileId ?: UUID.randomUUID(),
+    studentId = studentId ?: UUID.randomUUID(),
+    studentCode = studentCode,
+    fullName = fullName,
     faceImageUrl = faceImageUrl,
     status = status,
     rejectionReason = rejectionReason,

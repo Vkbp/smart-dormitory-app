@@ -150,26 +150,30 @@ fun FaceRegistrationScreen(
                     onCapture = { bitmap, faces ->
                         val student = loginState.userData
                         val face = faces.firstOrNull()
-                        if (face != null && student != null) {
-                            val croppedFace = bitmap.cropFace(face.boundingBox)
-                            val finalFace = croppedFace.resizeAndCompress(720)
-                            
-                            val file = File(context.cacheDir, "temp_face_registration.jpg")
-                            val out = FileOutputStream(file)
-                            finalFace.compress(Bitmap.CompressFormat.JPEG, 90, out)
-                            out.flush()
-                            out.close()
-                            
-                            if (uiState.faceProfile?.status == "APPROVED") {
-                                viewModel.onEvent(FaceRegistrationUiEvent.RequestReplacement(file.absolutePath))
-                            } else {
-                                viewModel.onEvent(FaceRegistrationUiEvent.RegisterFace(student.fullName ?: "User", file.absolutePath))
-                            }
-                            
-                            if (croppedFace != bitmap) croppedFace.recycle()
-                            if (finalFace != croppedFace) finalFace.recycle()
-                            showCamera = false
+                        if (face == null) {
+                            Toast.makeText(context, "Không tìm thấy khuôn mặt trong khung hình. Vui lòng giữ yên máy.", Toast.LENGTH_SHORT).show()
+                            return@CameraView
                         }
+                        if (student == null) return@CameraView
+
+                        val croppedFace = bitmap.cropFace(face.boundingBox)
+                        val finalFace = croppedFace.resizeAndCompress(720)
+
+                        val file = File(context.cacheDir, "temp_face_registration.jpg")
+                        val out = FileOutputStream(file)
+                        finalFace.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                        out.flush()
+                        out.close()
+
+                        if (uiState.faceProfile?.status == "APPROVED") {
+                            viewModel.onEvent(FaceRegistrationUiEvent.RequestReplacement(file.absolutePath))
+                        } else {
+                            viewModel.onEvent(FaceRegistrationUiEvent.RegisterFace(student.fullName ?: "User", file.absolutePath))
+                        }
+
+                        if (croppedFace != bitmap) croppedFace.recycle()
+                        if (finalFace != croppedFace) finalFace.recycle()
+                        showCamera = false
                     },
                     onBack = { showCamera = false }
                 )
@@ -395,6 +399,7 @@ fun CameraView(
 ) {
     var captureState by remember { mutableStateOf(CaptureState()) }
     val isRegistering = uiState.isRegistering
+    val context = LocalContext.current
     
     Box(modifier = Modifier.fillMaxSize()) {
         if (hasCameraPermission) {
@@ -429,8 +434,12 @@ fun CameraView(
                                 .build()
                                 .also {
                                     it.setAnalyzer(cameraExecutor, FaceAnalyzer(viewModel) { faces, _, _, bitmap ->
-                                        captureState.bitmap?.takeIf { old -> old != bitmap && !old.isRecycled }?.recycle()
-                                        captureState = CaptureState(bitmap, faces)
+                                        // Fix: Chỉ cập nhật frame mới khi chưa hoàn thành liveness hoặc chưa có bitmap
+                                        // Khi đã hoàn thành, ta giữ lại frame cuối cùng để tránh lỗi mất khuôn mặt khi rung tay
+                                        if (livenessState.currentStep != LivenessStep.COMPLETED || captureState.bitmap == null) {
+                                            captureState.bitmap?.takeIf { old -> old != bitmap && !old.isRecycled }?.recycle()
+                                            captureState = CaptureState(bitmap, faces)
+                                        }
                                     })
                                 }
                             
@@ -552,28 +561,40 @@ fun CameraView(
             }
         }
 
-        Column(
-            modifier = Modifier.align(Alignment.BottomCenter).padding(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                onClick = {
-                    val currentFrame = captureState
-                    val bitmap = currentFrame.bitmap
-                    if (bitmap != null) {
-                        onCapture(bitmap, currentFrame.faces)
+                Column(
+                    modifier = Modifier.align(Alignment.BottomCenter).padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val isCompleted = livenessState.currentStep == LivenessStep.COMPLETED
+                    
+                    Button(
+                        onClick = {
+                            val currentFrame = captureState
+                            val bitmap = currentFrame.bitmap
+                            val faces = currentFrame.faces
+                            
+                            if (bitmap != null) {
+                                // Nếu liveness đã xong nhưng faces rỗng (do cử động nhanh), 
+                                // ta vẫn cho phép capture nếu bitmap tồn tại.
+                                onCapture(bitmap, faces.ifEmpty { 
+                                    // Tạo face giả lập từ bounding box trung tâm nếu cần, 
+                                    // hoặc thông báo người dùng giữ yên.
+                                    emptyList() 
+                                })
+                            } else {
+                                Toast.makeText(context, "Đang chuẩn bị ảnh, vui lòng giữ yên máy trong giây lát.", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        enabled = !isRegistering && isCompleted
+                    ) {
+                        if (isRegistering) {
+                            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                        } else {
+                            Text(if (isCompleted) "LƯU KHUÔN MẶT" else "HOÀN THÀNH CÁC BƯỚC TRÊN")
+                        }
                     }
-                },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                enabled = !isRegistering && livenessState.currentStep == LivenessStep.COMPLETED
-            ) {
-                if (isRegistering) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                } else {
-                    Text(if (livenessState.currentStep == LivenessStep.COMPLETED) "LƯU KHUÔN MẶT" else "HOÀN THÀNH CÁC BƯỚC TRÊN")
                 }
-            }
-        }
     }
 }
 

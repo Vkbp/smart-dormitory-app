@@ -200,10 +200,12 @@ fun RemoteUnlockDialog(
         },
         confirmButton = {
             Button(
-                enabled = selectedBuilding != null && selectedGate != null,
+                enabled = selectedBuilding?.id != null && selectedGate?.id != null,
                 onClick = {
-                    if (selectedBuilding != null && selectedGate != null) {
-                        onConfirm(selectedGate!!.id, selectedBuilding!!.id)
+                    val gateId = selectedGate?.id
+                    val buildingId = selectedBuilding?.id
+                    if (gateId != null && buildingId != null) {
+                        onConfirm(gateId, buildingId)
                     }
                 }
             ) { Text("Mở cửa") }

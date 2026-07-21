@@ -1,23 +1,51 @@
 package com.ktx.dormitory.student.payment.data.remote
 
 import com.ktx.dormitory.core.common.BaseResponse
-import com.ktx.dormitory.student.payment.data.dto.response.InvoiceDto
-import com.ktx.dormitory.student.payment.data.dto.response.TransactionDto
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
+import com.ktx.dormitory.core.common.PageResponse
+import com.ktx.dormitory.student.payment.data.dto.request.OnlinePaymentRequestDto
+import com.ktx.dormitory.student.payment.data.dto.response.BillDto
+import com.ktx.dormitory.student.payment.data.dto.response.PaymentResponseDto
+import com.ktx.dormitory.student.payment.data.dto.response.PaymentInstructionDto
+import retrofit2.http.*
 
 interface PaymentApiService {
-    @GET("v1/bills/me")
-    suspend fun getInvoices(): BaseResponse<List<InvoiceDto>>
+    
+    /**
+     * Lấy thông tin hóa đơn dựa trên Application ID (hồ sơ đăng ký).
+     * Dùng cho sinh viên mới chưa có tài khoản hoặc đang trong quá trình check-in.
+     */
+    @GET("v1/bills/application/{applicationId}")
+    suspend fun getBillByApplication(
+        @Path("applicationId") applicationId: String
+    ): BaseResponse<BillDto>
 
+    /**
+     * Lấy danh sách hóa đơn của chính mình (đã login).
+     */
+    @GET("v1/bills/me")
+    suspend fun getInvoices(): BaseResponse<List<BillDto>>
+
+    /**
+     * Tạo mã QR thông minh (Smart QR) để thanh toán online qua SePay.
+     */
     @POST("v1/payments/online")
-    suspend fun verifyPayment(@Body request: HashMap<String, Any>): BaseResponse<Unit>
+    suspend fun createSmartQR(
+        @Body request: OnlinePaymentRequestDto
+    ): BaseResponse<PaymentResponseDto>
 
-    @GET("v1/bills/me")
-    suspend fun getPaymentHistory(): BaseResponse<List<TransactionDto>>
+    /**
+     * Lấy lịch sử hóa đơn phân trang.
+     */
+    @GET("v1/bills/me/paged")
+    suspend fun getPaymentHistoryPaged(
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String = "dueDate,desc"
+    ): BaseResponse<PageResponse<BillDto>>
 
+    /**
+     * Lấy hướng dẫn thanh toán công khai (Static QR).
+     */
     @GET("v1/public/payment-instructions")
-    suspend fun getPaymentInstructions(): com.ktx.dormitory.student.payment.data.dto.response.PaymentInstructionDto
+    suspend fun getPaymentInstructions(): BaseResponse<PaymentInstructionDto>
 }
-

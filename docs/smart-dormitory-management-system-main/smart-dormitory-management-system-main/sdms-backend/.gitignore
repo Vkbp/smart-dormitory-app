@@ -1,0 +1,66 @@
+### IDE ###
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+
+# Eclipse
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+### Build & Dependencies ###
+# Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle (Nếu có)
+# .gradle/
+# build/
+# out/
+
+### Runtime & Logs ###
+# Log files
+logs/
+*.log
+hs_err_pid*
+replay_pid*
+
+# Runtime generated folders
+uploads/
+
+# Packaged applications
+*.jar
+*.war
+*.ear
+
+### Environment & Secrets ###
+# Local environment variables
+.env
+.env.*
+
+# Local application properties (tránh commit file chứa mật khẩu db, api key...)
+application-local.yml
+application-dev.yml
+application-prod.yml
+
+### OS Specific ###
+# Windows
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+
+### Temporary Files ###
+*.tmp
+*.bak
+*.swp

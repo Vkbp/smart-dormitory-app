@@ -21,6 +21,8 @@ data class StayExtensionResponse(
     val currentBedCode: String?,
     val currentRoomCode: String?,
     val pdfUrl: String?,
+    val contractPdfUrl: String? = null,
+    val commitmentPdfUrl: String? = null,
     val description: String?,
     val rejectReason: String? = null
 ) : Parcelable

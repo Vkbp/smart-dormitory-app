@@ -49,6 +49,16 @@ fun AdminDashboardScreen(
     )
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Smart Dormitory", fontWeight = FontWeight.Black) },
+                actions = {
+                    IconButton(onClick = { viewModel.onEvent(AdminDashboardUiEvent.Refresh) }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Tải lại")
+                    }
+                }
+            )
+        },
         bottomBar = { BottomNavBar(navController, loginViewModel) }
     ) { padding ->
         Column(
@@ -85,17 +95,34 @@ fun AdminDashboardScreen(
                     }
                 } else {
                     val stats = uiState.stats
+                    
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
-                        modifier = Modifier.height(260.dp), // Fixed height for LazyVerticalGrid inside Column
+                        modifier = Modifier.height(260.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         userScrollEnabled = false
                     ) {
-                        item { StatCard("Hồ sơ chờ duyệt", stats?.pendingApplications ?: 0, Color(0xFFFFC107)) }
-                        item { StatCard("Chưa đóng tiền", stats?.waitingForPayment ?: 0, Color(0xFFF44336)) }
-                        item { StatCard("Chờ Check-in", stats?.pendingCheckIn ?: 0, Color(0xFF9C27B0)) }
-                        item { StatCard("Đang lưu trú", stats?.occupiedAssignments ?: 0, Color(0xFF4CAF50)) }
+                        item { 
+                            StatCard("Duyệt khuôn mặt", uiState.pendingFaces, Color(0xFFE91E63)) {
+                                navController.navigate(Screen.AdminFaceApproval.route)
+                            } 
+                        }
+                        item { 
+                            StatCard("Duyệt trả phòng", uiState.pendingCheckouts, Color(0xFFFF5722)) {
+                                navController.navigate(Screen.AdminCheckoutApproval.route)
+                            } 
+                        }
+                        item { 
+                            StatCard("Duyệt gia hạn", uiState.pendingExtensions, Color(0xFF4CAF50)) {
+                                navController.navigate(Screen.AdminExtensionApproval.route)
+                            } 
+                        }
+                        item { 
+                            StatCard("Chờ nhận phòng", stats?.pendingCheckIn ?: 0, Color(0xFF2196F3)) {
+                                navController.navigate(Screen.AdminCheckIn.route)
+                            } 
+                        }
                     }
                 }
 
@@ -184,10 +211,11 @@ fun DashboardHeader(username: String, onLogout: () -> Unit) {
 }
 
 @Composable
-fun StatCard(title: String, value: Int, color: Color) {
+fun StatCard(title: String, value: Int, color: Color, onClick: () -> Unit = {}) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
+        onClick = onClick,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

@@ -18,7 +18,8 @@ data class CheckInStudent(
 data class FaceProfile(
     val profileId: UUID,
     val studentId: UUID,
-    val studentName: String?,
+    val studentCode: String?,
+    val fullName: String?,
     val faceImageUrl: String?,
     val status: String,
     val rejectionReason: String?,

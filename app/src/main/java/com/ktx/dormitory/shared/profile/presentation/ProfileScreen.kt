@@ -77,7 +77,7 @@ fun ProfileScreen(
                 title = { Text("Thông tin cá nhân", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Quay lại")
                     }
                 },
                 actions = {
@@ -88,16 +88,19 @@ fun ProfileScreen(
                                 editedPhone,
                                 editedEmail
                             ))
-                            isEditing = false
+                            // Only exit edit mode if there are no errors (checked in VM)
+                            if (uiState.phoneError == null && uiState.emailError == null) {
+                                isEditing = false
+                            }
                         }) {
-                            Icon(Icons.Default.Check, contentDescription = "Save", tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.Default.Check, contentDescription = "Lưu thay đổi", tint = MaterialTheme.colorScheme.primary)
                         }
                     } else {
                         IconButton(onClick = { isEditing = true }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit")
+                            Icon(Icons.Default.Edit, contentDescription = "Chỉnh sửa thông tin")
                         }
                         IconButton(onClick = { viewModel.onEvent(ProfileUiEvent.Logout) }) {
-                            Icon(Icons.Default.Logout, contentDescription = "Logout", tint = MaterialTheme.colorScheme.error)
+                            Icon(Icons.Default.Logout, contentDescription = "Đăng xuất", tint = MaterialTheme.colorScheme.error)
                         }
                     }
                 }
@@ -165,7 +168,8 @@ fun ProfileScreen(
                     value = if (isEditing) editedPhone else uiState.profile?.phone ?: "Chưa cập nhật",
                     isEditing = isEditing,
                     onValueChange = { editedPhone = it },
-                    icon = Icons.Default.Phone
+                    icon = Icons.Default.Phone,
+                    error = uiState.phoneError
                 )
 
                 ProfileInfoCard(
@@ -173,7 +177,8 @@ fun ProfileScreen(
                     value = if (isEditing) editedEmail else uiState.profile?.email ?: "Chưa cập nhật",
                     isEditing = isEditing,
                     onValueChange = { editedEmail = it },
-                    icon = Icons.Default.Email
+                    icon = Icons.Default.Email,
+                    error = uiState.emailError
                 )
 
                 ProfileInfoCard(
@@ -202,7 +207,8 @@ fun ProfileInfoCard(
     value: String,
     isEditing: Boolean,
     onValueChange: (String) -> Unit,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    error: String? = null
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -222,7 +228,13 @@ fun ProfileInfoCard(
                         value = value,
                         onValueChange = onValueChange,
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        isError = error != null,
+                        supportingText = {
+                            if (error != null) {
+                                Text(error, color = MaterialTheme.colorScheme.error)
+                            }
+                        }
                     )
                 } else {
                     Text(text = value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)

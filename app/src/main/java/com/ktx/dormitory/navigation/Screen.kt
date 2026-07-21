@@ -6,6 +6,7 @@ sealed class Screen(val route: String, val title: String) {
     data object StudentHome : Screen("student_home", "Trang chủ")
     data object AccessHistory : Screen("access_history", "Lịch sử ra vào")
     data object CurfewRequest : Screen("curfew_request", "Yêu cầu vào trễ")
+    data object CreateCurfewRequest : Screen("create_curfew_request", "Tạo đơn mới")
     data object FaceRegistration : Screen("face_registration", "Đăng ký khuôn mặt")
     data object Profile : Screen("profile", "Hồ sơ cá nhân")
     data object Payment : Screen("payment", "Thanh toán")
@@ -20,7 +21,6 @@ sealed class Screen(val route: String, val title: String) {
     data object FaceVerificationHistory : Screen("face_verification_history", "Lịch sử xác thực")
     data object PaymentInstruction : Screen("payment_instruction", "Hướng dẫn chuyển khoản")
     data object RoomTransfer : Screen("room_transfer", "Đổi phòng")
-    data object IssueHistory : Screen("issue_history", "Lịch sử báo hỏng")
 
     // --- ADMIN ROUTES ---
     data object AdminDashboard : Screen("admin_dashboard", "Hệ thống")

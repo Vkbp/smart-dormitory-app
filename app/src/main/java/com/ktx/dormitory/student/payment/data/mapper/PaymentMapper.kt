@@ -1,9 +1,7 @@
 package com.ktx.dormitory.student.payment.data.mapper
 
+import com.ktx.dormitory.student.payment.data.dto.response.*
 import com.ktx.dormitory.student.payment.data.local.InvoiceEntity
-import com.ktx.dormitory.student.payment.data.dto.response.InvoiceDto
-import com.ktx.dormitory.student.payment.data.dto.response.PaymentInstructionDto
-import com.ktx.dormitory.student.payment.data.dto.response.TransactionDto
 import com.ktx.dormitory.student.payment.domain.model.*
 
 fun PaymentInstructionDto.toDomain(): PaymentInstruction {
@@ -16,87 +14,55 @@ fun PaymentInstructionDto.toDomain(): PaymentInstruction {
     )
 }
 
-fun InvoiceDto.toDomain(): Invoice {
-    return Invoice(
+fun BillDto.toDomain(): Bill {
+    return Bill(
         id = id,
         type = when (type?.uppercase()) {
-            "ACCOMMODATION_FEE", "ROOM" -> InvoiceType.ROOM
-            "ELECTRIC_FEE", "ELECTRICITY" -> InvoiceType.ELECTRICITY
-            "WATER_FEE", "WATER" -> InvoiceType.WATER
-            "SERVICE_FEE", "SERVICE" -> InvoiceType.SERVICE
-            "APPLICATION_FEE" -> InvoiceType.APPLICATION
-            "PENALTY_FEE" -> InvoiceType.PENALTY
-            "DEPOSIT_FEE" -> InvoiceType.DEPOSIT
+            "APPLICATION_FEE" -> BillType.APPLICATION_FEE
+            "ACCOMMODATION_FEE" -> BillType.ACCOMMODATION_FEE
+            "ELECTRIC_FEE" -> BillType.ELECTRIC_FEE
+            "WATER_FEE" -> BillType.WATER_FEE
+            "PENALTY_FEE" -> BillType.PENALTY_FEE
+            "DEPOSIT_FEE" -> BillType.DEPOSIT_FEE
             else -> null
         },
         amount = amount,
         paidAmount = paidAmount,
         remainingAmount = remainingAmount,
         status = when (status?.uppercase()) {
-            "UNPAID", "PENDING", "NEW" -> PaymentStatus.UNPAID
-            "PARTIALLY_PAID" -> PaymentStatus.PARTIALLY_PAID
-            "PAID" -> PaymentStatus.PAID
-            "OVERDUE" -> PaymentStatus.OVERDUE
-            "CANCELLED" -> PaymentStatus.CANCELLED
-            else -> PaymentStatus.UNPAID // Mặc định là chưa thanh toán nếu có status lạ
+            "UNPAID" -> BillStatus.UNPAID
+            "PARTIALLY_PAID" -> BillStatus.PARTIALLY_PAID
+            "PAID" -> BillStatus.PAID
+            "OVERDUE" -> BillStatus.OVERDUE
+            "CANCELLED" -> BillStatus.CANCELLED
+            else -> BillStatus.UNPAID
         },
         dueDate = dueDate,
         description = description,
+        assignmentId = assignmentId,
         roomCode = roomCode,
         bedCode = bedCode
     )
 }
 
-fun InvoiceEntity.toDomain(): Invoice {
-    return Invoice(
-        id = id,
-        type = when (type?.uppercase()) {
-            "ACCOMMODATION_FEE", "ROOM" -> InvoiceType.ROOM
-            "ELECTRICITY" -> InvoiceType.ELECTRICITY
-            "WATER" -> InvoiceType.WATER
-            "SERVICE_FEE" -> InvoiceType.SERVICE
-            else -> null
-        },
+fun PaymentResponseDto.toDomain(): PaymentResult {
+    return PaymentResult(
+        paymentId = paymentId,
+        billId = billId,
+        transactionCode = transactionCode,
         amount = amount,
-        paidAmount = paidAmount,
-        remainingAmount = remainingAmount,
-        status = when (status?.uppercase()) {
-            "UNPAID" -> PaymentStatus.UNPAID
-            "PARTIALLY_PAID" -> PaymentStatus.PARTIALLY_PAID
-            "PAID" -> PaymentStatus.PAID
-            "OVERDUE" -> PaymentStatus.OVERDUE
-            else -> null
+        paymentMethod = when (paymentMethod?.uppercase()) {
+            "BANK_TRANSFER" -> PaymentMethod.BANK_TRANSFER
+            "CASH" -> PaymentMethod.CASH
+            else -> PaymentMethod.BANK_TRANSFER
         },
-        dueDate = dueDate,
-        description = description,
-        roomCode = roomCode,
-        bedCode = bedCode
+        paymentStatus = paymentStatus,
+        paymentUrl = paymentUrl,
+        paidAt = paidAt
     )
 }
 
-fun TransactionDto.toDomain(): Transaction {
-    return Transaction(
-        transactionId = transactionId,
-        amount = amount,
-        method = when (type?.uppercase()) {
-            "ACCOMMODATION_FEE", "ROOM" -> "Phí phòng"
-            "ELECTRIC_FEE", "ELECTRICITY" -> "Tiền điện"
-            "WATER_FEE", "WATER" -> "Tiền nước"
-            "SERVICE_FEE", "SERVICE" -> "Phí dịch vụ"
-            "APPLICATION_FEE" -> "Lệ phí đơn"
-            "PENALTY_FEE" -> "Tiền phạt"
-            "DEPOSIT_FEE" -> "Tiền cọc"
-            else -> type ?: "Hóa đơn"
-        },
-        status = status,
-        createdAt = createdAt,
-        type = type,
-        message = message,
-        transactionCode = transactionCode
-    )
-}
-
-fun InvoiceDto.toEntity(): InvoiceEntity {
+fun BillDto.toEntity(): InvoiceEntity {
     return InvoiceEntity(
         id = id,
         type = type,
@@ -106,6 +72,38 @@ fun InvoiceDto.toEntity(): InvoiceEntity {
         status = status,
         dueDate = dueDate,
         description = description,
+        assignmentId = assignmentId,
+        roomCode = roomCode,
+        bedCode = bedCode
+    )
+}
+
+fun InvoiceEntity.toDomain(): Bill {
+    return Bill(
+        id = id,
+        type = when (type?.uppercase()) {
+            "APPLICATION_FEE" -> BillType.APPLICATION_FEE
+            "ACCOMMODATION_FEE" -> BillType.ACCOMMODATION_FEE
+            "ELECTRIC_FEE" -> BillType.ELECTRIC_FEE
+            "WATER_FEE" -> BillType.WATER_FEE
+            "PENALTY_FEE" -> BillType.PENALTY_FEE
+            "DEPOSIT_FEE" -> BillType.DEPOSIT_FEE
+            else -> null
+        },
+        amount = amount,
+        paidAmount = paidAmount,
+        remainingAmount = remainingAmount,
+        status = when (status?.uppercase()) {
+            "UNPAID" -> BillStatus.UNPAID
+            "PARTIALLY_PAID" -> BillStatus.PARTIALLY_PAID
+            "PAID" -> BillStatus.PAID
+            "OVERDUE" -> BillStatus.OVERDUE
+            "CANCELLED" -> BillStatus.CANCELLED
+            else -> BillStatus.UNPAID
+        },
+        dueDate = dueDate,
+        description = description,
+        assignmentId = assignmentId,
         roomCode = roomCode,
         bedCode = bedCode
     )

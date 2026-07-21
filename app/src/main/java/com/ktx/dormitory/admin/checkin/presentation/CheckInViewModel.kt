@@ -97,6 +97,11 @@ class CheckInViewModel @Inject constructor(
     }
 
     private fun assignRfid(studentId: UUID, rfidCode: String) {
+        if (rfidCode.isBlank()) {
+            updateState { it.copy(errorMessage = "Mã thẻ RFID không được để trống") }
+            return
+        }
+
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, errorMessage = null) }
             try {

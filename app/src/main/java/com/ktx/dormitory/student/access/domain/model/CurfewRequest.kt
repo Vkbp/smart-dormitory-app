@@ -7,7 +7,9 @@ import kotlinx.parcelize.Parcelize
 data class CurfewRequest(
     val id: String,
     val studentId: String,
+    val requestType: CurfewRequestType,
     val reason: String,
+    val startDate: String?,
     val expectedArrivalTime: String,
     val note: String?,
     val status: CurfewStatus,
@@ -20,4 +22,9 @@ enum class CurfewStatus {
     PENDING,
     APPROVED,
     REJECTED
+}
+
+enum class CurfewRequestType {
+    LATE_RETURN,
+    ABSENCE
 }

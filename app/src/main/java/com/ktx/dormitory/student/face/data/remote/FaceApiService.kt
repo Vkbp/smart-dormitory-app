@@ -3,9 +3,9 @@ package com.ktx.dormitory.student.face.data.remote
 import com.ktx.dormitory.core.common.BaseResponse
 import com.ktx.dormitory.core.common.PageResponse
 import com.ktx.dormitory.student.face.data.dto.response.FaceProfileDto
-import com.ktx.dormitory.student.face.data.dto.request.FaceReplacementRequest
 import com.ktx.dormitory.student.face.data.dto.response.VerificationAttemptDto
 import okhttp3.MultipartBody
+import retrofit2.Response
 import retrofit2.http.*
 import java.util.UUID
 
@@ -18,13 +18,13 @@ interface FaceApiService {
     @POST("v1/students/me/face")
     suspend fun registerFace(
         @Part file: MultipartBody.Part
-    ): BaseResponse<UUID>
+    ): Response<BaseResponse<UUID>>
 
     /**
      * Lấy hồ sơ khuôn mặt hiện tại
      */
     @GET("v1/students/me/face")
-    suspend fun getMyFaceProfile(): BaseResponse<FaceProfileDto>
+    suspend fun getMyFaceProfile(): Response<BaseResponse<FaceProfileDto>>
 
     /**
      * Gửi yêu cầu thay đổi khuôn mặt
@@ -33,7 +33,7 @@ interface FaceApiService {
     @POST("v1/students/me/face/replacements")
     suspend fun requestReplacement(
         @Part file: MultipartBody.Part
-    ): BaseResponse<Unit>
+    ): Response<BaseResponse<Unit>>
 
     /**
      * Xem lịch sử các lần xác thực khuôn mặt
@@ -42,5 +42,5 @@ interface FaceApiService {
     suspend fun getMyVerifications(
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 20
-    ): BaseResponse<PageResponse<VerificationAttemptDto>>
+    ): Response<BaseResponse<PageResponse<VerificationAttemptDto>>>
 }

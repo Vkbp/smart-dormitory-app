@@ -10,6 +10,8 @@ data class ProfileUiState(
     val isLoading: Boolean = false,
     val profile: UserProfile? = null,
     val error: String? = null,
+    val phoneError: String? = null,
+    val emailError: String? = null,
     val isUploading: Boolean = false,
     val uploadSuccess: Boolean = false
 ) : BaseContract.State, Parcelable

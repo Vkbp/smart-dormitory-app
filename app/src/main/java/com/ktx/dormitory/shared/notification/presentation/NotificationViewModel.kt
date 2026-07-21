@@ -2,7 +2,8 @@ package com.ktx.dormitory.shared.notification.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
-import com.ktx.dormitory.shared.auth.domain.usecase.GetAuthStateUseCase
+import com.ktx.dormitory.shared.notification.domain.model.Notification
+import com.ktx.dormitory.shared.notification.domain.model.NotificationType
 import com.ktx.dormitory.shared.notification.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -14,10 +15,13 @@ class NotificationViewModel @Inject constructor(
     private val getUnreadCountUseCase: GetUnreadCountUseCase,
     private val markReadUseCase: MarkNotificationReadUseCase,
     private val markAllReadUseCase: MarkAllNotificationsReadUseCase,
-    private val getAuthStateUseCase: GetAuthStateUseCase
 ) : BaseViewModel<NotificationUiState, NotificationUiEvent, NotificationUiEffect>(NotificationUiState()) {
 
     init {
+        loadNotifications()
+    }
+
+    fun refresh() {
         loadNotifications()
     }
 
@@ -27,31 +31,29 @@ class NotificationViewModel @Inject constructor(
             NotificationUiEvent.Refresh -> loadNotifications()
             is NotificationUiEvent.MarkAsRead -> markAsRead(event.notificationId)
             NotificationUiEvent.MarkAllAsRead -> markAllAsRead()
+            is NotificationUiEvent.FilterByType -> filterNotifications(event.type)
         }
     }
 
     private fun loadNotifications() {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, error = null) }
-            getAuthStateUseCase().onSuccess { user ->
-                val userId = user.id ?: ""
-                val notificationsResult = getNotificationsUseCase(userId)
-                val unreadResult = getUnreadCountUseCase(userId)
+            val notificationsResult = getNotificationsUseCase()
+            val unreadResult = getUnreadCountUseCase()
 
-                if (notificationsResult.isSuccess && unreadResult.isSuccess) {
-                    updateState { it.copy(
-                        notifications = notificationsResult.getOrThrow(),
-                        unreadCount = unreadResult.getOrThrow().toInt(),
-                        isLoading = false
-                    ) }
-                } else {
-                    updateState { it.copy(
-                        error = notificationsResult.exceptionOrNull()?.message ?: "Lỗi tải thông báo",
-                        isLoading = false
-                    ) }
-                }
-            }.onFailure {
-                updateState { it.copy(error = "Không tìm thấy người dùng", isLoading = false) }
+            if (notificationsResult.isSuccess && unreadResult.isSuccess) {
+                val notifications = notificationsResult.getOrThrow()
+                updateState { it.copy(
+                    notifications = notifications,
+                    filteredNotifications = applyFilter(notifications, it.selectedType),
+                    unreadCount = unreadResult.getOrThrow().toInt(),
+                    isLoading = false
+                ) }
+            } else {
+                updateState { it.copy(
+                    error = notificationsResult.exceptionOrNull()?.message ?: "Lỗi tải thông báo",
+                    isLoading = false
+                ) }
             }
         }
     }
@@ -66,11 +68,24 @@ class NotificationViewModel @Inject constructor(
 
     private fun markAllAsRead() {
         viewModelScope.launch {
-            getAuthStateUseCase().onSuccess { user ->
-                markAllReadUseCase(user.id ?: "").onSuccess {
-                    loadNotifications()
-                }
+            markAllReadUseCase().onSuccess {
+                loadNotifications()
             }
+        }
+    }
+
+    private fun filterNotifications(type: NotificationType) {
+        updateState { it.copy(
+            selectedType = type,
+            filteredNotifications = applyFilter(it.notifications, type)
+        ) }
+    }
+
+    private fun applyFilter(notifications: List<Notification>, type: NotificationType): List<Notification> {
+        return if (type == NotificationType.ALL) {
+            notifications
+        } else {
+            notifications.filter { it.type == type.name }
         }
     }
 }

@@ -4,8 +4,10 @@ import com.google.gson.annotations.SerializedName
 import java.util.UUID
 
 data class FaceProfileDto(
-    @SerializedName("profileId") val profileId: UUID,
-    @SerializedName("studentId") val studentId: UUID,
+    @SerializedName("profileId", alternate = ["id"]) val profileId: UUID?,
+    @SerializedName("studentId") val studentId: UUID?,
+    @SerializedName("studentCode", alternate = ["student_code"]) val studentCode: String? = null,
+    @SerializedName("fullName", alternate = ["full_name"]) val fullName: String? = null,
     @SerializedName("faceImageUrl") val faceImageUrl: String?,
     @SerializedName("status") val status: String,
     @SerializedName("rejectionReason") val rejectionReason: String?,

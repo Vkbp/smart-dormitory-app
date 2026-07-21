@@ -1,0 +1,13 @@
+package com.ktx.dormitory.student.payment.domain.usecase
+
+import com.ktx.dormitory.student.payment.domain.model.PaymentResult
+import com.ktx.dormitory.student.payment.domain.repository.PaymentRepository
+import javax.inject.Inject
+
+class CreateSmartQRUseCase @Inject constructor(
+    private val repository: PaymentRepository
+) {
+    suspend operator fun invoke(billId: String, amount: Double): Result<PaymentResult> {
+        return repository.createSmartQR(billId, amount)
+    }
+}

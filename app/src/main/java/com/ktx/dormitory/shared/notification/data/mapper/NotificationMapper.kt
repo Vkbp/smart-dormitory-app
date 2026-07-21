@@ -14,13 +14,3 @@ fun NotificationResponse.toDomain(): Notification {
         createdAt = createdAt
     )
 }
-
-fun com.ktx.dormitory.shared.notification.data.remote.IssueReportResponse.toDomain(): com.ktx.dormitory.shared.notification.domain.model.IssueReport {
-    return com.ktx.dormitory.shared.notification.domain.model.IssueReport(
-        id = id,
-        description = description,
-        status = status,
-        createdAt = createdAt,
-        imageUrl = imageUrl
-    )
-}

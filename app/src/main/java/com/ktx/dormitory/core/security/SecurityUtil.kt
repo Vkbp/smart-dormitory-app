@@ -11,6 +11,7 @@ import javax.crypto.spec.GCMParameterSpec
 
 object SecurityUtils {
     private const val KEY_ALIAS = "face_embedding_key"
+    private const val BIOMETRIC_KEY_ALIAS = "biometric_auth_key"
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     private const val TRANSFORMATION = "AES/GCM/NoPadding"
 
@@ -28,6 +29,32 @@ object SecurityUtils {
         return keyGenerator.generateKey()
     }
 
+    /**
+     * Tạo hoặc lấy khóa yêu cầu xác thực sinh trắc học (SEC-04).
+     */
+    fun getBiometricKey(): SecretKey {
+        val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
+        keyStore.load(null)
+        val key = keyStore.getKey(BIOMETRIC_KEY_ALIAS, null) as? SecretKey
+        if (key != null) return key
+
+        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
+        val spec = KeyGenParameterSpec.Builder(BIOMETRIC_KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+            .setUserAuthenticationRequired(true) // Bắt buộc vân tay để dùng key
+            .setInvalidatedByBiometricEnrollment(true) // Reset nếu thêm vân tay mới
+            .build()
+        keyGenerator.init(spec)
+        return keyGenerator.generateKey()
+    }
+
+    fun getBiometricCipher(): Cipher {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        cipher.init(Cipher.ENCRYPT_MODE, getBiometricKey())
+        return cipher
+    }
+
     fun encryptEmbedding(embedding: FloatArray): ByteArray {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, getSecretKey())
@@ -40,7 +67,7 @@ object SecurityUtils {
 
     fun decryptEmbedding(encrypted: ByteArray): FloatArray {
         val iv = encrypted.sliceArray(0 until 12)
-        val data = encrypted.sliceArray(12 until encrypted.size)
+          val data = encrypted.sliceArray(12 until encrypted.size)
         val cipher = Cipher.getInstance(TRANSFORMATION)
         val spec = GCMParameterSpec(128, iv)
         cipher.init(Cipher.DECRYPT_MODE, getSecretKey(), spec)

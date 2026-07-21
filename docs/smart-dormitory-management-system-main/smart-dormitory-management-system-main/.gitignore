@@ -1,0 +1,22 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs (Global)
+*.log
+
+# Misc
+*.bak
+*.tmp
+*.temp
+# Environment & Secrets
+.env
+.env.*
+!.env.example

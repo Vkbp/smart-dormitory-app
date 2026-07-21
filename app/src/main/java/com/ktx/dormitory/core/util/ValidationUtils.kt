@@ -42,4 +42,18 @@ object ValidationUtils {
         val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$"
         return email.matches(Regex(emailRegex))
     }
+
+    /**
+     * General Blank Check
+     */
+    fun isNotBlank(value: String?): Boolean {
+        return !value.isNullOrBlank()
+    }
+
+    /**
+     * Min Length Check
+     */
+    fun hasMinLength(value: String?, minLength: Int): Boolean {
+        return (value?.length ?: 0) >= minLength
+    }
 }

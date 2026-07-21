@@ -56,10 +56,21 @@ class FaceRepositoryImpl @Inject constructor(
     ): Result<com.ktx.dormitory.core.common.PageResponse<VerificationAttemptDto>> {
         return try {
             val response = remoteDataSource.getMyVerifications(studentId, page, size)
-            if (response.success && response.data != null) {
-                Result.success(response.data)
+            val body = response.body()
+            // Xử lý 404 như danh sách trống để tránh hiện ErrorView ở màn hình Timeline
+            if (response.isSuccessful && body != null && body.success && body.data != null) {
+                Result.success(body.data)
+            } else if (response.code() == 404) {
+                Result.success(com.ktx.dormitory.core.common.PageResponse(
+                    content = emptyList(),
+                    pageNumber = 0,
+                    pageSize = size,
+                    totalElements = 0,
+                    totalPages = 0,
+                    last = true
+                ))
             } else {
-                Result.failure(Exception(response.message ?: "Lỗi tải lịch sử"))
+                Result.failure(Exception(body?.message ?: "Lỗi tải lịch sử"))
             }
         } catch (e: Exception) {
             Result.failure(Exception(e.toUserFriendlyMessage()))

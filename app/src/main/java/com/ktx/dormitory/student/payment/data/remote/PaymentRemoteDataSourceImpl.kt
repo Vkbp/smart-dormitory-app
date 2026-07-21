@@ -1,5 +1,11 @@
 package com.ktx.dormitory.student.payment.data.remote
 
+import com.ktx.dormitory.student.payment.data.dto.request.OnlinePaymentRequestDto
+import com.ktx.dormitory.student.payment.data.dto.response.BillDto
+import com.ktx.dormitory.student.payment.data.dto.response.PaymentResponseDto
+import com.ktx.dormitory.student.payment.data.dto.response.PaymentInstructionDto
+import com.ktx.dormitory.core.common.BaseResponse
+import com.ktx.dormitory.core.common.PageResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -7,19 +13,31 @@ import javax.inject.Singleton
 class PaymentRemoteDataSourceImpl @Inject constructor(
     private val api: PaymentApiService
 ) : PaymentRemoteDataSource {
-    override suspend fun getInvoices() = api.getInvoices()
+    
+    override suspend fun getBillByApplication(applicationId: String): BaseResponse<BillDto> {
+        return api.getBillByApplication(applicationId)
+    }
 
-    override suspend fun verifyPayment(billId: String, amount: Double, paymentMethod: String, transactionCode: String) =
-        api.verifyPayment(
-            hashMapOf(
-                "billId" to billId,
-                "amount" to amount,
-                "paymentMethod" to paymentMethod,
-                "transactionCode" to transactionCode
+    override suspend fun getInvoices(): BaseResponse<List<BillDto>> {
+        return api.getInvoices()
+    }
+
+    override suspend fun createSmartQR(billId: String, amount: Double, paymentMethod: String, transactionCode: String?): BaseResponse<PaymentResponseDto> {
+        return api.createSmartQR(
+            OnlinePaymentRequestDto(
+                billId = billId,
+                amount = amount,
+                paymentMethod = paymentMethod,
+                transactionCode = transactionCode
             )
         )
+    }
 
-    override suspend fun getPaymentHistory() = api.getPaymentHistory()
+    override suspend fun getPaymentHistoryPaged(page: Int, size: Int): BaseResponse<PageResponse<BillDto>> {
+        return api.getPaymentHistoryPaged(page, size)
+    }
 
-    override suspend fun getPaymentInstructions() = api.getPaymentInstructions()
+    override suspend fun getPaymentInstructions(): BaseResponse<PaymentInstructionDto> {
+        return api.getPaymentInstructions()
+    }
 }

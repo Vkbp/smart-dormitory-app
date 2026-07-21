@@ -39,6 +39,10 @@ class ProfileRepositoryImpl @Inject constructor(
             else Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
+    
+    fun getStudentProfile(studentId: String) {
+        // Implement if needed for other places, but we'll use AdminRepository for Admin side
+    }
 
     override suspend fun updateProfile(request: UpdateProfileRequest): Result<Unit> {
         return try {

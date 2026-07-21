@@ -7,6 +7,7 @@ import com.ktx.dormitory.shared.profile.domain.usecase.GetProfileUseCase
 import com.ktx.dormitory.shared.profile.domain.usecase.UpdateProfileUseCase
 import com.ktx.dormitory.shared.profile.domain.usecase.UploadAvatarUseCase
 import com.ktx.dormitory.shared.auth.domain.usecase.LogoutUseCase
+import com.ktx.dormitory.core.util.ValidationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -65,6 +66,24 @@ class ProfileViewModel @Inject constructor(
 
     private fun updateProfile(fullName: String, phone: String, email: String) {
         viewModelScope.launch {
+            // STEP 2: UI Hardening - Client side validation
+            var hasError = false
+            if (!ValidationUtils.isValidPhone(phone)) {
+                updateState { it.copy(phoneError = "Số điện thoại không hợp lệ (10 số, bắt đầu bằng 0)") }
+                hasError = true
+            } else {
+                updateState { it.copy(phoneError = null) }
+            }
+
+            if (!ValidationUtils.isValidEmail(email)) {
+                updateState { it.copy(emailError = "Email không đúng định dạng") }
+                hasError = true
+            } else {
+                updateState { it.copy(emailError = null) }
+            }
+
+            if (hasError) return@launch
+
             updateState { it.copy(isLoading = true) }
             updateProfileUseCase(phone, email)
                 .onSuccess {

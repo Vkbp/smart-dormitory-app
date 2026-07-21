@@ -1,16 +1,18 @@
 package com.ktx.dormitory.student.face.data.remote
 
-import com.ktx.dormitory.student.face.data.remote.FaceApiService
+import com.ktx.dormitory.core.common.BaseResponse
+import com.ktx.dormitory.core.common.PageResponse
 import com.ktx.dormitory.student.face.data.dto.response.FaceProfileDto
 import com.ktx.dormitory.student.face.data.dto.response.VerificationAttemptDto
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.Response
 import java.io.File
 import javax.inject.Inject
 
 /**
- * Impl gửi faceImageUrl hoặc File lên Backend qua AccessApiService.
+ * Impl gửi faceImageUrl hoặc File lên Backend qua FaceApiService.
  */
 class FaceRemoteDataSourceImpl @Inject constructor(
     private val faceApi: FaceApiService
@@ -27,20 +29,24 @@ class FaceRemoteDataSourceImpl @Inject constructor(
         val body = MultipartBody.Part.createFormData("file", faceImageFile.name, requestFile)
         
         val response = faceApi.registerFace(body)
-        if (!response.success) {
-            val errorMsg = response.message ?: "Unknown AI error"
-            throw Exception(if (errorMsg.contains("face", ignoreCase = true)) "AI_ERROR: $errorMsg" else errorMsg)
+        val baseResponse = response.body()
+        if (response.isSuccessful && baseResponse != null) {
+            if (!baseResponse.success) {
+                val errorMsg = baseResponse.message ?: "Unknown AI error"
+                throw Exception(if (errorMsg.contains("face", ignoreCase = true)) "AI_ERROR: $errorMsg" else errorMsg)
+            }
+        } else {
+            throw Exception("Lỗi kết nối server: ${response.code()}")
         }
     }
 
     override suspend fun getMyFaceProfile(studentId: String): FaceProfileDto? {
         val response = faceApi.getMyFaceProfile()
-        if (response.success && response.data != null) {
-            return response.data
-        } else {
-            // Log lỗi nghiệp vụ nếu cần
-            return null
+        val baseResponse = response.body()
+        if (response.isSuccessful && baseResponse != null && baseResponse.success) {
+            return baseResponse.data
         }
+        return null
     }
 
     override suspend fun requestReplacement(studentId: String, faceImageFile: File) {
@@ -48,14 +54,19 @@ class FaceRemoteDataSourceImpl @Inject constructor(
         val body = MultipartBody.Part.createFormData("file", faceImageFile.name, requestFile)
         
         val response = faceApi.requestReplacement(body)
-        if (!response.success) {
-            val errorMsg = response.message ?: "Unknown error"
-            val message = if (errorMsg.contains("face", ignoreCase = true)) {
-                "AI_ERROR: No face detected or low quality"
-            } else {
-                errorMsg
+        val baseResponse = response.body()
+        if (response.isSuccessful && baseResponse != null) {
+            if (!baseResponse.success) {
+                val errorMsg = baseResponse.message ?: "Unknown error"
+                val message = if (errorMsg.contains("face", ignoreCase = true)) {
+                    "AI_ERROR: No face detected or low quality"
+                } else {
+                    errorMsg
+                }
+                throw Exception(message)
             }
-            throw Exception(message)
+        } else {
+            throw Exception("Lỗi kết nối server: ${response.code()}")
         }
     }
 
@@ -63,8 +74,7 @@ class FaceRemoteDataSourceImpl @Inject constructor(
         studentId: String,
         page: Int,
         size: Int
-    ): com.ktx.dormitory.core.common.BaseResponse<com.ktx.dormitory.core.common.PageResponse<VerificationAttemptDto>> {
+    ): Response<BaseResponse<PageResponse<VerificationAttemptDto>>> {
         return faceApi.getMyVerifications(page, size)
     }
 }
-

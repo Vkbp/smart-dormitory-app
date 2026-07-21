@@ -73,6 +73,7 @@ interface AdminApiService {
     // --- Stay Extension ---
     @GET("v1/admin/extensions")
     suspend fun getStayExtensions(
+        @Query("status") status: String?,
         @Query("page") page: Int,
         @Query("size") size: Int
     ): Response<BaseResponse<PageResponse<StayExtensionResponseDto>>>
@@ -111,4 +112,8 @@ interface AdminApiService {
     // --- Dashboard ---
     @GET("v1/dashboard/stats")
     suspend fun getDashboardStats(): Response<BaseResponse<DashboardStatsResponseDto>>
+
+    // --- Student Profile ---
+    @GET("v1/students/{id}/profile")
+    suspend fun getStudentProfile(@Path("id") studentId: UUID): Response<BaseResponse<com.ktx.dormitory.shared.profile.data.dto.response.StudentResponse>>
 }

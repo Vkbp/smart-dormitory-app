@@ -8,7 +8,6 @@ import com.google.gson.Gson
 import com.ktx.dormitory.data.common.local.*
 import com.ktx.dormitory.shared.profile.data.dto.request.UpdateProfileRequest
 import com.ktx.dormitory.shared.profile.domain.repository.*
-import com.ktx.dormitory.student.payment.domain.repository.*
 import com.ktx.dormitory.student.face.domain.repository.FaceRepository
 import java.io.File
 import dagger.assisted.Assisted
@@ -23,7 +22,6 @@ class SyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val pendingSyncDao: PendingSyncDao,
-    private val paymentRepository: PaymentRepository,
     private val profileRepository: ProfileRepository,
     private val faceRepository: FaceRepository,
 ) : CoroutineWorker(appContext, workerParams) {
@@ -48,15 +46,6 @@ class SyncWorker @AssistedInject constructor(
                     pendingSyncDao.updateAction(action.copy(syncStatus = SyncStatus.SYNCING))
                     
                     val success = when (action.actionType) {
-                        "VERIFY_PAYMENT" -> {
-                            val payload = gson.fromJson(action.payload, VerifyPaymentPayload::class.java)
-                            paymentRepository.verifyPayment(
-                                payload.billId,
-                                payload.amount,
-                                payload.method,
-                                payload.transactionCode,
-                            ).isSuccess
-                        }
                         "UPDATE_PROFILE" -> {
                             val payload = gson.fromJson(action.payload, UpdateProfileRequest::class.java)
                             profileRepository.updateProfile(payload).isSuccess

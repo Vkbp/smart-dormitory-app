@@ -1,14 +1,15 @@
 package com.ktx.dormitory.student.payment.data.remote
 
 import com.ktx.dormitory.core.common.BaseResponse
-import com.ktx.dormitory.student.payment.data.dto.response.InvoiceDto
-import com.ktx.dormitory.student.payment.data.dto.response.TransactionDto
+import com.ktx.dormitory.core.common.PageResponse
+import com.ktx.dormitory.student.payment.data.dto.response.BillDto
+import com.ktx.dormitory.student.payment.data.dto.response.PaymentResponseDto
 import com.ktx.dormitory.student.payment.data.dto.response.PaymentInstructionDto
 
 interface PaymentRemoteDataSource {
-    suspend fun getInvoices(): BaseResponse<List<InvoiceDto>>
-    suspend fun verifyPayment(billId: String, amount: Double, paymentMethod: String, transactionCode: String): BaseResponse<Unit>
-    suspend fun getPaymentHistory(): BaseResponse<List<TransactionDto>>
-    suspend fun getPaymentInstructions(): PaymentInstructionDto
+    suspend fun getBillByApplication(applicationId: String): BaseResponse<BillDto>
+    suspend fun getInvoices(): BaseResponse<List<BillDto>>
+    suspend fun createSmartQR(billId: String, amount: Double, paymentMethod: String, transactionCode: String?): BaseResponse<PaymentResponseDto>
+    suspend fun getPaymentHistoryPaged(page: Int, size: Int): BaseResponse<PageResponse<BillDto>>
+    suspend fun getPaymentInstructions(): BaseResponse<PaymentInstructionDto>
 }
-

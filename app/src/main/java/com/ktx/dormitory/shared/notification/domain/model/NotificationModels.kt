@@ -13,12 +13,3 @@ data class Notification(
     val isRead: Boolean,
     val createdAt: String
 ) : Parcelable
-
-@Parcelize
-data class IssueReport(
-    val id: Long,
-    val description: String,
-    val status: String,
-    val createdAt: String,
-    val imageUrl: String? = null
-) : Parcelable

@@ -20,7 +20,7 @@ interface AdminRepository {
     suspend fun getCheckoutRequests(status: String?, page: Int, size: Int): Result<PageResponse<CheckoutRequestResponseDto>>
     suspend fun reviewCheckoutRequest(requestId: UUID, status: String, rejectReason: String?): Result<CheckoutRequestResponseDto>
     
-    suspend fun getStayExtensions(page: Int, size: Int): Result<PageResponse<StayExtensionResponseDto>>
+    suspend fun getStayExtensions(status: String?, page: Int, size: Int): Result<PageResponse<StayExtensionResponseDto>>
     suspend fun reviewStayExtension(id: UUID, status: String, rejectReason: String?): Result<StayExtensionResponseDto>
     
     suspend fun searchStudentForCheckIn(cccd: String): Result<CheckInSearchResponseDto>
@@ -33,4 +33,6 @@ interface AdminRepository {
     suspend fun getGates(): Result<List<GateResponseDto>>
     
     suspend fun getDashboardStats(): Result<DashboardStats>
+
+    suspend fun getStudentProfile(studentId: UUID): Result<com.ktx.dormitory.shared.profile.domain.model.UserProfile>
 }

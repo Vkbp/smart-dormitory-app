@@ -15,6 +15,7 @@ sealed class FaceApprovalUiEvent : BaseContract.Event {
     data object LoadPendingProfiles : FaceApprovalUiEvent()
     data class ApproveProfile(val profileId: UUID) : FaceApprovalUiEvent()
     data class RejectProfile(val profileId: UUID, val reason: String) : FaceApprovalUiEvent()
+    data object ClearMessages : FaceApprovalUiEvent()
 }
 
 sealed class FaceApprovalUiEffect : BaseContract.Effect {

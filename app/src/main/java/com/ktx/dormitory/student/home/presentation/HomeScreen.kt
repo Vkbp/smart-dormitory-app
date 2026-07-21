@@ -21,11 +21,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.ui.components.BottomNavBar
 import com.ktx.dormitory.shared.notification.presentation.components.IssueReportBottomSheet
+import com.ktx.dormitory.shared.notification.presentation.NotificationUiEvent
 import com.ktx.dormitory.shared.notification.presentation.NotificationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,6 +45,11 @@ fun HomeScreen(
     
     var showIssueReport by remember { mutableStateOf(value = false) }
 
+    LifecycleResumeEffect(Unit) {
+        notificationViewModel.refresh()
+        onPauseOrDispose { }
+    }
+
     if (showIssueReport) {
         IssueReportBottomSheet(onDismiss = { showIssueReport = false })
     }
@@ -52,6 +59,12 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text("Smart Dormitory", fontWeight = FontWeight.Black) },
                 actions = {
+                    IconButton(onClick = { 
+                        viewModel.onEvent(HomeContract.Event.RefreshData)
+                        notificationViewModel.refresh()
+                    }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Tải lại")
+                    }
                     IconButton(onClick = { navController.navigate(Screen.Notifications.route) }) {
                         BadgedBox(
                             badge = {

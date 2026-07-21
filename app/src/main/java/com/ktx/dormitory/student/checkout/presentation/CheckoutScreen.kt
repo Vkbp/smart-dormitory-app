@@ -64,23 +64,27 @@ fun CheckoutScreen(
                 Column {
                     if (uiState.hasUnpaidBills) {
                         Surface(
-                            color = MaterialTheme.colorScheme.errorContainer,
+                            color = Color(0xFFFFF3E0), // Light orange pastel
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
                                 modifier = Modifier.padding(16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.onErrorContainer)
+                                Icon(Icons.Default.Warning, null, tint = Color(0xFFE65100))
                                 Spacer(Modifier.width(12.dp))
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        "Bạn đang có hóa đơn chưa thanh toán. Vui lòng thanh toán toàn bộ nợ trước khi xin trả phòng.",
+                                        "Bạn đang có hóa đơn chưa thanh toán. Vui lòng thanh toán toàn bộ nợ trước khi nộp đơn trả phòng.",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                        color = Color(0xFFE65100),
+                                        fontWeight = FontWeight.Medium
                                     )
-                                    TextButton(onClick = { navController.navigate(com.ktx.dormitory.navigation.Screen.Payment.route) }) {
-                                        Text("THANH TOÁN NGAY", fontWeight = FontWeight.Bold)
+                                    TextButton(
+                                        onClick = { navController.navigate(com.ktx.dormitory.navigation.Screen.Payment.route) },
+                                        contentPadding = PaddingValues(0.dp)
+                                    ) {
+                                        Text("THANH TOÁN NGAY", fontWeight = FontWeight.Bold, color = Color(0xFFE65100))
                                     }
                                 }
                             }
@@ -124,19 +128,23 @@ fun CheckoutScreen(
             if (uiState.debtErrorMessage != null) {
                 AlertDialog(
                     onDismissRequest = { viewModel.onEvent(CheckoutUiEvent.ClearStatus) },
-                    title = { Text("Cần thanh toán nợ") },
-                    text = { Text(uiState.debtErrorMessage!!) },
+                    icon = { Icon(Icons.Default.Error, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+                    title = { Text("Cảnh báo nợ phí", color = MaterialTheme.colorScheme.error) },
+                    text = { Text(uiState.debtErrorMessage!!, style = MaterialTheme.typography.bodyMedium) },
                     confirmButton = {
-                        Button(onClick = {
-                            viewModel.onEvent(CheckoutUiEvent.ClearStatus)
-                            navController.navigate(com.ktx.dormitory.navigation.Screen.Payment.route)
-                        }) {
-                            Text("Thanh Toán Ngay")
+                        Button(
+                            onClick = {
+                                viewModel.onEvent(CheckoutUiEvent.ClearStatus)
+                                navController.navigate(com.ktx.dormitory.navigation.Screen.Payment.route)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        ) {
+                            Text("Đến trang Hóa đơn")
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { viewModel.onEvent(CheckoutUiEvent.ClearStatus) }) {
-                            Text("Để sau")
+                            Text("Đóng")
                         }
                     }
                 )
@@ -251,10 +259,37 @@ fun CheckoutForm(
             value = bankName,
             onValueChange = { bankName = it },
             label = { Text("Tên ngân hàng") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("Ví dụ: Vietcombank, MB Bank...") }
         )
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(8.dp))
+
+        Surface(
+            color = Color(0xFFE3F2FD), // Light blue pastel
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.Info,
+                    contentDescription = null,
+                    tint = Color(0xFF1976D2),
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "Vui lòng cung cấp chính xác Số Tài Khoản Ngân hàng. Ban quản lý KTX sẽ chốt công nợ và chuyển hồ sơ sang Phòng Tài vụ của Trường để giải ngân tiền thừa (nếu có).",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF1976D2)
+                )
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
 
         Button(
             onClick = { 
@@ -316,30 +351,76 @@ fun CheckoutHistoryItem(item: CheckoutResponse) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Đơn trả phòng", fontWeight = FontWeight.Bold)
+                Text("Đơn trả phòng", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                Surface(
+                    color = statusColor.copy(alpha = 0.1f),
+                    shape = MaterialTheme.shapes.extraSmall
+                ) {
+                    Text(
+                        text = when(item.status.uppercase()) {
+                            "PENDING" -> "Chờ xử lý"
+                            "APPROVED" -> "Hoàn tất Checkout"
+                            "REJECTED" -> "Bị từ chối"
+                            else -> item.status
+                        },
+                        color = statusColor,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.MeetingRoom, null, modifier = Modifier.size(16.dp), tint = Color.Gray)
+                Spacer(Modifier.width(8.dp))
+                Text("Phòng: ${item.roomCode ?: "N/A"} - Giường: ${item.bedCode ?: "N/A"}", style = MaterialTheme.typography.bodyMedium)
+            }
+            
+            Spacer(Modifier.height(4.dp))
+            
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Event, null, modifier = Modifier.size(16.dp), tint = Color.Gray)
+                Spacer(Modifier.width(8.dp))
+                Text("Ngày dự định: ${DateTimeUtils.formatIsoDateTime(item.intendedCheckoutDate)}", style = MaterialTheme.typography.bodyMedium)
+            }
+            
+            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+            Spacer(Modifier.height(12.dp))
+
+            val statusNote = when (item.status.uppercase()) {
+                "PENDING" -> "Đang chờ BQL KTX kiểm tra tài sản và chốt công nợ."
+                "APPROVED" -> "Đã thu hồi giường. Hồ sơ đang được Kế toán Trường xử lý giải ngân (nếu có)."
+                "REJECTED" -> "Yêu cầu không được chấp thuận."
+                else -> ""
+            }
+
+            if (statusNote.isNotEmpty()) {
                 Text(
-                    text = when(item.status.uppercase()) {
-                        "PENDING" -> "Đang chờ duyệt"
-                        "APPROVED" -> "Đã chấp thuận"
-                        "REJECTED" -> "Đã từ chối"
-                        else -> item.status
-                    },
-                    color = statusColor,
-                    fontWeight = FontWeight.Medium,
-                    style = MaterialTheme.typography.labelMedium
+                    text = statusNote,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Normal
                 )
             }
-            Spacer(Modifier.height(8.dp))
-            Text("Phòng: ${item.roomCode ?: "N/A"} - Giường: ${item.bedCode ?: "N/A"}")
-            Text("Ngày dự định: ${DateTimeUtils.formatIsoDateTime(item.intendedCheckoutDate)}")
             
             if (item.status.uppercase() == "REJECTED" && !item.rejectReason.isNullOrEmpty()) {
-                Spacer(Modifier.height(8.dp))
-                Text("Lý do từ chối: ${item.rejectReason}", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Lý do từ chối: ${item.rejectReason}",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium
+                )
             }
         }
     }

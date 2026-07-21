@@ -31,7 +31,7 @@ class CheckoutApprovalViewModel @Inject constructor(
             if (refresh) updateState { it.copy(isLoading = true, requests = emptyList(), currentPage = 0, isLastPage = false) }
             
             val page = if (refresh) 0 else currentState.currentPage + 1
-            getRequestsUseCase(null, page, 15).onSuccess { response ->
+            getRequestsUseCase("PENDING", page, 15).onSuccess { response ->
                 updateState { state ->
                     val newList = if (refresh) (response.content ?: emptyList()) else state.requests + (response.content ?: emptyList())
                     state.copy(

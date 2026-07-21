@@ -3,12 +3,9 @@ package com.ktx.dormitory.admin.smartaccess.presentation
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
 import com.ktx.dormitory.admin.common.domain.usecase.EmergencyOverrideUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.GetBuildingsUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.GetGatesUseCase
+import com.ktx.dormitory.admin.common.domain.usecase.GetSmartAccessResourcesUseCase
 import com.ktx.dormitory.admin.common.domain.usecase.RemoteUnlockUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,8 +13,7 @@ import javax.inject.Inject
 class SmartAccessViewModel @Inject constructor(
     private val remoteUnlockUseCase: RemoteUnlockUseCase,
     private val emergencyOverrideUseCase: EmergencyOverrideUseCase,
-    private val getBuildingsUseCase: GetBuildingsUseCase,
-    private val getGatesUseCase: GetGatesUseCase
+    private val getSmartAccessResourcesUseCase: GetSmartAccessResourcesUseCase
 ) : BaseViewModel<SmartAccessUiState, SmartAccessUiEvent, SmartAccessUiEffect>(SmartAccessUiState()) {
 
     init {
@@ -36,30 +32,21 @@ class SmartAccessViewModel @Inject constructor(
     private fun loadResources() {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true) }
-            try {
-                coroutineScope {
-                    val buildingsDef = async { getBuildingsUseCase() }
-                    val gatesDef = async { getGatesUseCase() }
-
-                    val buildingsRes = buildingsDef.await()
-                    val gatesRes = gatesDef.await()
-
-                    if (buildingsRes.isSuccess && gatesRes.isSuccess) {
-                        updateState { it.copy(
-                            buildings = buildingsRes.getOrDefault(emptyList()),
-                            gates = gatesRes.getOrDefault(emptyList()),
-                            isLoading = false
-                        ) }
-                    } else {
-                        updateState { it.copy(
-                            errorMessage = "Không thể tải danh sách tài nguyên",
-                            isLoading = false
-                        ) }
-                    }
+            getSmartAccessResourcesUseCase().fold(
+                onSuccess = { resources ->
+                    updateState { it.copy(
+                        buildings = resources.buildings,
+                        gates = resources.gates,
+                        isLoading = false
+                    ) }
+                },
+                onFailure = { error ->
+                    updateState { it.copy(
+                        errorMessage = error.message ?: "Không thể tải danh sách tài nguyên",
+                        isLoading = false
+                    ) }
                 }
-            } catch (e: Exception) {
-                updateState { it.copy(errorMessage = e.message, isLoading = false) }
-            }
+            )
         }
     }
 

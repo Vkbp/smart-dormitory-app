@@ -12,6 +12,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ktx.dormitory.R
+import com.ktx.dormitory.core.security.IntegrityChecker
+import com.ktx.dormitory.core.security.SecurityUtils
 import com.ktx.dormitory.navigation.Screen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -24,6 +26,11 @@ fun SplashScreen(
     var showBiometricPrompt by remember { mutableStateOf(false) }
     var hasNavigated by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    // STEP 3: Security Hardening - Integrity Check (SEC-07)
+    LaunchedEffect(Unit) {
+        IntegrityChecker.isDeviceCompromised(context)
+    }
 
     LaunchedEffect(Unit) {
         loginViewModel.effect.collectLatest { effect ->
@@ -77,6 +84,7 @@ fun SplashScreen(
         com.ktx.dormitory.core.security.ShowBiometricPrompt(
             title = "Xác thực truy cập",
             subtitle = "Sử dụng vân tay để tiếp tục vào ứng dụng",
+            cryptoObject = try { androidx.biometric.BiometricPrompt.CryptoObject(SecurityUtils.getBiometricCipher()) } catch (e: Exception) { null },
             onSuccess = { result ->
                 showBiometricPrompt = false
                 loginViewModel.onEvent(LoginUiEvent.BiometricClicked)

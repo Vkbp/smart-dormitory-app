@@ -23,8 +23,9 @@ object Constants {
         BASE_URL.replace("https://", "").replace("http://", "").split(":")[0].split("/")[0]
     }
     /**
-     * SSL Pinning configuration.
-     * IMPORTANT: Replace these placeholders with actual SHA-256 hashes of your server certificate.
+     * SSL Pinning configuration (SEC-02, SEC-05).
+     * IMPORTANT: These are placeholders. In production, use:
+     * 'openssl x509 -in cert.crt -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64'
      */
     val SERVER_PINS = arrayOf(
         "sha256/7n7Fk0z1/placeholder/actual/hash/required/1=", 

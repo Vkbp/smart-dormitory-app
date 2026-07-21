@@ -1,5 +1,6 @@
 package com.ktx.dormitory.navigation.graphs
 
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -9,6 +10,7 @@ import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.student.access.presentation.AccessHistoryScreen
 import com.ktx.dormitory.student.access.presentation.AccessViewModel
 import com.ktx.dormitory.student.access.presentation.CurfewRequestScreen
+import com.ktx.dormitory.student.access.presentation.CreateCurfewRequestScreen
 import com.ktx.dormitory.student.face.presentation.FaceRegistrationScreen
 import com.ktx.dormitory.student.face.presentation.FaceStatusScreen
 import com.ktx.dormitory.student.face.presentation.FaceVerificationHistoryScreen
@@ -28,8 +30,6 @@ import com.ktx.dormitory.student.checkout.presentation.CheckoutScreen
 import com.ktx.dormitory.student.checkout.presentation.CheckoutViewModel
 import com.ktx.dormitory.shared.notification.presentation.NotificationScreen
 import com.ktx.dormitory.shared.notification.presentation.NotificationViewModel
-import com.ktx.dormitory.shared.notification.presentation.components.IssueHistoryScreen
-import com.ktx.dormitory.shared.notification.presentation.components.IssueHistoryViewModel
 import com.ktx.dormitory.shared.auth.presentation.LoginViewModel
 
 fun NavGraphBuilder.studentNavGraph(
@@ -40,8 +40,12 @@ fun NavGraphBuilder.studentNavGraph(
         startDestination = Screen.StudentHome.route,
         route = "student_graph"
     ) {
-        composable(Screen.StudentHome.route) {
-            HomeScreen(navController)
+        composable(Screen.StudentHome.route) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry("student_graph")
+            }
+            val notificationViewModel: NotificationViewModel = hiltViewModel(parentEntry)
+            HomeScreen(navController, notificationViewModel = notificationViewModel)
         }
 
         composable(Screen.Profile.route) {
@@ -70,6 +74,11 @@ fun NavGraphBuilder.studentNavGraph(
             val accessViewModel: AccessViewModel = hiltViewModel()
             CurfewRequestScreen(navController, accessViewModel)
         }
+
+        composable(Screen.CreateCurfewRequest.route) {
+            val accessViewModel: AccessViewModel = hiltViewModel()
+            CreateCurfewRequestScreen(navController, accessViewModel)
+        }
         
         composable(Screen.FaceRegistration.route) {
             FaceRegistrationScreen(navController, loginViewModel)
@@ -85,8 +94,11 @@ fun NavGraphBuilder.studentNavGraph(
             CheckoutScreen(navController, checkoutViewModel)
         }
 
-        composable(Screen.Notifications.route) {
-            val notificationViewModel: NotificationViewModel = hiltViewModel()
+        composable(Screen.Notifications.route) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry("student_graph")
+            }
+            val notificationViewModel: NotificationViewModel = hiltViewModel(parentEntry)
             NotificationScreen(navController, notificationViewModel)
         }
 
@@ -105,11 +117,6 @@ fun NavGraphBuilder.studentNavGraph(
         composable(Screen.RoomTransfer.route) {
             val roomTransferViewModel: RoomTransferViewModel = hiltViewModel()
             RoomTransferScreen(navController, roomTransferViewModel)
-        }
-
-        composable(Screen.IssueHistory.route) {
-            val issueHistoryViewModel: IssueHistoryViewModel = hiltViewModel()
-            IssueHistoryScreen(navController, issueHistoryViewModel)
         }
     }
 }

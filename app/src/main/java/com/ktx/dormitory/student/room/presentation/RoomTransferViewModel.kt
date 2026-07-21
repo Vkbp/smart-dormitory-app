@@ -2,7 +2,7 @@ package com.ktx.dormitory.student.room.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
-import com.ktx.dormitory.student.room.domain.usecase.GetAvailableRoomsUseCase
+import com.ktx.dormitory.student.room.domain.usecase.GetGroupedAvailableRoomsUseCase
 import com.ktx.dormitory.student.room.domain.usecase.GetTransferHistoryUseCase
 import com.ktx.dormitory.student.room.domain.usecase.SubmitTransferRequestUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +13,7 @@ import javax.inject.Inject
 class RoomTransferViewModel @Inject constructor(
     private val submitTransferRequestUseCase: SubmitTransferRequestUseCase,
     private val getTransferHistoryUseCase: GetTransferHistoryUseCase,
-    private val getAvailableRoomsUseCase: GetAvailableRoomsUseCase
+    private val getGroupedAvailableRoomsUseCase: GetGroupedAvailableRoomsUseCase
 ) : BaseViewModel<RoomTransferUiState, RoomTransferUiEvent, RoomTransferUiEffect>(
     RoomTransferUiState()
 ) {
@@ -46,10 +46,12 @@ class RoomTransferViewModel @Inject constructor(
 
     private fun loadAvailableRooms() {
         viewModelScope.launch {
-            getAvailableRoomsUseCase().fold(
-                onSuccess = { rooms ->
-                    val grouped = rooms.groupBy { it.buildingName ?: "Khác" }
-                    updateState { it.copy(availableRooms = rooms, groupedAvailableRooms = grouped) }
+            getGroupedAvailableRoomsUseCase().fold(
+                onSuccess = { result ->
+                    updateState { it.copy(
+                        availableRooms = result.allRooms,
+                        groupedAvailableRooms = result.groupedByBuilding
+                    ) }
                 },
                 onFailure = { /* Silent fail for available rooms */ }
             )
@@ -73,10 +75,17 @@ class RoomTransferViewModel @Inject constructor(
     private fun submitRequest() {
         viewModelScope.launch {
             val currentState = uiState.value
+            
+            // Client-side validation hardening (STEP 2)
             if (currentState.reason.isBlank()) {
-                updateState { it.copy(error = "Lý do không được để trống") }
+                updateState { it.copy(reasonError = "Lý do không được để trống") }
                 return@launch
             }
+            if (currentState.reason.length < 10) {
+                updateState { it.copy(reasonError = "Lý do phải có ít nhất 10 ký tự để Admin xem xét") }
+                return@launch
+            }
+            updateState { it.copy(reasonError = null) }
 
             updateState { it.copy(isSubmitting = true) }
             submitTransferRequestUseCase(

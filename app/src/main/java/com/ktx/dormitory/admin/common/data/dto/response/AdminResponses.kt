@@ -1,26 +1,36 @@
 package com.ktx.dormitory.admin.common.data.dto.response
 
+import com.google.gson.annotations.SerializedName
 import java.util.UUID
 
 data class CheckoutRequestResponseDto(
-    val id: UUID,
-    val studentId: UUID,
-    val studentName: String?,
+    @SerializedName("requestId", alternate = ["id", "request_id"]) val id: UUID?,
+    val studentId: UUID?,
+    @SerializedName("studentCode", alternate = ["student_code", "studentNumber"]) val studentCode: String?,
+    @SerializedName("fullName", alternate = ["full_name", "studentName"]) val fullName: String?,
     val roomCode: String?,
+    val bedCode: String?,
     val intendedCheckoutDate: String?,
+    val reason: String?,
+    val bankName: String?,
+    val bankAccountNumber: String?,
     val status: String,
     val rejectReason: String?,
     val createdAt: String?
 )
 
 data class StayExtensionResponseDto(
-    val id: UUID,
-    val studentId: UUID,
-    val studentName: String?,
-    val roomCode: String?,
+    @SerializedName("extensionId", alternate = ["id", "extension_id"]) val id: UUID?,
+    val studentId: UUID?,
+    @SerializedName("studentCode", alternate = ["student_code", "studentNumber"]) val studentCode: String?,
+    @SerializedName("fullName", alternate = ["full_name", "studentName"]) val fullName: String?,
+    @SerializedName("currentRoomCode", alternate = ["roomCode", "current_room_code"]) val roomCode: String?,
     val extensionPeriodId: UUID?,
     val status: String,
+    val reason: String?,
     val rejectReason: String?,
+    val contractPdfUrl: String?,
+    val commitmentPdfUrl: String?,
     val createdAt: String?
 )
 
@@ -29,7 +39,7 @@ data class CheckInSearchResponseDto(
     val studentId: UUID?,
     val studentName: String?,
     val studentCode: String?,
-    val citizenId: String?,
+    @SerializedName("cccd") val citizenId: String?,
     val gender: String?,
     val portraitUrl: String?,
     val buildingName: String?,
@@ -46,7 +56,7 @@ data class BroadcastResponse(
 )
 
 data class BuildingResponseDto(
-    val id: UUID,
+    @SerializedName("buildingId", alternate = ["id"]) val id: UUID?,
     val name: String,
     val code: String,
     val status: String,
@@ -54,11 +64,11 @@ data class BuildingResponseDto(
 )
 
 data class GateResponseDto(
-    val id: UUID,
-    val gateName: String,
-    val gateCode: String,
+    @SerializedName("gateId", alternate = ["id"]) val id: UUID?,
+    @SerializedName("name", alternate = ["gateName"]) val gateName: String,
+    val gateCode: String?,
     val buildingId: UUID?,
-    val status: String
+    @SerializedName("active") val isActive: Boolean
 )
 
 data class DashboardStatsResponseDto(

@@ -77,4 +77,19 @@ object DateTimeUtils {
         }
         return null
     }
+
+    /**
+     * Tạo chuỗi LocalDateTime chuẩn ISO từ năm, tháng, ngày, giờ, phút.
+     */
+    fun createIsoDateTime(year: Int, month: Int, day: Int, hour: Int, minute: Int): String {
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, month - 1) // Calendar month is 0-indexed
+            set(Calendar.DAY_OF_MONTH, day)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+        }
+        return isoDateTimeFormat.format(calendar.time)
+    }
 }

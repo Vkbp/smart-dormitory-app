@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.student.checkout.domain.model.CheckoutRequest
 import com.ktx.dormitory.student.checkout.domain.usecase.GetCheckoutHistoryUseCase
 import com.ktx.dormitory.student.checkout.domain.usecase.SubmitCheckoutRequestUseCase
-import com.ktx.dormitory.student.payment.domain.model.PaymentStatus
+import com.ktx.dormitory.student.payment.domain.model.BillStatus
 import com.ktx.dormitory.student.payment.domain.usecase.GetInvoicesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
@@ -44,7 +44,7 @@ class CheckoutViewModel @Inject constructor(
             val hasPending = history.any { it.status.uppercase() == "PENDING" }
             
             val bills = billsResult.getOrDefault(emptyList())
-            val hasUnpaid = bills.any { it.status == PaymentStatus.UNPAID || it.status == PaymentStatus.OVERDUE }
+            val hasUnpaid = bills.any { it.status == BillStatus.UNPAID || it.status == BillStatus.OVERDUE }
 
             updateUiState { 
                 it.copy(

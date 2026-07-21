@@ -13,6 +13,7 @@ data class InvoiceEntity(
     val status: String?,
     val dueDate: String?,
     val description: String?,
+    val assignmentId: String? = null,
     val roomCode: String? = null,
     val bedCode: String? = null
 )

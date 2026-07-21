@@ -5,11 +5,11 @@ import com.ktx.dormitory.shared.notification.domain.repository.NotificationRepos
 import javax.inject.Inject
 
 class GetNotificationsUseCase @Inject constructor(private val repository: NotificationRepository) {
-    suspend operator fun invoke(userId: String): Result<List<Notification>> = repository.getNotifications(userId)
+    suspend operator fun invoke(): Result<List<Notification>> = repository.getNotifications()
 }
 
 class GetUnreadCountUseCase @Inject constructor(private val repository: NotificationRepository) {
-    suspend operator fun invoke(userId: String): Result<Long> = repository.getUnreadCount(userId)
+    suspend operator fun invoke(): Result<Long> = repository.getUnreadCount()
 }
 
 class MarkNotificationReadUseCase @Inject constructor(private val repository: NotificationRepository) {
@@ -17,11 +17,5 @@ class MarkNotificationReadUseCase @Inject constructor(private val repository: No
 }
 
 class MarkAllNotificationsReadUseCase @Inject constructor(private val repository: NotificationRepository) {
-    suspend operator fun invoke(userId: String): Result<Unit> = repository.markAllRead(userId)
-}
-
-class GetIssueHistoryUseCase @Inject constructor(
-    private val repository: NotificationRepository
-) {
-    suspend operator fun invoke() = repository.getIssueHistory()
+    suspend operator fun invoke(): Result<Unit> = repository.markAllRead()
 }

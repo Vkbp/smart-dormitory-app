@@ -23,21 +23,9 @@ interface NotificationApiService {
     suspend fun reportIssue(
         @Body request: IssueReportRequest
     ): Response<BaseResponse<Unit>>
-
-    @GET("v1/notifications/issues/history")
-    suspend fun getIssueHistory(): Response<BaseResponse<List<IssueReportResponse>>>
 }
-
-data class IssueReportResponse(
-    @SerializedName("id") val id: Long,
-    @SerializedName("description") val description: String,
-    @SerializedName("status") val status: String,
-    @SerializedName("createdAt") val createdAt: String,
-    @SerializedName("imageUrl") val imageUrl: String? = null
-)
 
 data class IssueReportRequest(
     @SerializedName("description") val description: String,
-    @SerializedName("roomId") val roomId: String,
-    @SerializedName("imageUrl") val imageUrl: String? = null
+    @SerializedName("isCommonArea") val isCommonArea: Boolean = false
 )

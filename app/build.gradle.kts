@@ -114,6 +114,9 @@ dependencies {
     // Biometric
     implementation("androidx.biometric:biometric:1.1.0")
 
+    // Root Detection (SEC-07)
+    implementation(libs.rootbeer)
+
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
