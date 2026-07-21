@@ -13,19 +13,29 @@ Chào bạn! Đây là hướng dẫn chi tiết để bạn có thể chạy đ
 
 ### Bước 1: Clone Project
 ```bash
-git clone https://github.com/your-repo/sdms-android.git
-cd sdms-android
+git clone https://github.com/Vkbp/smart-dormitory-app.git
 ```
 
 ### Bước 2: Cấu hình API Backend
 Ứng dụng cần kết nối với Server để hoạt động. Bạn cần tạo/chỉnh sửa file `local.properties` ở thư mục gốc của dự án:
 
 1. Mở file `local.properties`.
-2. Thêm dòng sau (thay đổi IP thành IP của Server đang chạy backend):
+2. Thêm dòng sau:
    ```properties
-   BASE_URL=http://10.24.4.74:8080/api/
+   BASE_URL=http://<IP_CỦA_BẠN>:8080/api/
    ```
-   *Lưu ý: Nếu bạn chạy backend trên localhost, hãy dùng IP máy tính của bạn (vídụ: `192.168.1.x`) thay vì `localhost` hoặc `127.0.0.1` để điện thoại có thể truy cập được.*
+   *   **Nếu dùng Emulator (Android Studio):** Sử dụng IP `http://10.0.2.2:8080/api/` để kết nối với localhost của máy tính.
+   *   **Nếu dùng Máy thật (Physical Device):** Bạn phải sử dụng IP LAN của máy tính (ví dụ: `http://192.168.1.5:8080/api/`). Đảm bảo điện thoại và máy tính cùng kết nối một mạng WiFi.
+   *   *Lưu ý: Không sử dụng `localhost` hoặc `127.0.0.1` vì Android sẽ hiểu đó là chính nó chứ không phải máy tính của bạn.*
+
+### Bước 3: Cấu hình Network Security (Nếu cần)
+Nếu bạn sử dụng một IP lạ không có trong danh sách mặc định, bạn có thể gặp lỗi `Cleartext communication not permitted`.
+1. Mở file `app/src/main/res/xml/network_security_config.xml`.
+2. Thêm IP của bạn vào danh sách `<domain>`:
+   ```xml
+   <domain includeSubdomains="true">IP_CỦA_BẠN</domain>
+   ```
+   *(Mặc định dự án đã hỗ trợ `10.0.2.2` và một số dải IP phổ biến).*
 
 ### Bước 3: Build & Sync Gradle
 - Mở project bằng Android Studio.
