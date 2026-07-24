@@ -1,1 +1,0 @@
-ALTER TABLE rooms ADD COLUMN room_pin_code VARCHAR(255);

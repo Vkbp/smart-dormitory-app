@@ -1,9 +1,0 @@
-fastapi
-uvicorn
-python-multipart
-facenet-pytorch
-torch
-torchvision
-numpy
-Pillow
-pydantic

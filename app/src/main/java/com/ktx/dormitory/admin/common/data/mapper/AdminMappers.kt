@@ -9,7 +9,7 @@ import com.ktx.dormitory.student.face.data.dto.response.FaceProfileDto
 import java.util.UUID
 
 fun CheckInSearchResponseDto.toDomain() = CheckInStudent(
-    assignmentId = assignmentId ?: UUID.randomUUID(), // Should not be null if search was successful
+    assignmentId = assignmentId ?: UUID.randomUUID(), 
     studentId = studentId,
     studentName = studentName ?: "N/A",
     studentCode = studentCode ?: "N/A",

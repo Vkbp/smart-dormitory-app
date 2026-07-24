@@ -33,7 +33,7 @@ android {
 
         // IP 192.168.1.11 dành cho điện thoại thật (theo Wi-Fi adapter).
         // IP 10.0.2.2 dành cho máy ảo Android Studio.
-        val baseUrl: String = baseUrlFromProps ?: "https://172.21.5.6:8080/api/"
+        val baseUrl: String = baseUrlFromProps ?: "https://raffle-canteen-ergonomic.ngrok-free.dev/api/"
         
         // Đảm bảo URL luôn có dấu / ở cuối để Retrofit không crash
         val formattedBaseUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"

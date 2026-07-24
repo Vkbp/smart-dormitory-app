@@ -36,7 +36,7 @@ data class StayExtensionResponseDto(
 
 data class CheckInSearchResponseDto(
     val assignmentId: UUID?,
-    val studentId: UUID?,
+    @SerializedName("studentId", alternate = ["student_id"]) val studentId: UUID?,
     val studentName: String?,
     val studentCode: String?,
     @SerializedName("cccd") val citizenId: String?,

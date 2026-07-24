@@ -1,5 +1,10 @@
 package com.ktx.dormitory.admin.checkin.presentation
 
+import android.annotation.SuppressLint
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,9 +60,29 @@ fun CheckInScreen(
     var showRfidDialog by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
     var selectedStudentId by remember { mutableStateOf<UUID?>(null) }
+    var lastScannedCccd by remember { mutableStateOf("") }
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by remember { mutableStateOf(false) }
+
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        hasCameraPermission = isGranted
+    }
+
+    // Tự động yêu cầu quyền khi vào màn hình nếu chưa có
+    LaunchedEffect(Unit) {
+        if (!hasCameraPermission) {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
 
     // Logic: Khi có studentInfo thì mở Bottom Sheet
     LaunchedEffect(uiState.studentInfo) {
@@ -103,28 +130,69 @@ fun CheckInScreen(
                         .fillMaxWidth()
                         .background(Color.Black)
                 ) {
-                    QrScannerView(
-                        onQrDetected = { qrData ->
-                            val cccd = QrParser.parseCccdQr(qrData)
-                            if (cccd != null && !uiState.isLoading && !showBottomSheet) {
-                                viewModel.onEvent(CheckInUiEvent.SearchStudent(cccd))
+                    if (hasCameraPermission) {
+                        QrScannerView(
+                            onQrDetected = { qrData ->
+                                val cccd = QrParser.parseCccdQr(qrData)
+                                // Tự động quét: Chỉ search nếu CCCD hợp lệ và khác với mã vừa quét xong
+                                if (cccd != null && cccd != lastScannedCccd && !uiState.isLoading && !showBottomSheet) {
+                                    lastScannedCccd = cccd
+                                    viewModel.onEvent(CheckInUiEvent.SearchStudent(cccd))
+                                    // Rung nhẹ để báo hiệu đã quét được (Haptic feedback)
+                                    val vibrator = context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as android.os.Vibrator
+                                    @SuppressLint("MissingPermission")
+                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                        vibrator.vibrate(android.os.VibrationEffect.createOneShot(100, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
+                                    } else {
+                                        @Suppress("DEPRECATION")
+                                        vibrator.vibrate(100)
+                                    }
+                                }
+                            }
+                        )
+                        
+                        // Scanning Overlay (Optional: Frame, Text hint)
+                        ScannerOverlay()
+                        
+                        Text(
+                            text = "Đưa mã QR CCCD vào khung hình",
+                            color = Color.White,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 16.dp)
+                                .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            fontSize = 14.sp
+                        )
+                    } else {
+                        // HIỂN THỊ KHI CHƯA CÓ QUYỀN CAMERA
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CameraAlt,
+                                contentDescription = null,
+                                tint = Color.White.copy(alpha = 0.5f),
+                                modifier = Modifier.size(64.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                "Ứng dụng cần quyền Camera để quét mã QR",
+                                color = Color.White,
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            Button(
+                                onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            ) {
+                                Text("CẤP QUYỀN CAMERA")
                             }
                         }
-                    )
-                    
-                    // Scanning Overlay (Optional: Frame, Text hint)
-                    ScannerOverlay()
-                    
-                    Text(
-                        text = "Đưa mã QR CCCD vào khung hình",
-                        color = Color.White,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 16.dp)
-                            .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
-                            .padding(horizontal = 12.dp, vertical = 6.dp),
-                        fontSize = 14.sp
-                    )
+                    }
                 }
 
                 // PHẦN 2: NHẬP TAY (CHIẾM 40% CHIỀU CAO)
@@ -209,7 +277,8 @@ fun CheckInScreen(
             ModalBottomSheet(
                 onDismissRequest = { 
                     showBottomSheet = false
-                    viewModel.onEvent(CheckInUiEvent.ClearStatus) // Clear student info to allow next search
+                    lastScannedCccd = "" // Reset để có thể quét lại cùng mã đó sau khi đóng sheet
+                    viewModel.onEvent(CheckInUiEvent.ClearStatus) 
                 },
                 sheetState = sheetState,
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -227,11 +296,17 @@ fun CheckInScreen(
         }
 
         // RFID DIALOG
-        if (showRfidDialog && selectedStudentId != null) {
+        if (showRfidDialog) {
             RfidAssignmentDialog(
                 onDismiss = { showRfidDialog = false },
                 onConfirm = { rfidCode: String ->
-                    viewModel.onEvent(CheckInUiEvent.AssignRfid(selectedStudentId!!, rfidCode))
+                    // Sử dụng ID từ studentInfo nếu selectedStudentId vì lý do nào đó bị null
+                    val idToAssign = selectedStudentId ?: uiState.studentInfo?.studentId
+                    if (idToAssign != null) {
+                        viewModel.onEvent(CheckInUiEvent.AssignRfid(idToAssign, rfidCode))
+                    } else {
+                        android.widget.Toast.makeText(context, "Không xác định được sinh viên để gán thẻ", android.widget.Toast.LENGTH_SHORT).show()
+                    }
                     showRfidDialog = false
                 }
             )
@@ -324,7 +399,7 @@ fun StudentCheckInBottomSheetContent(
                 onClick = onAssignRfid,
                 modifier = Modifier.weight(1f).height(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                enabled = student.studentId != null
+                enabled = true // Mở khóa nút này (User yêu cầu)
             ) {
                 Text("GÁN THẺ RFID", fontWeight = FontWeight.Bold)
             }

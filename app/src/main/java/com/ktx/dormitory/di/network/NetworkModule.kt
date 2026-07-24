@@ -40,21 +40,25 @@ object NetworkModule {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
-        val certificatePinner = CertificatePinner.Builder()
-            .add(Constants.SERVER_HOSTNAME, *Constants.SERVER_PINS)
-            .build()
-
-        return OkHttpClient.Builder()
+        val builder = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(idempotencyInterceptor)
             .addInterceptor(RetryInterceptor(maxRetry = 2))
             .addInterceptor(authInterceptor)
             .authenticator(tokenAuthenticator)
-            .certificatePinner(certificatePinner)
             .connectTimeout(Constants.NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(Constants.NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(Constants.NETWORK_TIMEOUT, TimeUnit.SECONDS)
-            .build()
+
+        // Chỉ áp dụng Certificate Pinning nếu không phải là URL Ngrok (phục vụ test)
+        if (!Constants.BASE_URL.contains("ngrok-free.dev")) {
+            val certificatePinner = CertificatePinner.Builder()
+                .add(Constants.SERVER_HOSTNAME, *Constants.SERVER_PINS)
+                .build()
+            builder.certificatePinner(certificatePinner)
+        }
+
+        return builder.build()
     }
 
     @Provides
