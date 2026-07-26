@@ -1,0 +1,50 @@
+<mxGraphModel dx="2287" dy="1138" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1800" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="Admin" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;" value="Admin" vertex="1">
+      <mxGeometry height="60" width="30" x="50" y="150" as="geometry" />
+    </mxCell>
+    <mxCell id="Staff" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;" value="Nhân viên" vertex="1">
+      <mxGeometry height="60" width="30" x="50" y="270" as="geometry" />
+    </mxCell>
+    <mxCell id="Student" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;" value="Sinh viên" vertex="1">
+      <mxGeometry height="60" width="30" x="50" y="420" as="geometry" />
+    </mxCell>
+    <mxCell id="UC_Main" parent="1" style="ellipse;whiteSpace=wrap;html=0;fontStyle=1;fillColor=#f5f5f5;strokeWidth=2;" value="Tra cứu &amp; Phân tích CSVC" vertex="1">
+      <mxGeometry height="100" width="220" x="800" y="240" as="geometry" />
+    </mxCell>
+    <mxCell id="UC1_01" parent="1" style="ellipse;whiteSpace=wrap;html=0;fillColor=#f5f5f5;strokeWidth=2;" value="Đăng nhập" vertex="1">
+      <mxGeometry height="60" width="140" x="1200" y="260" as="geometry" />
+    </mxCell>
+    <mxCell id="UC2_22" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Báo cáo phân tích phòng" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="100" as="geometry" />
+    </mxCell>
+    <mxCell id="UC2_18" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xem kết quả xếp phòng" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="170" as="geometry" />
+    </mxCell>
+    <mxCell id="UC2_19" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xem thông tin phòng ở hiện tại" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="240" as="geometry" />
+    </mxCell>
+    <mxCell id="UC2_20" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xem phòng còn trống" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="310" as="geometry" />
+    </mxCell>
+    <mxCell id="UC2_21" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xem đếm ngược hạn xác nhận" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="380" as="geometry" />
+    </mxCell>
+    <mxCell id="LA1" edge="1" parent="1" source="Admin" target="UC2_22"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="LA2" edge="1" parent="1" source="Admin" target="UC2_18"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="LS1" edge="1" parent="1" source="Staff" target="UC2_22"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="LSt1" edge="1" parent="1" source="Student" target="UC2_18"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="LSt2" edge="1" parent="1" source="Student" target="UC2_19"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="LSt3" edge="1" parent="1" source="Student" target="UC2_20"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="LSt4" edge="1" parent="1" source="Student" target="UC2_21"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="ex22" edge="1" parent="1" source="UC2_22" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main"><mxGeometry relative="1" as="geometry" /><mxCell id="lx22" connectable="0" parent="ex22" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1"><mxPoint as="offset" /></mxCell></mxCell>
+    <mxCell id="ex18" edge="1" parent="1" source="UC2_18" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main"><mxGeometry relative="1" as="geometry" /><mxCell id="lx18" connectable="0" parent="ex18" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1"><mxPoint as="offset" /></mxCell></mxCell>
+    <mxCell id="ex19" edge="1" parent="1" source="UC2_19" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main"><mxGeometry relative="1" as="geometry" /><mxCell id="lx19" connectable="0" parent="ex19" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1"><mxPoint as="offset" /></mxCell></mxCell>
+    <mxCell id="ex20" edge="1" parent="1" source="UC2_20" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main"><mxGeometry relative="1" as="geometry" /><mxCell id="lx20" connectable="0" parent="ex20" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1"><mxPoint as="offset" /></mxCell></mxCell>
+    <mxCell id="ex21" edge="1" parent="1" source="UC2_21" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main"><mxGeometry relative="1" as="geometry" /><mxCell id="lx21" connectable="0" parent="ex21" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1"><mxPoint as="offset" /></mxCell></mxCell>
+    <mxCell id="in_main" edge="1" parent="1" source="UC_Main" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC1_01"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="lin_main" connectable="0" parent="in_main" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Include&gt;&gt;" vertex="1"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+  </root>
+</mxGraphModel>

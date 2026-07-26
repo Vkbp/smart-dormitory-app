@@ -1,0 +1,23 @@
+# ĐẶC TẢ CHI TIẾT USE CASE UC 1.1: QUẢN TRỊ TÀI KHOẢN & PHÂN QUYỀN
+
+### **Bảng 3.x. Đặc tả chi tiết Use Case Quản trị Tài khoản & Phân quyền**
+
+| Tiêu chí | Nội dung |
+| :--- | :--- |
+| **Tên Use case** | **UC 1.1: Quản trị Tài khoản & Phân quyền** |
+| **Actor** | Quản trị viên (Admin), Sinh viên, Cán bộ quản lý (Staff). |
+| **Mô tả** | Mô tả quy trình quản lý vòng đời tài khoản bao gồm: xác thực (Authentication), cấp quyền (Authorization), kích hoạt tài khoản định danh, và quản trị trạng thái tài khoản (Khóa/Mở khóa). |
+| **Pre-conditions** | - Đối với các chức năng quản trị: Admin/Staff phải được xác thực và có quyền tương ứng.<br>- Đối với chức năng đăng nhập/kích hoạt: Tài khoản phải tồn tại trong CSDL. |
+| **Post-conditions** | - **Thành công:** Trạng thái tài khoản cập nhật; Token (JWT) được cấp phát hoặc thu hồi thành công; Tính toàn vẹn dữ liệu được đảm bảo.<br>- **Thất bại:** Hệ thống từ chối truy cập, ghi nhật ký lỗi (log) và giữ nguyên trạng thái dữ liệu cũ. |
+| **Luồng sự kiện chính** | 1. Actor truy cập giao diện tương ứng (Màn hình đăng nhập hoặc Trang quản trị).<br>2. Hệ thống kiểm tra trạng thái phiên làm việc thông qua bộ lọc `JwtAuthenticationFilter`.<br>3. Thực hiện các luồng mở rộng (Extend Use Cases) tùy theo yêu cầu của Actor. |
+| **Luồng sự kiện phụ** | - Hệ thống ngắt kết nối hoặc Token hết hạn: Yêu cầu thực hiện luồng làm mới Token (`refreshToken`) hoặc yêu cầu đăng nhập lại.<br>- Actor hủy thao tác: Hệ thống đóng tiến trình và giải phóng bộ nhớ tạm. |
+| **<Extend Use Case>** | **Đăng nhập (Login)**<br>1. Actor gửi thông tin định danh (Username/Email) và mật khẩu qua giao thức HTTPS.<br>2. `AuthService` truy vấn tài khoản từ CSDL.<br>3. Kiểm tra trạng thái tài khoản và đối chiếu mật khẩu (BCrypt).<br>4. Hệ thống cập nhật `lastLogin`, reset `failedLoginAttempts`.<br>5. `JwtService` khởi tạo bộ Token và trả về phía Client.<br><br>**Rẽ nhánh (Exception Flows):**<br>**3.1. Tài khoản không tồn tại hoặc sai mật khẩu:** Báo lỗi "Thông tin đăng nhập không hợp lệ". Tăng số lần `failedLoginAttempts`.<br>**3.2. Sai mật khẩu quá 5 lần:** Cập nhật `lock_time`, khóa tài khoản trong 15 phút.<br>**3.3. Tài khoản bị khóa:** Báo lỗi "Tài khoản của bạn đã bị khóa".<br>**3.4. Tài khoản chưa kích hoạt:** Báo lỗi "Vui lòng kích hoạt tài khoản trước khi đăng nhập". |
+| **<Extend Use Case>** | **Kích hoạt tài khoản (Activation)**<br>1. Sinh viên nhập Mã sinh viên và mật khẩu tạm thời (Số CCCD).<br>2. Hệ thống xác minh trạng thái `PENDING_ACTIVATION`.<br>3. Đối chiếu mật khẩu tạm thời bằng BCrypt.<br>4. Sinh viên thiết lập mật khẩu mới.<br>5. Cập nhật trạng thái `ACTIVE` và mã hóa mật khẩu mới.<br>6. Thu hồi Token cũ và cấp phát bộ Token mới.<br><br>**Rẽ nhánh (Exception Flows):**<br>**2.1. Tài khoản đã ở trạng thái ACTIVE:** Thông báo "Tài khoản đã được kích hoạt trước đó".<br>**3.1. Sai mật khẩu tạm thời:** Báo lỗi yêu cầu kiểm tra lại số định danh cá nhân/CCCD. |
+| **<Extend Use Case>** | **Khóa/Mở khóa tài khoản (Admin Only)**<br>1. Admin chọn tài khoản cần thay đổi trạng thái từ danh sách.<br>2. Hệ thống kiểm tra các ràng buộc nghiệp vụ bảo vệ.<br>3. Admin xác nhận thao tác `toggleLock`.<br>4. Hệ thống cập nhật trạng thái mới vào CSDL và xóa Refresh Token (nếu là khóa).<br><br>**Rẽ nhánh (Exception Flows):**<br>**2.1. Admin tự khóa chính mình:** Hệ thống chặn và báo lỗi "Bạn không thể tự khóa tài khoản của chính mình".<br>**2.2. Khóa Admin khác:** Hệ thống báo lỗi "Không có quyền thực hiện thao tác trên tài khoản Quản trị viên khác".<br>**2.3. Thao tác trên tài khoản PENDING:** Hệ thống yêu cầu tài khoản phải ở trạng thái Active hoặc Locked mới được chuyển đổi. |
+| **<Extend Use Case>** | **Quên và Đặt lại mật khẩu**<br>1. Actor yêu cầu khôi phục mật khẩu qua Email.<br>2. Hệ thống kiểm tra Email và gửi Secure Token (32 bytes).<br>3. Actor truy cập link và nhập mật khẩu mới.<br>4. Hệ thống đối chiếu mã băm SHA-256 của Token.<br>5. Cập nhật mật khẩu mới (BCrypt) và hủy Token khôi phục.<br><br>**Rẽ nhánh (Exception Flows):**<br>**2.1. Email không tồn tại:** Vì lý do bảo mật, hệ thống vẫn thông báo "Vui lòng kiểm tra Email" nhưng không gửi mã.<br>**4.1. Token hết hạn (quá 15 phút) hoặc đã sử dụng:** Báo lỗi "Liên kết không hợp lệ hoặc đã hết hạn". |
+
+---
+
+### **Ghi chú cho các Sơ đồ bổ trợ:**
+*   **Sơ đồ Tuần tự (Sequence Diagram):** Cần thể hiện rõ vai trò của `JwtAuthenticationFilter` như một lớp bảo vệ đầu tiên (Guard) trước khi yêu cầu đi vào `Controller`.
+*   **Bảo mật:** Nhấn mạnh việc sử dụng cơ chế **Stateless** (không lưu session trên server), mọi thông tin xác thực đều nằm trong JWT được mã hóa phía Client.

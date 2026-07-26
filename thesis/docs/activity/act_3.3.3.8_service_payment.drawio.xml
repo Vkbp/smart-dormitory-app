@@ -1,0 +1,156 @@
+<mxGraphModel dx="1480" dy="736" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- Actor -->
+    <mxCell id="act_3.3.3.8_actor" value="Ngân hàng (SePay)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="410" y="20" width="30" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Start Node -->
+    <mxCell id="act_3.3.3.8_start" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF0000;strokeColor=#FF0000;" vertex="1" parent="1">
+      <mxGeometry x="415" y="110" width="20" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- Standard Steps (Solid Arrows) -->
+    <mxCell id="act_3.3.3.8_s1" value="POST /webhook (Nội dung chuyển khoản, Số tiền)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="275" y="160" width="300" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s2" value="processWebhook(request)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="275" y="230" width="300" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s3" value="extractTransactionCode()" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="275" y="300" width="300" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s4" value="findByTransactionCode(txnCode)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="275" y="370" width="300" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s5" value="completeOnlinePayment(paymentId, amount)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="275" y="440" width="300" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s6" value="findById(paymentId)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="275" y="510" width="300" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s7" value="checkStatus(PENDING)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="275" y="580" width="300" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s8" value="save(status = SUCCESS, paidAt = now)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="275" y="650" width="300" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s9" value="updateBillAfterPayment(bill, amount)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="275" y="720" width="300" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s10" value="newPaid = oldPaid + amount" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="275" y="790" width="300" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Decision 1: Paid status -->
+    <mxCell id="act_3.3.3.8_d1" value="" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="405" y="860" width="40" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_branch1" value="status = PAID" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="200" y="930" width="200" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_branch2" value="status = PARTIALLY_PAID" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="450" y="930" width="200" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Decision 2: Trigger Event -->
+    <mxCell id="act_3.3.3.8_d2" value="" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="405" y="1000" width="40" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s11" value="publishEvent(PaymentSuccessEvent)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="300" y="1070" width="250" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Fork for Async -->
+    <mxCell id="act_3.3.3.8_fork" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="265" y="1150" width="320" height="8" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s12" value="handlePaymentSuccess(event)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="300" y="1190" width="250" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="act_3.3.3.8_s13" value="route(payload -&gt; IN_APP)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Times New Roman;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="300" y="1260" width="250" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Join -->
+    <mxCell id="act_3.3.3.8_join" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="265" y="1340" width="320" height="8" as="geometry" />
+    </mxCell>
+
+    <!-- End Node -->
+    <mxCell id="act_3.3.3.8_end" value="" style="ellipse;html=1;shape=endState;fillColor=#FF0000;strokeColor=#FF0000;" vertex="1" parent="1">
+      <mxGeometry x="415" y="1390" width="20" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- Edges -->
+    <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_start" target="act_3.3.3.8_s1"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s1" target="act_3.3.3.8_s2"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s2" target="act_3.3.3.8_s3"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s3" target="act_3.3.3.8_s4"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s4" target="act_3.3.3.8_s5"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s5" target="act_3.3.3.8_s6"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s6" target="act_3.3.3.8_s7"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s7" target="act_3.3.3.8_s8"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s8" target="act_3.3.3.8_s9"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s9" target="act_3.3.3.8_s10"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s10" target="act_3.3.3.8_d1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- Branch 1: >= total -->
+    <mxCell id="eb1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_d1" target="act_3.3.3.8_branch1">
+      <mxGeometry relative="1" as="geometry">
+        <mxCell id="eb1l" value="[newPaid &gt;= totalAmount]" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="eb1" />
+      </mxGeometry>
+    </mxCell>
+
+    <!-- Branch 2: < total -->
+    <mxCell id="eb2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_d1" target="act_3.3.3.8_branch2">
+      <mxGeometry relative="1" as="geometry">
+        <mxCell id="eb2l" value="[newPaid &amp;lt; totalAmount]" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="eb2" />
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="eb3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;entryX=0;entryY=0.5;" edge="1" parent="1" source="act_3.3.3.8_branch1" target="act_3.3.3.8_d2"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="eb4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;entryX=1;entryY=0.5;" edge="1" parent="1" source="act_3.3.3.8_branch2" target="act_3.3.3.8_d2"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- Event Condition -->
+    <mxCell id="ec1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_d2" target="act_3.3.3.8_s11">
+      <mxGeometry relative="1" as="geometry">
+        <mxCell id="ec1l" value="[status == PAID]" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="ec1" />
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="ec2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;entryX=1;entryY=0.5;" edge="1" parent="1" source="act_3.3.3.8_d2" target="act_3.3.3.8_join">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points"><mxPoint x="750" y="1020" /><mxPoint x="750" y="1344" /></Array>
+        <mxCell id="ec2l" value="[else]" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="ec2" />
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="e11_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s11" target="act_3.3.3.8_fork"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- Fork/Join for Async -->
+    <mxCell id="ef1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="act_3.3.3.8_fork" target="act_3.3.3.8_s12"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="ef2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_s12" target="act_3.3.3.8_s13"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="ef3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;entryX=0.5;entryY=0;" edge="1" parent="1" source="act_3.3.3.8_s13" target="act_3.3.3.8_join"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <mxCell id="efinal" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;endArrow=block;" edge="1" parent="1" source="act_3.3.3.8_join" target="act_3.3.3.8_end"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+  </root>
+</mxGraphModel>

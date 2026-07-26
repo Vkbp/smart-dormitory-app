@@ -1,0 +1,213 @@
+<mxGraphModel dx="-127" dy="-317" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-176" edge="1" parent="1" source="2Yy2OtOWSH0VMMx2h9nB-140" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=none;endFill=0;">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1838" y="2746.956686268682" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-140" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fontFamily=Arial;fontSize=13;fontStyle=1;fillColor=#FFFFFF;strokeColor=#000000;" value="Sinh viên" vertex="1">
+      <mxGeometry height="80" width="40" x="1818" y="1365" as="geometry" />
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-141" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=13;fontStyle=1;fillColor=#FFFFFF;strokeColor=#000000;" value=":B_Auth" vertex="1">
+      <mxGeometry height="60" width="100" x="1928" y="1375" as="geometry" />
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-142" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=13;fontStyle=1;fillColor=#FFFFFF;strokeColor=#000000;" value=":C_Auth" vertex="1">
+      <mxGeometry height="60" width="100" x="2128" y="1375" as="geometry" />
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-143" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=13;fontStyle=1;fillColor=#FFFFFF;strokeColor=#000000;" value=":C_Jwt" vertex="1">
+      <mxGeometry height="60" width="100" x="2328" y="1375" as="geometry" />
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-144" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=13;fontStyle=1;fillColor=#FFFFFF;strokeColor=#000000;" value=":E_UserAccount" vertex="1">
+      <mxGeometry height="60" width="120" x="2528" y="1375" as="geometry" />
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-146" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#000000;strokeWidth=1;" value="">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1978" y="1445" as="sourcePoint" />
+        <mxPoint x="1978" y="2735" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-147" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#000000;strokeWidth=1;" value="">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2178" y="1445" as="sourcePoint" />
+        <mxPoint x="2178" y="2735" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-148" edge="1" parent="1" source="2Yy2OtOWSH0VMMx2h9nB-143" style="endArrow=none;dashed=1;html=1;strokeColor=#000000;strokeWidth=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" value="">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2378" y="1585" as="sourcePoint" />
+        <mxPoint x="2372" y="2890.000030517578" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-149" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#000000;strokeWidth=1;" value="">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2588" y="1445" as="sourcePoint" />
+        <mxPoint x="2588" y="2758" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-150" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="Nhập (Mã SV, Mật khẩu tạm, Mật khẩu mới)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1836" y="1485" as="sourcePoint" />
+        <mxPoint x="1978" y="1485" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-151" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="activate(ActivateAccountRequest)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1978" y="1515" as="sourcePoint" />
+        <mxPoint x="2178" y="1515" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-152" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="findByUsernameForUpdate(studentCode)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2178" y="1555" as="sourcePoint" />
+        <mxPoint x="2588" y="1555" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-153" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="UserAccount (account)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2588" y="1585" as="sourcePoint" />
+        <mxPoint x="2178" y="1585" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-154" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="checkAccountStatus()">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="2268" y="1625" />
+          <mxPoint x="2268" y="1665" />
+        </Array>
+        <mxPoint x="2178" y="1625" as="sourcePoint" />
+        <mxPoint x="2178" y="1664" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-155" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=11;fillColor=none;strokeColor=#000000;" value="" vertex="1">
+      <mxGeometry height="200" width="862" x="1806" y="1695" as="geometry" />
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-156" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=11;fontStyle=1;" value="alt [status == ACTIVE || status == LOCKED]" vertex="1">
+      <mxGeometry height="25" width="300" x="1810" y="1695" as="geometry" />
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-157" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="return Error(ACCOUNT_ALREADY_ACTIVE / LOCKED)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2178" y="1745" as="sourcePoint" />
+        <mxPoint x="1978" y="1745" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-158" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="Hiển thị lỗi trạng thái">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1978" y="1785" as="sourcePoint" />
+        <mxPoint x="1838" y="1785" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-159" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=11;fillColor=none;strokeColor=#000000;" value="" vertex="1">
+      <mxGeometry height="145" width="861" x="1807" y="1895" as="geometry" />
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-160" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=11;fontStyle=1;" value="alt [matches == false]" vertex="1">
+      <mxGeometry height="25" width="200" x="1810" y="1895" as="geometry" />
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-161" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="passwordEncoder.matches(tempPassword, account.password)">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="2268" y="1845" />
+          <mxPoint x="2268" y="1885" />
+          <mxPoint x="2178" y="1885" />
+        </Array>
+        <mxPoint x="2178" y="1845" as="sourcePoint" />
+        <mxPoint x="2177" y="1885" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-162" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="return Error(INVALID_CREDENTIALS)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2178" y="1945" as="sourcePoint" />
+        <mxPoint x="1978" y="1945" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-163" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="Hiển thị lỗi sai mật khẩu tạm">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1978" y="1985" as="sourcePoint" />
+        <mxPoint x="1838" y="1985" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-164" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="passwordEncoder.encode(newPassword)">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="2268" y="2085" />
+          <mxPoint x="2268" y="2125" />
+          <mxPoint x="2178" y="2125" />
+        </Array>
+        <mxPoint x="2178" y="2085" as="sourcePoint" />
+        <mxPoint x="2177" y="2125" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-165" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="save(password, status = ACTIVE)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2178" y="2165" as="sourcePoint" />
+        <mxPoint x="2588" y="2165" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-166" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="updatedAccount">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2588" y="2195" as="sourcePoint" />
+        <mxPoint x="2178" y="2195" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-167" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;endFill=1;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="revokeTokens(account)">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="2268" y="2235" />
+          <mxPoint x="2268" y="2275" />
+          <mxPoint x="2178" y="2275" />
+        </Array>
+        <mxPoint x="2178" y="2235" as="sourcePoint" />
+        <mxPoint x="2175" y="2275" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-168" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="generateAccessToken(account)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2178" y="2315" as="sourcePoint" />
+        <mxPoint x="2378" y="2315" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-169" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="accessToken">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2378" y="2345" as="sourcePoint" />
+        <mxPoint x="2178" y="2345" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-170" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="generateRefreshToken(account)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2178" y="2385" as="sourcePoint" />
+        <mxPoint x="2378" y="2385" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-171" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="refreshToken">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2378" y="2415" as="sourcePoint" />
+        <mxPoint x="2178" y="2415" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-172" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="save(refreshToken, lastLogin)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2178" y="2455" as="sourcePoint" />
+        <mxPoint x="2588" y="2455" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-173" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="savedAccount">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2588" y="2485" as="sourcePoint" />
+        <mxPoint x="2178" y="2485" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-174" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="return AuthResponse(accessToken, refreshToken)">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="2178" y="2535" as="sourcePoint" />
+        <mxPoint x="1978" y="2535" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="2Yy2OtOWSH0VMMx2h9nB-175" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontFamily=Arial;fontSize=11;strokeColor=#000000;" value="Hiển thị &quot;Kích hoạt thành công&quot; và tự động đăng nhập">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1978" y="2575" as="sourcePoint" />
+        <mxPoint x="1848" y="2575" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+  </root>
+</mxGraphModel>

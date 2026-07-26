@@ -1,0 +1,27 @@
+<mxGraphModel dx="2287" dy="1138" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1800" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="Admin" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;" value="Admin" vertex="1">
+      <mxGeometry height="60" width="30" x="50" y="150" as="geometry" />
+    </mxCell>
+    <mxCell id="UC_Main" parent="1" style="ellipse;whiteSpace=wrap;html=0;fontStyle=1;fillColor=#f5f5f5;strokeWidth=2;" value="Quản trị Khóa thông minh" vertex="1">
+      <mxGeometry height="100" width="220" x="800" y="135" as="geometry" />
+    </mxCell>
+    <mxCell id="UC1_01" parent="1" style="ellipse;whiteSpace=wrap;html=0;fillColor=#f5f5f5;strokeWidth=2;" value="Đăng nhập" vertex="1">
+      <mxGeometry height="60" width="140" x="1200" y="155" as="geometry" />
+    </mxCell>
+    <mxCell id="UC2_16" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Quản lý Mã PIN cửa phòng" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="100" as="geometry" />
+    </mxCell>
+    <mxCell id="UC2_17" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Sinh PIN hàng loạt" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="170" as="geometry" />
+    </mxCell>
+    <mxCell id="LA1" edge="1" parent="1" source="Admin" target="UC2_16"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="LA2" edge="1" parent="1" source="Admin" target="UC2_17"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="ex16" edge="1" parent="1" source="UC2_16" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main"><mxGeometry relative="1" as="geometry" /><mxCell id="lx16" connectable="0" parent="ex16" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1"><mxPoint as="offset" /></mxCell></mxCell>
+    <mxCell id="ex17" edge="1" parent="1" source="UC2_17" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main"><mxGeometry relative="1" as="geometry" /><mxCell id="lx17" connectable="0" parent="ex17" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1"><mxPoint as="offset" /></mxCell></mxCell>
+    <mxCell id="in_main" edge="1" parent="1" source="UC_Main" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC1_01"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="lin_main" connectable="0" parent="in_main" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Include&gt;&gt;" vertex="1"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+  </root>
+</mxGraphModel>

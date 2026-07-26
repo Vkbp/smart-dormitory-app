@@ -1,0 +1,213 @@
+<mxGraphModel dx="2287" dy="1138" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="2200" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="Public" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;" value="Người dùng" vertex="1">
+      <mxGeometry height="60" width="30" x="50" y="80" as="geometry" />
+    </mxCell>
+    <mxCell id="Admin" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;" value="Admin" vertex="1">
+      <mxGeometry height="60" width="30" x="50" y="400" as="geometry" />
+    </mxCell>
+    <mxCell id="Staff" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;" value="Nhân viên" vertex="1">
+      <mxGeometry height="60" width="30" x="50" y="700" as="geometry" />
+    </mxCell>
+    <mxCell id="Student" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;" value="Sinh viên" vertex="1">
+      <mxGeometry height="60" width="30" x="127" y="805" as="geometry" />
+    </mxCell>
+    <mxCell id="SePay" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;" value="Hệ thống SePay" vertex="1">
+      <mxGeometry height="60" width="30" x="249" y="957" as="geometry" />
+    </mxCell>
+    <mxCell id="UC_Main" parent="1" style="ellipse;whiteSpace=wrap;html=0;fontStyle=1;fillColor=#f5f5f5;strokeWidth=2;" value="Quản lý Tài chính &amp; Thanh toán" vertex="1">
+      <mxGeometry height="100" width="220" x="850" y="650" as="geometry" />
+    </mxCell>
+    <mxCell id="UC1_01" parent="1" style="ellipse;whiteSpace=wrap;html=0;fillColor=#f5f5f5;strokeWidth=2;" value="Đăng nhập" vertex="1">
+      <mxGeometry height="60" width="140" x="1250" y="670" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_11" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xem hướng dẫn thanh toán" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="50" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_01" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Ghi chỉ số điện định kỳ" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="120" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_02" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xem chỉ số điện tất cả phòng" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="190" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_03" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xóa chỉ số điện sai" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="260" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_04" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Tạo hóa đơn thủ công" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="330" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_05" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xem tất cả hóa đơn hệ thống" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="400" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_09" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xác nhận thanh toán tiền mặt" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="470" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_06" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xem hóa đơn theo hồ sơ" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="540" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_07" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Xem hóa đơn của bản thân" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="610" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_08" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Thanh toán trực tuyến QR" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="680" as="geometry" />
+    </mxCell>
+    <mxCell id="UC4_10" parent="1" style="ellipse;whiteSpace=wrap;html=0;" value="Nhận Webhook SePay (tự động)" vertex="1">
+      <mxGeometry height="50" width="200" x="400" y="750" as="geometry" />
+    </mxCell>
+    <mxCell id="LP1" edge="1" parent="1" source="Public" target="UC4_11">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LA1" edge="1" parent="1" source="Admin" target="UC4_01">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LA2" edge="1" parent="1" source="Admin" target="UC4_02">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LA3" edge="1" parent="1" source="Admin" target="UC4_03">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LA4" edge="1" parent="1" source="Admin" target="UC4_04">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LA5" edge="1" parent="1" source="Admin" target="UC4_05">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LA6" edge="1" parent="1" source="Admin" target="UC4_06">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LA9" edge="1" parent="1" source="Admin" target="UC4_09">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LS1" edge="1" parent="1" source="Staff" target="UC4_01">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LS2" edge="1" parent="1" source="Staff" target="UC4_02">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LS3" edge="1" parent="1" source="Staff" target="UC4_03">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LS4" edge="1" parent="1" source="Staff" target="UC4_04">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LS5" edge="1" parent="1" source="Staff" target="UC4_05">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LS6" edge="1" parent="1" source="Staff" target="UC4_06">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LS9" edge="1" parent="1" source="Staff" target="UC4_09">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LSt6" edge="1" parent="1" source="Student" target="UC4_06">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LSt7" edge="1" parent="1" source="Student" target="UC4_07">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LSt8" edge="1" parent="1" source="Student" target="UC4_08">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="LW10" edge="1" parent="1" source="SePay" target="UC4_10">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ex11" edge="1" parent="1" source="UC4_11" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx11" connectable="0" parent="ex11" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ex01" edge="1" parent="1" source="UC4_01" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx01" connectable="0" parent="ex01" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ex02" edge="1" parent="1" source="UC4_02" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx02" connectable="0" parent="ex02" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ex03" edge="1" parent="1" source="UC4_03" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx03" connectable="0" parent="ex03" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ex04" edge="1" parent="1" source="UC4_04" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx04" connectable="0" parent="ex04" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ex05" edge="1" parent="1" source="UC4_05" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx05" connectable="0" parent="ex05" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ex09" edge="1" parent="1" source="UC4_09" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx09" connectable="0" parent="ex09" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ex06" edge="1" parent="1" source="UC4_06" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx06" connectable="0" parent="ex06" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ex07" edge="1" parent="1" source="UC4_07" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx07" connectable="0" parent="ex07" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ex08" edge="1" parent="1" source="UC4_08" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx08" connectable="0" parent="ex08" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ex10" edge="1" parent="1" source="UC4_10" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC_Main">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lx10" connectable="0" parent="ex10" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Extend&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="in_main" edge="1" parent="1" source="UC_Main" style="endArrow=open;dashed=1;html=1;endFill=0;" target="UC1_01">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="lin_main" connectable="0" parent="in_main" style="edgeLabel;html=0;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;" value="&lt;&lt;Include&gt;&gt;" vertex="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+  </root>
+</mxGraphModel>
