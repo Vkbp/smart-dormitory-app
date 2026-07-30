@@ -26,28 +26,40 @@ class HomeViewModel @Inject constructor(
 
     fun loadHomeData() {
         viewModelScope.launch {
-            updateState { it.copy(isLoading = true, error = null) }
+            // Chỉ reset isLoading và error, giữ nguyên trạng thái isResident cũ để tránh nháy màn hình
+            updateState { it.copy(
+                isLoading = true, 
+                error = null, 
+                roomInfo = null
+            ) }
             
-            // Lấy thông tin Auth cơ bản
+            // 1. Lấy thông tin Auth cơ bản
             val authResult = getAuthStateUseCase()
             authResult.onSuccess { userData ->
                 updateState { it.copy(userData = userData) }
             }
 
-            // Lấy thông tin Profile chi tiết để hiển thị tên thật
+            // 2. Lấy thông tin Profile và thông tin Phòng song song
             val profileResult = getProfileUseCase()
+            val roomResult = getRoomInfoUseCase()
+
             profileResult.onSuccess { profile ->
+                val isResidentStatus = profile.status?.uppercase() != "INACTIVE" && 
+                                     profile.status?.uppercase() != "CHECKED_OUT"
+                
+                val roomInfo = roomResult.getOrNull()
+                val hasRoom = roomResult.isSuccess && roomInfo?.roomCode != null
+
                 updateState { state ->
                     state.copy(
-                        userData = state.userData?.copy(fullName = profile.fullName) ?: userDataWithProfile(profile.fullName)
+                        userData = state.userData?.copy(fullName = profile.fullName) ?: userDataWithProfile(profile.fullName),
+                        roomInfo = roomInfo,
+                        // Một người là cư dân nếu: Hồ sơ ACTIVE VÀ (Có phòng HOẶC chưa xác định rõ)
+                        // Chỉ ẩn nút nếu trạng thái chắc chắn là INACTIVE/CHECKED_OUT
+                        isResident = isResidentStatus,
+                        isLoading = false
                     )
                 }
-            }
-            
-            // Lấy thông tin phòng
-            val roomResult = getRoomInfoUseCase()
-            roomResult.onSuccess { roomInfo ->
-                updateState { it.copy(roomInfo = roomInfo, isLoading = false) }
             }.onFailure { e ->
                 updateState { it.copy(error = e.message, isLoading = false) }
             }

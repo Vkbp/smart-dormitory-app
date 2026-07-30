@@ -69,41 +69,71 @@ fun CheckoutApprovalScreen(
             )
         }
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
         ) {
-            if (uiState.isLoading && uiState.requests.isEmpty()) {
-                LoadingView()
-            } else if (uiState.error != null && uiState.requests.isEmpty()) {
-                ErrorView(
-                    message = uiState.error ?: "Đã có lỗi xảy ra",
-                    onRetry = { viewModel.onEvent(CheckoutApprovalUiEvent.LoadRequests(refresh = true)) }
-                )
-            } else if (uiState.requests.isEmpty()) {
-                EmptyView(message = "Không có yêu cầu nào chờ duyệt")
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(uiState.requests, key = { it.id ?: UUID.randomUUID() }) { request ->
-                        CheckoutRequestCard(
-                            request = request,
-                            onClick = { selectedRequest = request }
-                        )
-                    }
-                    if (uiState.isLoading) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+            val statuses = listOf("PENDING", "APPROVED", "REJECTED", "COMPLETED")
+            ScrollableTabRow(
+                selectedTabIndex = statuses.indexOf(uiState.selectedStatus).coerceAtLeast(0),
+                edgePadding = 16.dp,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary,
+                divider = {}
+            ) {
+                statuses.forEach { status ->
+                    Tab(
+                        selected = uiState.selectedStatus == status,
+                        onClick = { viewModel.onEvent(CheckoutApprovalUiEvent.ChangeStatus(status)) },
+                        text = {
+                            Text(
+                                text = when (status) {
+                                    "PENDING" -> "Chờ duyệt"
+                                    "APPROVED" -> "Đã duyệt"
+                                    "REJECTED" -> "Từ chối"
+                                    "COMPLETED" -> "Hoàn tất"
+                                    else -> status
+                                },
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+                    )
+                }
+            }
+
+            Box(modifier = Modifier.weight(1f)) {
+                if (uiState.isLoading && uiState.requests.isEmpty()) {
+                    LoadingView()
+                } else if (uiState.error != null && uiState.requests.isEmpty()) {
+                    ErrorView(
+                        message = uiState.error ?: "Đã có lỗi xảy ra",
+                        onRetry = { viewModel.onEvent(CheckoutApprovalUiEvent.LoadRequests(refresh = true)) }
+                    )
+                } else if (uiState.requests.isEmpty()) {
+                    EmptyView(message = "Không có yêu cầu nào trong danh sách này")
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(uiState.requests, key = { it.id ?: UUID.randomUUID() }) { request ->
+                            CheckoutRequestCard(
+                                request = request,
+                                onClick = { selectedRequest = request }
+                            )
+                        }
+                        if (uiState.isLoading) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                                }
                             }
                         }
                     }
@@ -118,10 +148,11 @@ fun CheckoutApprovalScreen(
             onDismiss = { selectedRequest = null },
             onApprove = {
                 selectedRequest?.id?.let { id ->
+                    val nextStatus = if (selectedRequest?.status == "APPROVED") "COMPLETED" else "APPROVED"
                     viewModel.onEvent(
                         CheckoutApprovalUiEvent.ReviewRequest(
                             id,
-                            "APPROVED",
+                            nextStatus,
                             null
                         )
                     )
@@ -295,30 +326,54 @@ fun CheckoutDetailDialog(
                         .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Button(
-                        onClick = { showRejectInput = true },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Text("TỪ CHỐI", fontWeight = FontWeight.Bold)
-                    }
-                    Button(
-                        onClick = { showApproveConfirm = true },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)), // Dark Green
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Text(
-                            "PHÊ DUYỆT & CHỐT CÔNG NỢ",
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                            fontSize = 12.sp
-                        )
+                    if (request.status == "PENDING") {
+                        Button(
+                            onClick = { showRejectInput = true },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text("TỪ CHỐI", fontWeight = FontWeight.Bold)
+                        }
+                        Button(
+                            onClick = { showApproveConfirm = true },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)), // Dark Green
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text(
+                                "PHÊ DUYỆT & CHỐT CÔNG NỢ",
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
+                                fontSize = 12.sp
+                            )
+                        }
+                    } else if (request.status == "APPROVED") {
+                        Button(
+                            onClick = onApprove,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text("HOÀN TẤT HỒ SƠ", fontWeight = FontWeight.Bold)
+                        }
+                    } else {
+                        // REJECTED or COMPLETED - Close only
+                        Button(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text("ĐÓNG", fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }

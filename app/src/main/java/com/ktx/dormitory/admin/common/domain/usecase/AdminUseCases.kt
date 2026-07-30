@@ -44,7 +44,12 @@ class GetSmartAccessResourcesUseCase @Inject constructor(
 }
 
 class RemoteUnlockUseCase @Inject constructor(private val repository: AdminRepository) {
-    suspend operator fun invoke(gateId: UUID, buildingId: UUID) = repository.remoteUnlock(gateId, buildingId)
+    suspend operator fun invoke(gateId: UUID, buildingId: UUID, studentId: UUID? = null) = 
+        repository.remoteUnlock(gateId, buildingId, studentId)
+}
+
+class SearchStudentsUseCase @Inject constructor(private val repository: AdminRepository) {
+    suspend operator fun invoke(query: String) = repository.searchStudents(query)
 }
 
 class EmergencyOverrideUseCase @Inject constructor(private val repository: AdminRepository) {

@@ -29,7 +29,6 @@ class AdminRepositoryImpl @Inject constructor(
                 val body = response.body()
                 if (body != null && body.success) {
                     @Suppress("UNCHECKED_CAST")
-                    // Handle Unit type correctly when body.data is null
                     val data = (body.data ?: Unit) as T
                     Result.success(data)
                 } else {
@@ -39,7 +38,8 @@ class AdminRepositoryImpl @Inject constructor(
                 Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
             }
         } catch (e: Exception) {
-            Result.failure(Exception(e.toUserFriendlyMessage()))
+            // Log.e("AdminRepository", "Network Error", e)
+            Result.failure(Exception("Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng."))
         }
     }
 
@@ -60,11 +60,14 @@ class AdminRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun remoteUnlock(gateId: UUID, buildingId: UUID) = 
-        handleResponse(apiService.remoteUnlock(gateId, buildingId))
+    override suspend fun remoteUnlock(gateId: UUID, buildingId: UUID, studentId: UUID?) = 
+        handleResponse(apiService.remoteUnlock(gateId, buildingId, studentId))
 
     override suspend fun emergencyOverride(actionType: String, reason: String, buildingId: UUID?) =
         handleResponse(apiService.emergencyOverride(actionType, reason, buildingId))
+
+    override suspend fun searchStudents(query: String) =
+        handleResponse(apiService.searchStudents(query)).map { it.students }
 
     override suspend fun getPendingFaceProfiles(page: Int, size: Int) =
         handleResponse(apiService.getPendingFaceProfiles(page, size))

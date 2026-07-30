@@ -42,7 +42,7 @@ fun CheckoutScreen(
             )
         },
         floatingActionButton = {
-            if (!showForm && !uiState.hasPendingRequest && !uiState.hasUnpaidBills) {
+            if (!showForm && !uiState.hasPendingRequest && !uiState.hasUnpaidBills && uiState.isResident) {
                 ExtendedFloatingActionButton(
                     onClick = { showForm = true },
                     icon = { Icon(Icons.Default.Add, null) },
@@ -75,7 +75,7 @@ fun CheckoutScreen(
                                 Spacer(Modifier.width(12.dp))
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        "Bạn đang có hóa đơn chưa thanh toán. Vui lòng thanh toán toàn bộ nợ trước khi nộp đơn trả phòng.",
+                                        "Bạn đang có hóa đơn quá hạn chưa thanh toán. Vui lòng thanh toán toàn bộ nợ quá hạn trước khi nộp đơn trả phòng.",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = Color(0xFFE65100),
                                         fontWeight = FontWeight.Medium

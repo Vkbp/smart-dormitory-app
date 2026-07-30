@@ -15,8 +15,14 @@ interface AdminApiService {
     @POST("v1/access/gates/{gateId}/unlock")
     suspend fun remoteUnlock(
         @Path("gateId") gateId: UUID,
-        @Query("buildingId") buildingId: UUID
+        @Query("buildingId") buildingId: UUID,
+        @Query("studentId") studentId: UUID? = null
     ): Response<BaseResponse<Unit>>
+
+    @GET("v1/students")
+    suspend fun searchStudents(
+        @Query("search") query: String
+    ): Response<BaseResponse<com.ktx.dormitory.admin.common.data.dto.response.StudentSearchResponse>>
 
     @POST("v1/access/emergency")
     suspend fun emergencyOverride(

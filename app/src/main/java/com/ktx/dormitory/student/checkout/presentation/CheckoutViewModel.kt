@@ -8,6 +8,7 @@ import com.ktx.dormitory.student.checkout.domain.usecase.GetCheckoutHistoryUseCa
 import com.ktx.dormitory.student.checkout.domain.usecase.SubmitCheckoutRequestUseCase
 import com.ktx.dormitory.student.payment.domain.model.BillStatus
 import com.ktx.dormitory.student.payment.domain.usecase.GetInvoicesUseCase
+import com.ktx.dormitory.student.room.domain.usecase.GetRoomInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,6 +19,7 @@ class CheckoutViewModel @Inject constructor(
     private val submitUseCase: SubmitCheckoutRequestUseCase,
     private val getHistoryUseCase: GetCheckoutHistoryUseCase,
     private val getInvoicesUseCase: GetInvoicesUseCase,
+    private val getRoomInfoUseCase: GetRoomInfoUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -33,26 +35,35 @@ class CheckoutViewModel @Inject constructor(
 
     private fun loadInitialData() {
         viewModelScope.launch {
-            updateUiState { it.copy(isLoading = true, error = null) }
-            
-            // 1. Kiểm tra đơn PENDING
-            val historyResult = getHistoryUseCase()
-            // 2. Kiểm tra nợ hóa đơn
-            val billsResult = getInvoicesUseCase()
+            // Reset trạng thái để tránh dùng nhầm dữ liệu của tài khoản trước đó
+            updateUiState { it.copy(isLoading = true, error = null, isResident = true) }
+            try {
+                // 1. Kiểm tra đơn PENDING
+                val historyResult = getHistoryUseCase()
+                // 2. Kiểm tra nợ hóa đơn
+                val billsResult = getInvoicesUseCase()
 
-            val history = historyResult.getOrDefault(emptyList())
-            val hasPending = history.any { it.status.uppercase() == "PENDING" }
-            
-            val bills = billsResult.getOrDefault(emptyList())
-            val hasUnpaid = bills.any { it.status == BillStatus.UNPAID || it.status == BillStatus.OVERDUE }
+                val history = historyResult.getOrDefault(emptyList())
+                val hasPending = history.any { it.status.uppercase() == "PENDING" }
+                
+                val bills = billsResult.getOrDefault(emptyList())
+                val hasUnpaid = bills.any { it.status == BillStatus.OVERDUE }
 
-            updateUiState { 
-                it.copy(
-                    isLoading = false, 
-                    history = history, 
-                    hasPendingRequest = hasPending,
-                    hasUnpaidBills = hasUnpaid
-                ) 
+                // 3. Kiểm tra thông tin phòng hiện tại
+                val roomResult = getRoomInfoUseCase()
+                val isResident = roomResult.isSuccess && roomResult.getOrNull()?.roomCode != null
+
+                updateUiState { 
+                    it.copy(
+                        isLoading = false, 
+                        history = history, 
+                        hasPendingRequest = hasPending,
+                        hasUnpaidBills = hasUnpaid,
+                        isResident = isResident
+                    ) 
+                }
+            } catch (e: Exception) {
+                updateUiState { it.copy(isLoading = false, error = "Lỗi kết nối máy chủ") }
             }
         }
     }

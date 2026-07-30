@@ -10,6 +10,7 @@ data class CheckoutUiState(
     val history: List<CheckoutResponse> = emptyList(),
     val hasPendingRequest: Boolean = false,
     val hasUnpaidBills: Boolean = false,
+    val isResident: Boolean = true,
     val submitSuccess: Boolean = false,
     val error: String? = null,
     val debtErrorMessage: String? = null

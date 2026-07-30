@@ -37,6 +37,19 @@ object DateTimeUtils {
         return isoDateTimeFormat.format(Date(timestamp))
     }
 
+    /**
+     * Kiểm tra xem một ngày (ISO) có phải là ngày trong tương lai hay không.
+     */
+    fun isFutureDate(isoDate: String?): Boolean {
+        if (isoDate.isNullOrBlank()) return false
+        return try {
+            val date = isoDateFormat.parse(isoDate) ?: isoDateTimeFormat.parse(isoDate) ?: return false
+            date.after(Date())
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     fun calculateDaysRemaining(expectedCheckOutAt: String?): Long {
         if (expectedCheckOutAt.isNullOrBlank()) return -1
         return try {

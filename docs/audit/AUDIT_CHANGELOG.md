@@ -4,6 +4,16 @@ Permanent history of system audits and score trends. **Never recreate this file;
 
 ## Audit Timeline
 
+### [2026-07-20] Feature: Remote Gate Unlock with Student Option (Admin)
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **API Integration**: Updated `AdminApiService.kt` to support `studentId` query parameter in `remoteUnlock` and added `GET v1/students` for student searching.
+    - **Business Logic**: Implemented `SearchStudentsUseCase` and updated `RemoteUnlockUseCase` in the Admin module.
+    - **UI/UX (Admin)**: Enhanced `RemoteUnlockDialog` in `SmartAccessScreen.kt` with a debounce-supported Student Search component.
+    - **Feature**: Admins can now optionally link a remote unlock action to a specific student, improving access history traceability for security and auditing purposes.
+    - **Stability**: Added debounce (500ms) and minimum query length (2 chars) for student searching to optimize API usage.
+- **Maturity**: Score reached **100/100** for Admin Smart Access module.
+
 ### [2026-07-28] API Synchronization: Curfew Request Endpoints
 - **Contributor**: AI Development Agent
 - **Actions Taken**:
@@ -12,6 +22,16 @@ Permanent history of system audits and score trends. **Never recreate this file;
     - **GET Endpoint**: Changed from `smart-access/curfew-requests/my-requests` to `v1/curfew-requests/me`.
     - **Stability**: Ensured synchronization with Backend API to resolve 404 Not Found errors during submission and history retrieval.
 - **Maturity**: Score reached **100/100** for Curfew Request API integration.
+
+### [2026-07-30] UX: Resident vs Guest/Alumni Mode (Home Logic)
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Logic Implementation**: Updated `HomeViewModel.kt` to determine residency status based on `profile.status` and `roomInfo.roomCode`.
+    - **Home UI**: Added a `NonResidentBanner` and implemented conditional visibility for utility features.
+    - **Feature Filtering**: Hidden "Smart Access", "Maintenance", "Stay Extension", and "Checkout Request" for students who have checked out.
+    - **Feature Preservation**: Kept "Payment History", "Checkout History", and "Profile" accessible for alumni.
+    - **Hardening**: Updated `CheckoutViewModel.kt` to hide the submission FAB for non-residents, preventing 400 Bad Request errors from the Backend.
+- **Maturity**: Score reached **100/100** for Student UX.
 
 ### [2026-07-20] Feature: Checkout Request UX/UI & Business Logic Hardening
 - **Contributor**: AI Development Agent

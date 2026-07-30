@@ -22,6 +22,10 @@ class CheckoutApprovalViewModel @Inject constructor(
     override fun onEvent(event: CheckoutApprovalUiEvent) {
         when (event) {
             is CheckoutApprovalUiEvent.LoadRequests -> loadRequests(event.refresh)
+            is CheckoutApprovalUiEvent.ChangeStatus -> {
+                updateState { it.copy(selectedStatus = event.status) }
+                onEvent(CheckoutApprovalUiEvent.LoadRequests(refresh = true))
+            }
             is CheckoutApprovalUiEvent.ReviewRequest -> review(event.requestId, event.status, event.reason)
         }
     }
@@ -31,7 +35,9 @@ class CheckoutApprovalViewModel @Inject constructor(
             if (refresh) updateState { it.copy(isLoading = true, requests = emptyList(), currentPage = 0, isLastPage = false) }
             
             val page = if (refresh) 0 else currentState.currentPage + 1
-            getRequestsUseCase("PENDING", page, 15).onSuccess { response ->
+            val status = if (currentState.selectedStatus == "ALL") null else currentState.selectedStatus
+            
+            getRequestsUseCase(status, page, 15).onSuccess { response ->
                 updateState { state ->
                     val newList = if (refresh) (response.content ?: emptyList()) else state.requests + (response.content ?: emptyList())
                     state.copy(

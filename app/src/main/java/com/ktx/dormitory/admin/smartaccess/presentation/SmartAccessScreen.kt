@@ -2,17 +2,22 @@ package com.ktx.dormitory.admin.smartaccess.presentation
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DoorBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.compose.ui.window.PopupProperties
 import com.ktx.dormitory.admin.common.data.dto.response.BuildingResponseDto
 import com.ktx.dormitory.admin.common.data.dto.response.GateResponseDto
+import com.ktx.dormitory.shared.profile.data.dto.response.StudentResponse
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,9 +99,17 @@ fun SmartAccessScreen(
         RemoteUnlockDialog(
             buildings = uiState.buildings,
             gates = uiState.gates,
-            onDismiss = { showUnlockDialog = false },
-            onConfirm = { gateId, buildingId ->
-                viewModel.onEvent(SmartAccessUiEvent.RemoteUnlock(gateId, buildingId))
+            studentSearchResults = uiState.studentSearchResults,
+            isSearchingStudent = uiState.isSearchingStudent,
+            selectedStudent = uiState.selectedStudent,
+            onSearchStudent = { viewModel.onEvent(SmartAccessUiEvent.SearchStudent(it)) },
+            onSelectStudent = { viewModel.onEvent(SmartAccessUiEvent.SelectStudent(it)) },
+            onDismiss = { 
+                showUnlockDialog = false
+                viewModel.onEvent(SmartAccessUiEvent.SelectStudent(null))
+            },
+            onConfirm = { gateId, buildingId, studentId ->
+                viewModel.onEvent(SmartAccessUiEvent.RemoteUnlock(gateId, buildingId, studentId))
                 showUnlockDialog = false
             }
         )
@@ -119,14 +132,22 @@ fun SmartAccessScreen(
 fun RemoteUnlockDialog(
     buildings: List<BuildingResponseDto>,
     gates: List<GateResponseDto>,
+    studentSearchResults: List<StudentResponse>,
+    isSearchingStudent: Boolean,
+    selectedStudent: StudentResponse?,
+    onSearchStudent: (String) -> Unit,
+    onSelectStudent: (StudentResponse?) -> Unit,
     onDismiss: () -> Unit,
-    onConfirm: (UUID, UUID) -> Unit
+    onConfirm: (UUID, UUID, UUID?) -> Unit
 ) {
     var selectedBuilding by remember { mutableStateOf<BuildingResponseDto?>(null) }
     var selectedGate by remember { mutableStateOf<GateResponseDto?>(null) }
     
     var buildingExpanded by remember { mutableStateOf(false) }
     var gateExpanded by remember { mutableStateOf(false) }
+    
+    var searchQuery by remember { mutableStateOf("") }
+    var searchExpanded by remember { mutableStateOf(false) }
 
     val filteredGates = remember(selectedBuilding, gates) {
         if (selectedBuilding == null) gates else gates.filter { it.buildingId == selectedBuilding?.id }
@@ -196,6 +217,65 @@ fun RemoteUnlockDialog(
                         }
                     }
                 }
+
+                HorizontalDivider()
+                
+                // Student Search (Optional)
+                Column {
+                    Text("Sinh viên được mở hộ (Tùy chọn)", style = MaterialTheme.typography.labelMedium)
+                    Spacer(Modifier.height(8.dp))
+                    
+                    if (selectedStudent != null) {
+                        InputChip(
+                            selected = true,
+                            onClick = { onSelectStudent(null) },
+                            label = { Text("${selectedStudent.fullName} (${selectedStudent.studentCode})") },
+                            trailingIcon = { Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                        )
+                    } else {
+                        Box {
+                            OutlinedTextField(
+                                value = searchQuery,
+                                onValueChange = { 
+                                    searchQuery = it
+                                    onSearchStudent(it)
+                                    searchExpanded = true
+                                },
+                                placeholder = { Text("Tìm theo tên hoặc MSSV...") },
+                                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                                modifier = Modifier.fillMaxWidth(),
+                                trailingIcon = {
+                                    if (isSearchingStudent) {
+                                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                                    }
+                                }
+                            )
+                            
+                            DropdownMenu(
+                                expanded = searchExpanded && studentSearchResults.isNotEmpty(),
+                                onDismissRequest = { searchExpanded = false },
+                                modifier = Modifier.fillMaxWidth(0.8f),
+                                properties = PopupProperties(focusable = false)
+                            ) {
+                                studentSearchResults.forEach { student ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Column {
+                                                Text(student.fullName ?: "N/A", style = MaterialTheme.typography.bodyMedium)
+                                                Text(student.studentCode ?: "N/A", style = MaterialTheme.typography.bodySmall)
+                                            }
+                                        },
+                                        onClick = {
+                                            onSelectStudent(student)
+                                            searchQuery = ""
+                                            searchExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
@@ -205,7 +285,9 @@ fun RemoteUnlockDialog(
                     val gateId = selectedGate?.id
                     val buildingId = selectedBuilding?.id
                     if (gateId != null && buildingId != null) {
-                        onConfirm(gateId, buildingId)
+                        val studentIdStr = selectedStudent?.id
+                        val studentId = if (studentIdStr != null) UUID.fromString(studentIdStr) else null
+                        onConfirm(gateId, buildingId, studentId)
                     }
                 }
             ) { Text("Mở cửa") }

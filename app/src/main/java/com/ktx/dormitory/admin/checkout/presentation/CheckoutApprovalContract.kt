@@ -9,11 +9,13 @@ data class CheckoutApprovalUiState(
     val requests: List<CheckoutRequestResponseDto> = emptyList(),
     val error: String? = null,
     val currentPage: Int = 0,
-    val isLastPage: Boolean = false
+    val isLastPage: Boolean = false,
+    val selectedStatus: String = "PENDING"
 ) : BaseContract.State
 
 sealed class CheckoutApprovalUiEvent : BaseContract.Event {
     data class LoadRequests(val refresh: Boolean = false) : CheckoutApprovalUiEvent()
+    data class ChangeStatus(val status: String) : CheckoutApprovalUiEvent()
     data class ReviewRequest(val requestId: UUID, val status: String, val reason: String?) : CheckoutApprovalUiEvent()
 }
 

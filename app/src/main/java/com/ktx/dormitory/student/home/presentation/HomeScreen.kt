@@ -94,9 +94,47 @@ fun HomeScreen(
                 room = roomInfo?.roomCode,
             ) { navController.navigate(Screen.RoomInfo.route) }
 
-            Column(modifier = Modifier.padding(16.dp)) {
-                StudentDashboard(navController, onIssueReportClick = { showIssueReport = true })
+            if (!state.isResident && !state.isLoading) {
+                NonResidentBanner()
             }
+
+            Column(modifier = Modifier.padding(16.dp)) {
+                StudentDashboard(
+                    navController = navController, 
+                    onIssueReportClick = { showIssueReport = true },
+                    isResident = state.isResident,
+                    isLoading = state.isLoading
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun NonResidentBanner() {
+    Surface(
+        color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.7f),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onTertiaryContainer
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "Bạn hiện không lưu trú tại Ký túc xá. Các tính năng tiện ích đã được ẩn.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
@@ -154,19 +192,37 @@ fun WelcomeSection(name: String, room: String?, onRoomClick: () -> Unit) {
 }
 
 @Composable
-fun StudentDashboard(navController: NavController, onIssueReportClick: () -> Unit) {
+fun StudentDashboard(
+    navController: NavController, 
+    onIssueReportClick: () -> Unit,
+    isResident: Boolean,
+    isLoading: Boolean
+) {
+    val allItems = listOf(
+        DashboardItem("Quản lý AI", Icons.Default.Face, Screen.FaceStatus.route, isResidentOnly = true),
+        DashboardItem("Báo hỏng", Icons.Default.Build, "", onClick = onIssueReportClick, isResidentOnly = true),
+        DashboardItem("Thanh toán", Icons.Default.Payments, Screen.Payment.route, isResidentOnly = true),
+        DashboardItem("Đổi phòng", Icons.Default.SwapHoriz, Screen.RoomTransfer.route, isResidentOnly = true),
+        DashboardItem("Gia hạn", Icons.Default.Update, Screen.QuickExtend.route, isResidentOnly = true),
+        DashboardItem("Trả phòng sớm", Icons.AutoMirrored.Filled.ExitToApp, Screen.Checkout.route, isResidentOnly = true),
+        DashboardItem("Lịch sử trả phòng", Icons.Default.AssignmentReturn, Screen.Checkout.route, isResidentOnly = false),
+        DashboardItem("Lịch sử GD", Icons.AutoMirrored.Filled.ReceiptLong, Screen.PaymentHistory.route, isResidentOnly = false),
+        DashboardItem("Lịch sử vào", Icons.Default.History, Screen.AccessHistory.route, isResidentOnly = true),
+    )
+
+    val visibleItems = allItems.filter { item ->
+        if (isLoading) return@filter true // Trong lúc load thì cứ hiện hết cho đỡ nháy
+        
+        when (item.title) {
+            "Trả phòng sớm" -> isResident
+            "Lịch sử trả phòng" -> !isResident
+            else -> !item.isResidentOnly || isResident
+        }
+    }
+
     DashboardGrid(
         title = "Tiện ích sinh viên",
-        items = listOf(
-            DashboardItem("Quản lý AI", Icons.Default.Face, Screen.FaceStatus.route),
-            DashboardItem("Báo hỏng", Icons.Default.Build, "", onClick = onIssueReportClick),
-            DashboardItem("Thanh toán", Icons.Default.Payments, Screen.Payment.route),
-            DashboardItem("Đổi phòng", Icons.Default.SwapHoriz, Screen.RoomTransfer.route),
-            DashboardItem("Gia hạn", Icons.Default.Update, Screen.QuickExtend.route),
-            DashboardItem("Trả phòng sớm", Icons.AutoMirrored.Filled.ExitToApp, Screen.Checkout.route),
-            DashboardItem("Lịch sử GD", Icons.AutoMirrored.Filled.ReceiptLong, Screen.PaymentHistory.route),
-            DashboardItem("Lịch sử vào", Icons.Default.History, Screen.AccessHistory.route),
-        ),
+        items = visibleItems,
         navController = navController
     )
 }
@@ -175,7 +231,8 @@ data class DashboardItem(
     val title: String,
     val icon: ImageVector,
     val route: String,
-    val onClick: (() -> Unit)? = null
+    val onClick: (() -> Unit)? = null,
+    val isResidentOnly: Boolean = false
 )
 
 @Composable

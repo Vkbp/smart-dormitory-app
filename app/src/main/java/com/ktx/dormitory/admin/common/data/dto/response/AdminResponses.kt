@@ -81,3 +81,15 @@ data class DashboardStatsResponseDto(
     val totalRooms: Int,
     val totalBeds: Int
 )
+
+data class StudentSearchResponse(
+    @SerializedName("content") val students: List<com.ktx.dormitory.shared.profile.data.dto.response.StudentResponse>,
+    val page: PageInfo?
+)
+
+data class PageInfo(
+    val size: Int,
+    val number: Int,
+    val totalElements: Long,
+    val totalPages: Int
+)

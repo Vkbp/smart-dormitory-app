@@ -15,6 +15,9 @@ interface ProfileApiService {
     suspend fun updateProfile(@Body request: UpdateProfileRequest): BaseResponse<StudentResponse>
 
     @Multipart
-    @POST("v1/uploads/avatar")
-    suspend fun uploadAvatar(@Part file: MultipartBody.Part): BaseResponse<FileUploadResponse>
+    @POST("v1/uploads/image")
+    suspend fun uploadAvatar(
+        @Part file: MultipartBody.Part,
+        @Query("folder") folder: String = "sdms/avatars"
+    ): BaseResponse<FileUploadResponse>
 }

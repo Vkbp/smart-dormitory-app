@@ -7,8 +7,10 @@ import com.ktx.dormitory.student.face.data.dto.response.FaceProfileDto
 import java.util.UUID
 
 interface AdminRepository {
-    suspend fun remoteUnlock(gateId: UUID, buildingId: UUID): Result<Unit>
+    suspend fun remoteUnlock(gateId: UUID, buildingId: UUID, studentId: UUID? = null): Result<Unit>
     suspend fun emergencyOverride(actionType: String, reason: String, buildingId: UUID?): Result<Unit>
+
+    suspend fun searchStudents(query: String): Result<List<com.ktx.dormitory.shared.profile.data.dto.response.StudentResponse>>
     
     suspend fun getPendingFaceProfiles(page: Int, size: Int): Result<PageResponse<FaceProfileDto>>
     suspend fun approveFace(profileId: UUID): Result<String>

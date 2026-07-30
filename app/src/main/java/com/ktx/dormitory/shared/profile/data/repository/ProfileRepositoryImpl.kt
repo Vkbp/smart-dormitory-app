@@ -35,8 +35,12 @@ class ProfileRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             val cached = localDataSource.getProfile().firstOrNull()?.toDomain()
-            if (cached != null) Result.success(cached)
-            else Result.failure(Exception(e.toUserFriendlyMessage()))
+            if (cached != null) {
+                android.util.Log.d("ProfileRepo", "Using cached profile due to error: ${e.message}")
+                Result.success(cached)
+            } else {
+                Result.failure(Exception("Không thể kết nối máy chủ. Vui lòng kiểm tra mạng."))
+            }
         }
     }
     

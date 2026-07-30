@@ -9,7 +9,8 @@ interface HomeContract : BaseContract {
         val userData: UserData? = null,
         val roomInfo: RoomInfo? = null,
         val isLoading: Boolean = false,
-        val error: String? = null
+        val error: String? = null,
+        val isResident: Boolean = true
     ) : BaseContract.State
 
     sealed interface Event : BaseContract.Event {
