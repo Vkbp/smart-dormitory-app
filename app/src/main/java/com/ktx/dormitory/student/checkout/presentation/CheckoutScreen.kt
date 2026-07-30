@@ -176,7 +176,31 @@ fun CheckoutForm(
     var dateError by remember { mutableStateOf<String?>(null) }
     
     var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
+    
+    // Quy định: Báo trước tối thiểu 7 ngày (Min 7 days notice period)
+    val minNoticeDateMillis = remember {
+        val calendar = java.util.Calendar.getInstance()
+        // Reset về 0h để tính toán chính xác theo ngày
+        calendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
+        calendar.set(java.util.Calendar.MINUTE, 0)
+        calendar.set(java.util.Calendar.SECOND, 0)
+        calendar.set(java.util.Calendar.MILLISECOND, 0)
+        calendar.add(java.util.Calendar.DAY_OF_YEAR, 7)
+        calendar.timeInMillis
+    }
+
+    val datePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                // Chỉ cho phép chọn từ ngày hiện tại + 7 ngày trở đi
+                return utcTimeMillis >= minNoticeDateMillis
+            }
+            
+            override fun isSelectableYear(year: Int): Boolean {
+                return year >= java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+            }
+        }
+    )
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -222,7 +246,13 @@ fun CheckoutForm(
                 }
             },
             isError = dateError != null,
-            supportingText = { dateError?.let { Text(it) } },
+            supportingText = { 
+                if (dateError != null) {
+                    Text(dateError!!)
+                } else {
+                    Text("Theo quy định, bạn cần báo trước ít nhất 7 ngày.")
+                }
+            },
             interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
                 .also { interactionSource ->
                     LaunchedEffect(interactionSource) {
