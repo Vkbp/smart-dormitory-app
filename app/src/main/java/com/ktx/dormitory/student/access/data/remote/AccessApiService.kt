@@ -16,12 +16,12 @@ interface AccessApiService {
         @Query("sort") sort: String = "eventTimestamp,desc"
     ): Response<BaseResponse<PageResponse<AccessLogDto>>>
 
-    @POST("smart-access/curfew-requests")
+    @POST("v1/curfew-requests")
     suspend fun submitCurfewRequest(
         @Body request: CurfewCreateRequest
     ): Response<BaseResponse<CurfewRequestDto>>
 
-    @GET("smart-access/curfew-requests/my-requests")
+    @GET("v1/curfew-requests/me")
     suspend fun getMyCurfewRequests(
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 20,

@@ -60,16 +60,22 @@ class FaceApprovalViewModel @Inject constructor(
             try {
                 approveFaceUseCase(profileId)
                     .onSuccess { message ->
-                        updateState { it.copy(successMessage = message) }
+                        // Cải tiến: Xóa ngay lập tức khỏi danh sách cục bộ để UI phản hồi tức thì
+                        updateState { state ->
+                            state.copy(
+                                successMessage = message,
+                                pendingProfiles = state.pendingProfiles.filter { it.profileId != profileId },
+                                isLoading = false
+                            )
+                        }
+                        // Sau đó vẫn load lại để đồng bộ với server (đề phòng có thêm data mới)
                         loadPending()
                     }
                     .onFailure { error ->
-                        updateState { it.copy(errorMessage = error.message) }
+                        updateState { it.copy(errorMessage = error.message, isLoading = false) }
                     }
             } catch (e: Exception) {
-                updateState { it.copy(errorMessage = "Lỗi phê duyệt: ${e.message}") }
-            } finally {
-                updateState { it.copy(isLoading = false) }
+                updateState { it.copy(errorMessage = "Lỗi phê duyệt: ${e.message}", isLoading = false) }
             }
         }
     }
@@ -80,16 +86,21 @@ class FaceApprovalViewModel @Inject constructor(
             try {
                 rejectFaceUseCase(profileId, reason)
                     .onSuccess { message ->
-                        updateState { it.copy(successMessage = message) }
+                        // Cải tiến: Xóa ngay lập tức khỏi danh sách cục bộ
+                        updateState { state ->
+                            state.copy(
+                                successMessage = message,
+                                pendingProfiles = state.pendingProfiles.filter { it.profileId != profileId },
+                                isLoading = false
+                            )
+                        }
                         loadPending()
                     }
                     .onFailure { error ->
-                        updateState { it.copy(errorMessage = error.message) }
+                        updateState { it.copy(errorMessage = error.message, isLoading = false) }
                     }
             } catch (e: Exception) {
-                updateState { it.copy(errorMessage = "Lỗi từ chối: ${e.message}") }
-            } finally {
-                updateState { it.copy(isLoading = false) }
+                updateState { it.copy(errorMessage = "Lỗi từ chối: ${e.message}", isLoading = false) }
             }
         }
     }

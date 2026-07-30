@@ -9,6 +9,8 @@
 
     <!-- Ngoại lệ cho môi trường phát triển (Local IP) -->
     <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.137.1</domain>
+        <domain includeSubdomains="true">10.17.63.74</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">172.21.0.40</domain>

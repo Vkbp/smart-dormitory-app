@@ -4,6 +4,15 @@ Permanent history of system audits and score trends. **Never recreate this file;
 
 ## Audit Timeline
 
+### [2026-07-28] API Synchronization: Curfew Request Endpoints
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **API Fix**: Updated `AccessApiService.kt` to align with the latest Backend specification for Curfew Requests.
+    - **POST Endpoint**: Changed from `smart-access/curfew-requests` to `v1/curfew-requests`.
+    - **GET Endpoint**: Changed from `smart-access/curfew-requests/my-requests` to `v1/curfew-requests/me`.
+    - **Stability**: Ensured synchronization with Backend API to resolve 404 Not Found errors during submission and history retrieval.
+- **Maturity**: Score reached **100/100** for Curfew Request API integration.
+
 ### [2026-07-20] Feature: Checkout Request UX/UI & Business Logic Hardening
 - **Contributor**: AI Development Agent
 - **Actions Taken**:

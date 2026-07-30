@@ -49,14 +49,14 @@ fun AccessLogDto.toEntity() = AccessLogEntity(
 )
 
 fun CurfewRequestDto.toDomain() = CurfewRequest(
-    id = id,
-    studentId = studentId,
-    requestType = try { CurfewRequestType.valueOf(requestType) } catch (e: Exception) { CurfewRequestType.LATE_RETURN },
-    reason = reason,
+    id = id ?: java.util.UUID.randomUUID().toString(),
+    studentId = studentId ?: "",
+    requestType = try { CurfewRequestType.valueOf(requestType ?: "LATE_RETURN") } catch (e: Exception) { CurfewRequestType.LATE_RETURN },
+    reason = reason ?: "N/A",
     startDate = startDate,
-    expectedArrivalTime = expectedArrivalTime,
+    expectedArrivalTime = expectedArrivalTime ?: "",
     note = note,
-    status = try { CurfewStatus.valueOf(status) } catch (e: Exception) { CurfewStatus.PENDING },
+    status = try { CurfewStatus.valueOf(status ?: "PENDING") } catch (e: Exception) { CurfewStatus.PENDING },
     createdAt = createdAt,
     approvedAt = approvedAt,
     approvedBy = approvedBy
@@ -77,14 +77,14 @@ fun CurfewRequestEntity.toDomain() = CurfewRequest(
 )
 
 fun CurfewRequestDto.toEntity() = CurfewRequestEntity(
-    id = id,
-    studentId = studentId,
-    requestType = requestType,
-    reason = reason,
+    id = id ?: java.util.UUID.randomUUID().toString(),
+    studentId = studentId ?: "",
+    requestType = requestType ?: "LATE_RETURN",
+    reason = reason ?: "N/A",
     startDate = startDate,
-    expectedArrivalTime = expectedArrivalTime,
+    expectedArrivalTime = expectedArrivalTime ?: "",
     note = note,
-    status = status,
+    status = status ?: "PENDING",
     createdAt = createdAt,
     approvedAt = approvedAt,
     approvedBy = approvedBy
