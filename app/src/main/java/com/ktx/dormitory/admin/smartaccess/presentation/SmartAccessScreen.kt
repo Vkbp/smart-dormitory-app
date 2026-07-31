@@ -362,7 +362,7 @@ fun EmergencyOverrideDialog(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                 enabled = reason.isNotBlank(),
                 onClick = {
-                    onConfirm("EMERGENCY_OPEN", reason, selectedBuilding?.id)
+                    onConfirm("GLOBAL_UNLOCK", reason, selectedBuilding?.id)
                 }
             ) { Text("XÁC NHẬN") }
         },
