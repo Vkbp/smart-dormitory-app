@@ -100,7 +100,8 @@ class ProfileViewModel @Inject constructor(
                 fatherName = fatherName,
                 fatherPhone = fatherPhone,
                 motherName = motherName,
-                motherPhone = motherPhone
+                motherPhone = motherPhone,
+                avatarUrl = currentState.profile?.avatarUrl // Giữ nguyên avatarUrl hiện tại khi cập nhật các thông tin khác
             ).onSuccess {
                 updateState { state ->
                     state.copy(
