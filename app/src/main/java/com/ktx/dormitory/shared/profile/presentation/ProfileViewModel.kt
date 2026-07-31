@@ -128,13 +128,20 @@ class ProfileViewModel @Inject constructor(
             updateState { it.copy(isUploading = true, uploadSuccess = false) }
             uploadAvatarUseCase(filePath)
                 .onSuccess { newUrl ->
-                    updateState { state ->
-                        state.copy(
-                            uploadSuccess = true,
-                            profile = state.profile?.copy(avatarUrl = newUrl)
-                        )
-                    }
-                    sendEffect(ProfileUiEffect.ShowToast("Tải ảnh lên thành công"))
+                    // Sau khi tải ảnh lên Cloudinary thành công, cần gọi API update profile để lưu URL này vào Database
+                    updateProfileUseCase(avatarUrl = newUrl)
+                        .onSuccess {
+                            updateState { state ->
+                                state.copy(
+                                    uploadSuccess = true,
+                                    profile = state.profile?.copy(avatarUrl = newUrl)
+                                )
+                            }
+                            sendEffect(ProfileUiEffect.ShowToast("Cập nhật ảnh đại diện thành công"))
+                        }
+                        .onFailure { e ->
+                            updateState { it.copy(error = "Lưu ảnh vào hồ sơ thất bại: ${e.message}") }
+                        }
                 }
                 .onFailure { e ->
                     updateState { it.copy(error = e.message) }

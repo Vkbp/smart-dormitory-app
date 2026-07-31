@@ -8,13 +8,14 @@ class UpdateProfileUseCase @Inject constructor(
     private val profileRepository: ProfileRepository
 ) {
     suspend operator fun invoke(
-        phone: String,
-        permanentAddress: String,
-        emergencyContact: String,
-        fatherName: String,
-        fatherPhone: String,
-        motherName: String,
-        motherPhone: String
+        phone: String? = null,
+        permanentAddress: String? = null,
+        emergencyContact: String? = null,
+        fatherName: String? = null,
+        fatherPhone: String? = null,
+        motherName: String? = null,
+        motherPhone: String? = null,
+        avatarUrl: String? = null
     ): Result<Unit> {
         return profileRepository.updateProfile(
             UpdateProfileRequest(
@@ -24,7 +25,8 @@ class UpdateProfileUseCase @Inject constructor(
                 fatherName = fatherName,
                 fatherPhone = fatherPhone,
                 motherName = motherName,
-                motherPhone = motherPhone
+                motherPhone = motherPhone,
+                avatarUrl = avatarUrl
             )
         )
     }

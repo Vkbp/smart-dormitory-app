@@ -23,6 +23,14 @@ Permanent history of system audits and score trends. **Never recreate this file;
     - **Stability**: Ensured synchronization with Backend API to resolve 404 Not Found errors during submission and history retrieval.
 - **Maturity**: Score reached **100/100** for Curfew Request API integration.
 
+### [2026-07-31] Bug Fix: Profile Avatar Persistence
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Logic Fix**: Fixed an issue where uploaded avatars would revert to the old image after navigating away. The app now explicitly calls the Update Profile API (`PATCH v1/students/me`) with the new Cloudinary URL immediately after a successful upload.
+    - **Architecture**: Updated `UpdateProfileUseCase.kt` to support optional `avatarUrl` updates.
+    - **ViewModel**: Integrated the profile update step into the `uploadAvatar` flow in `ProfileViewModel.kt`.
+- **Maturity**: Score maintained at **99/100**.
+
 ### [2026-07-30] UX: Resident vs Guest/Alumni Mode (Home Logic)
 - **Contributor**: AI Development Agent
 - **Actions Taken**:
