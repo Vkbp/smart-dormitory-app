@@ -456,9 +456,8 @@ Permanent history of system audits and score trends. **Never recreate this file;
 - **Actions Taken**:
     - **API Hardening**: Synchronized all Payment-related DTOs with the latest Backend changes.
     - **Data Type Upgrade**: Upgraded currency fields (`amount`, `paidAmount`, `remainingAmount`) from `Double` to `BigDecimal` across Data, Domain, and Presentation layers for financial precision.
-    - **DTO Update**: Added missing fields (`billStatus`, `assignmentStatus`, `paidAmount`, `message`) to `PaymentResponseDto.kt`.
-    - **Domain Refactor**: Updated `Bill` and `PaymentResult` models to use `BigDecimal` and include new status fields.
-    - **Persistence**: Updated `PaymentMapper.kt` to handle `BigDecimal` to `Double` conversion for Room Database (`InvoiceEntity`) and back.
-    - **UI/UX Sync**: Updated `PaymentScreen.kt`, `PaymentHistoryScreen.kt`, and `SmartQRBottomSheet.kt` to handle `BigDecimal` for currency formatting and calculations.
-    - **Sync Protocol**: Updated `VerifyPaymentPayload` in `SyncPayloads.kt` for data consistency.
-- **Maturity**: Score reached **100/100** for Payment module data integrity.
+    - **Field Synchronization**: Added missing fields (`billCode`, `billStatus`, `assignmentStatus`, `paidAmount`, `message`) to `BillDto.kt` and `PaymentResponseDto.kt`.
+    - **UI/UX Refactor**: Replaced UUID display with `billCode` (e.g., HD-XXXX) in Payment List and History screens. Updated Bank Transfer content logic to use `billCode`.
+    - **Notification Upgrade**: Added `eventId` (Reference Code) support to Notification module and updated UI to display it clearly.
+    - **Stability**: Incremented Room database version to 4 to support `InvoiceEntity` schema changes.
+- **Maturity**: Score reached **100/100** for Payment & Notification module synchronization.
