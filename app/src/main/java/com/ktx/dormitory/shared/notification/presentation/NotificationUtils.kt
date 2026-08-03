@@ -11,33 +11,40 @@ import androidx.compose.ui.graphics.vector.ImageVector
 object NotificationUtils {
     @Composable
     fun getTypeIcon(type: String?): ImageVector {
-        return when (type?.uppercase()) {
-            "PAYMENT" -> Icons.Default.AccountBalanceWallet
-            "ELECTRIC_FEE" -> Icons.Default.FlashOn
-            "ACCOMMODATION_FEE" -> Icons.Default.Home
-            "APPLICATION_FEE", "DEPOSIT_FEE" -> Icons.AutoMirrored.Filled.Assignment
-            "PENALTY_FEE" -> Icons.Default.ReportProblem
-            "MAINTENANCE" -> Icons.Default.Build
-            "APPLICATION" -> Icons.AutoMirrored.Filled.Assignment
-            "ANNOUNCEMENT" -> Icons.Default.Campaign
-            "ROOM" -> Icons.Default.Home
-            "SMART_ACCESS" -> Icons.Default.LockOpen
-            "FACE" -> Icons.Default.Face
-            "SYSTEM" -> Icons.Default.Warning
+        val typeUpper = type?.uppercase() ?: ""
+        return when {
+            typeUpper in listOf("PAYMENT", "BILL", "INVOICE") -> Icons.Default.AccountBalanceWallet
+            typeUpper.contains("ELECTRIC") || typeUpper == "TIEN_DIEN" -> Icons.Default.FlashOn
+            typeUpper == "ACCOMMODATION_FEE" -> Icons.Default.Home
+            typeUpper in listOf("APPLICATION_FEE", "DEPOSIT_FEE") -> Icons.AutoMirrored.Filled.Assignment
+            typeUpper == "PENALTY_FEE" -> Icons.Default.ReportProblem
+            typeUpper == "MAINTENANCE" -> Icons.Default.Build
+            typeUpper == "APPLICATION" -> Icons.AutoMirrored.Filled.Assignment
+            typeUpper == "ANNOUNCEMENT" -> Icons.Default.Campaign
+            typeUpper == "ROOM" -> Icons.Default.Home
+            typeUpper == "SMART_ACCESS" -> Icons.Default.LockOpen
+            typeUpper == "FACE" -> Icons.Default.Face
+            typeUpper == "SYSTEM" -> Icons.Default.Warning
             else -> Icons.Default.Notifications
         }
     }
 
     @Composable
     fun getTypeColor(type: String?): Color {
-        return when (type?.uppercase()) {
-            "PAYMENT", "ELECTRIC_FEE", "ACCOMMODATION_FEE", "APPLICATION_FEE", "PENALTY_FEE", "DEPOSIT_FEE" -> Color(0xFF4CAF50) // Green for all payments
-            "MAINTENANCE" -> Color(0xFFFF9800) // Orange
-            "APPLICATION", "ANNOUNCEMENT" -> Color(0xFF2196F3) // Blue
-            "ROOM" -> Color(0xFF9C27B0) // Purple
-            "SMART_ACCESS" -> Color(0xFFF44336) // Red
-            "FACE" -> Color(0xFF00BCD4) // Cyan
-            "SYSTEM" -> Color(0xFFE91E63) // Pink
+        val typeUpper = type?.uppercase() ?: ""
+        val isPayment = typeUpper in listOf(
+            "PAYMENT", "ELECTRIC_FEE", "ACCOMMODATION_FEE", "APPLICATION_FEE",
+            "PENALTY_FEE", "DEPOSIT_FEE", "BILL", "INVOICE", "PAYMENT_NOTICE"
+        )
+        
+        return when {
+            isPayment -> Color(0xFF4CAF50) // Green
+            typeUpper == "MAINTENANCE" -> Color(0xFFFF9800) // Orange
+            typeUpper in listOf("APPLICATION", "ANNOUNCEMENT") -> Color(0xFF2196F3) // Blue
+            typeUpper == "ROOM" -> Color(0xFF9C27B0) // Purple
+            typeUpper == "SMART_ACCESS" -> Color(0xFFF44336) // Red
+            typeUpper == "FACE" -> Color(0xFF00BCD4) // Cyan
+            typeUpper == "SYSTEM" -> Color(0xFFE91E63) // Pink
             else -> MaterialTheme.colorScheme.primary
         }
     }

@@ -89,11 +89,17 @@ class NotificationViewModel @Inject constructor(
             NotificationType.ALL -> notifications
             NotificationType.PAYMENT -> {
                 notifications.filter {
-                    it.type?.uppercase() in listOf(
-                        "PAYMENT", "ELECTRIC_FEE",
-                        "ACCOMMODATION_FEE", "APPLICATION_FEE",
-                        "PENALTY_FEE", "DEPOSIT_FEE"
+                    val typeUpper = it.type?.uppercase() ?: ""
+                    val isPaymentType = typeUpper in listOf(
+                        "PAYMENT", "ELECTRIC_FEE", "ACCOMMODATION_FEE",
+                        "APPLICATION_FEE", "PENALTY_FEE", "DEPOSIT_FEE",
+                        "BILL", "INVOICE", "PAYMENT_NOTICE"
                     )
+                    val containsKeyword = it.title.contains("hóa đơn", ignoreCase = true) ||
+                            it.title.contains("thanh toán", ignoreCase = true) ||
+                            it.message.contains("tiền điện", ignoreCase = true)
+                    
+                    isPaymentType || containsKeyword
                 }
             }
             else -> notifications.filter { it.type?.uppercase() == type.name }
