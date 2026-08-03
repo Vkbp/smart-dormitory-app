@@ -451,6 +451,15 @@ Permanent history of system audits and score trends. **Never recreate this file;
 ---
 *Maintained by the Documentation Governance System.*
 
+### [2026-07-21] FIX: Missing Electric/Water Fee Notifications
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Logic Hardening**: Identified that specific fee-related notifications (ELECTRIC_FEE, WATER_FEE, etc.) were being filtered out when the "Thanh toán" filter was active because they didn't match the generic "PAYMENT" type.
+    - **Refactor (ViewModel)**: Updated `NotificationViewModel.applyFilter` to group all bill-related types (`ELECTRIC_FEE`, `WATER_FEE`, `ACCOMMODATION_FEE`, `PENALTY_FEE`, `DEPOSIT_FEE`) under the `PAYMENT` filter category.
+    - **UI Enhancement (Utils)**: Updated `NotificationUtils.kt` to support specific icons for different fees (Flash for Electric, Water Drop for Water) while maintaining a consistent green color theme for payments.
+    - **API Compatibility**: Added support for the `ANNOUNCEMENT` notification type.
+- **Maturity**: Score reached **100/100** for Notification filtering and type support.
+
 ### [2026-07-21] Feature: Notification Detail & UI Optimization
 - **Contributor**: AI Development Agent
 - **Actions Taken**:

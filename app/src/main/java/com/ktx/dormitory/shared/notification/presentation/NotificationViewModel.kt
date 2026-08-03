@@ -85,10 +85,18 @@ class NotificationViewModel @Inject constructor(
     }
 
     private fun applyFilter(notifications: List<Notification>, type: NotificationType): List<Notification> {
-        return if (type == NotificationType.ALL) {
-            notifications
-        } else {
-            notifications.filter { it.type == type.name }
+        return when (type) {
+            NotificationType.ALL -> notifications
+            NotificationType.PAYMENT -> {
+                notifications.filter {
+                    it.type?.uppercase() in listOf(
+                        "PAYMENT", "ELECTRIC_FEE", "WATER_FEE",
+                        "ACCOMMODATION_FEE", "APPLICATION_FEE",
+                        "PENALTY_FEE", "DEPOSIT_FEE"
+                    )
+                }
+            }
+            else -> notifications.filter { it.type?.uppercase() == type.name }
         }
     }
 }
