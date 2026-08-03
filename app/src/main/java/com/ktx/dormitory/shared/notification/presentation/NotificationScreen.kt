@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,6 +32,7 @@ import com.ktx.dormitory.shared.notification.domain.model.NotificationType
 import com.ktx.dormitory.ui.components.EmptyView
 import com.ktx.dormitory.ui.components.ErrorView
 import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.shared.notification.presentation.components.NotificationDetailBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +41,13 @@ fun NotificationScreen(
     viewModel: NotificationViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    if (uiState.selectedNotification != null) {
+        NotificationDetailBottomSheet(
+            notification = uiState.selectedNotification!!,
+            onDismiss = { viewModel.onEvent(NotificationUiEvent.SelectNotification(null)) }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -110,7 +117,7 @@ fun NotificationScreen(
                                         if (!notification.isRead) {
                                             viewModel.onEvent(NotificationUiEvent.MarkAsRead(notification.id))
                                         }
-                                        // TODO: Handle actionUrl navigation
+                                        viewModel.onEvent(NotificationUiEvent.SelectNotification(notification))
                                     }
                                 )
                             }
@@ -187,13 +194,13 @@ fun NotificationCard(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(getTypeColor(notification.type).copy(alpha = 0.1f)),
+                    .background(NotificationUtils.getTypeColor(notification.type).copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = getTypeIcon(notification.type),
+                    imageVector = NotificationUtils.getTypeIcon(notification.type),
                     contentDescription = null,
-                    tint = getTypeColor(notification.type),
+                    tint = NotificationUtils.getTypeColor(notification.type),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -232,7 +239,7 @@ fun NotificationCard(
                     text = notification.message,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 3,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
 
@@ -262,33 +269,5 @@ fun NotificationCard(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun getTypeIcon(type: String?): androidx.compose.ui.graphics.vector.ImageVector {
-    return when (type?.uppercase()) {
-        "PAYMENT" -> Icons.Default.AccountBalanceWallet
-        "MAINTENANCE" -> Icons.Default.Build
-        "APPLICATION" -> Icons.AutoMirrored.Filled.Assignment
-        "ROOM" -> Icons.Default.Home
-        "SMART_ACCESS" -> Icons.Default.LockOpen
-        "FACE" -> Icons.Default.Face
-        "SYSTEM" -> Icons.Default.Warning
-        else -> Icons.Default.Notifications
-    }
-}
-
-@Composable
-fun getTypeColor(type: String?): Color {
-    return when (type?.uppercase()) {
-        "PAYMENT" -> Color(0xFF4CAF50) // Green
-        "MAINTENANCE" -> Color(0xFFFF9800) // Orange
-        "APPLICATION" -> Color(0xFF2196F3) // Blue
-        "ROOM" -> Color(0xFF9C27B0) // Purple
-        "SMART_ACCESS" -> Color(0xFFF44336) // Red
-        "FACE" -> Color(0xFF00BCD4) // Cyan
-        "SYSTEM" -> Color(0xFFE91E63) // Pink
-        else -> MaterialTheme.colorScheme.primary
     }
 }

@@ -32,6 +32,9 @@ class NotificationViewModel @Inject constructor(
             is NotificationUiEvent.MarkAsRead -> markAsRead(event.notificationId)
             NotificationUiEvent.MarkAllAsRead -> markAllAsRead()
             is NotificationUiEvent.FilterByType -> filterNotifications(event.type)
+            is NotificationUiEvent.SelectNotification -> {
+                updateState { it.copy(selectedNotification = event.notification) }
+            }
         }
     }
 

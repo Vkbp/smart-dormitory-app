@@ -10,7 +10,8 @@ data class NotificationUiState(
     val filteredNotifications: List<Notification> = emptyList(),
     val selectedType: NotificationType = NotificationType.ALL,
     val unreadCount: Int = 0,
-    val error: String? = null
+    val error: String? = null,
+    val selectedNotification: Notification? = null
 ) : BaseContract.State
 
 sealed class NotificationUiEvent : BaseContract.Event {
@@ -19,6 +20,7 @@ sealed class NotificationUiEvent : BaseContract.Event {
     data object MarkAllAsRead : NotificationUiEvent()
     data object Refresh : NotificationUiEvent()
     data class FilterByType(val type: NotificationType) : NotificationUiEvent()
+    data class SelectNotification(val notification: Notification?) : NotificationUiEvent()
 }
 
 sealed class NotificationUiEffect : BaseContract.Effect {
