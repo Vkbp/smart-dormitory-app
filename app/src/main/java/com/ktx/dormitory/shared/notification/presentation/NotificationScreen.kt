@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -53,7 +54,7 @@ fun NotificationScreen(
 
     if (uiState.selectedNotification != null) {
         NotificationDetailBottomSheet(
-            notification = uiState.selectedNotification!!
+            notification = uiState.selectedNotification!!,
         ) { 
             viewModel.onEvent(NotificationUiEvent.SelectNotification(null)) 
             pagingItems.refresh() // Refresh list to update read status visually if needed
@@ -116,7 +117,7 @@ fun NotificationScreen(
                             onRetry = { pagingItems.refresh() }
                         )
                     }
-                    pagingItems.itemCount == 0 && pagingItems.loadState.refresh !is LoadState.Loading -> EmptyView(
+                    (pagingItems.itemCount == 0 && pagingItems.loadState.refresh !is LoadState.Loading) -> EmptyView(
                         message = if (uiState.selectedType == NotificationType.ALL) "Chưa có thông báo nào" 
                                   else "Không có thông báo ${uiState.selectedType.displayName.lowercase()}",
                         icon = Icons.Default.NotificationsNone
@@ -168,19 +169,24 @@ private fun handleNotificationNavigation(actionUrl: String?, navController: NavC
     
     // Switch-case navigation based on actionUrl format
     when {
-        actionUrl.contains("/student/bills") -> {
+        actionUrl.contains("/student/bills") || actionUrl.contains("/payment") -> {
             navController.navigate(Screen.Payment.route)
         }
-        actionUrl.contains("/student/room") -> {
+        actionUrl.contains("/student/room") || actionUrl.contains("/room-info") -> {
             navController.navigate(Screen.RoomInfo.route)
         }
-        actionUrl.contains("/student/face") -> {
+        actionUrl.contains("/student/face") || actionUrl.contains("/face-status") -> {
             navController.navigate(Screen.FaceStatus.route)
         }
-        actionUrl.contains("/student/checkout") -> {
+        actionUrl.contains("/student/checkout") || actionUrl.contains("/checkout") -> {
             navController.navigate(Screen.Checkout.route)
         }
-        // Add more routes as needed
+        actionUrl.contains("/student/extension") || actionUrl.contains("/quick-extend") -> {
+            navController.navigate(Screen.QuickExtend.route)
+        }
+        actionUrl.contains("/student/access") || actionUrl.contains("/access-history") -> {
+            navController.navigate(Screen.AccessHistory.route)
+        }
     }
 }
 
@@ -233,13 +239,13 @@ fun NotificationCard(
             containerColor = if (notification.isRead) 
                 MaterialTheme.colorScheme.surface 
             else 
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.08f)
+                Color(0xFFE3F2FD) // Blue-ish for unread
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = if (notification.isRead) 0.dp else 2.dp),
         border = if (notification.isRead) 
             CardDefaults.outlinedCardBorder().copy(brush = Brush.linearGradient(listOf(Color.LightGray.copy(alpha = 0.2f), Color.Transparent)))
         else 
-            BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+            BorderStroke(1.dp, Color(0xFF2196F3).copy(alpha = 0.3f))
     ) {
         Row(
             modifier = Modifier
@@ -295,6 +301,16 @@ fun NotificationCard(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f)
                         )
+                        
+                        if (!notification.isRead) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF2196F3))
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -324,7 +340,7 @@ fun NotificationCard(
                             )
                             Spacer(Modifier.width(4.dp))
                             Text(
-                                text = DateTimeUtils.formatIsoDate(notification.createdAt),
+                                text = DateTimeUtils.formatRelativeTime(notification.createdAt),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.outline,
                                 fontSize = 11.sp

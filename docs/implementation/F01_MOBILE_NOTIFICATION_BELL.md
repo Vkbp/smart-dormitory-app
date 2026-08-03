@@ -51,8 +51,16 @@ Dựa trên hệ thống Backend SDMS đã hoàn thiện việc phát sự kiệ
 
 **3. Phát triển UI (Presentation Layer):**
 - **Chuông thông báo (AppBar):** Hiển thị biểu tượng `Icon(Icons.notifications)` trên màn hình Home. Nếu unread count > 0, gắn thêm 1 badge màu đỏ hiển thị con số.
-- **Màn hình danh sách (Notification Screen):** Tạo UI cho danh sách thông báo. Những thông báo chưa đọc (`isRead == false`) cần có background nổi bật hơn (ví dụ màu xanh dương nhạt) hoặc 1 chấm tròn nhỏ, các thông báo đã đọc thì background trong suốt/xám nhạt.
-- Text hiển thị cần rõ ràng, Title in đậm, Message hiển thị 2-3 dòng, Time được format dạng (2 giờ trước, hoặc ngày tháng).
+- **Màn hình danh sách (Notification Screen):** Tạo UI cho danh sách thông báo. Những thông báo chưa đọc (`isRead == false`) cần có background nổi bật hơn (ví dụ màu xanh dương nhạt) hoặc 1 chấm tròn nhỏ.
+- **Icon hiển thị theo Enum (Quan trọng):** Dựa vào trường `type`, thiết kế hàm mapping trả về Icon và Màu sắc tương ứng. App Sinh viên CHỈ cần quan tâm các loại Enum sau (tuyệt đối không xử lý `IOT_HARDWARE_ERROR` vì đó là của Admin):
+  - `APPLICATION`: Liên quan tới đơn từ (Icon văn bản, màu xanh dương).
+  - `ROOM`: Liên quan tới phòng ở/mã PIN (Icon chìa khóa/cửa, màu tím/cam).
+  - `SYSTEM`: Hệ thống tự động báo (Icon robot/hệ thống, màu xám).
+  - `ANNOUNCEMENT`: Loa phát thanh từ Ban quản lý (Icon cái loa, màu xanh lá).
+  - `MAINTENANCE`: Xử lý báo hỏng (Icon cờ lê/bảo trì, màu vàng).
+  - `PAYMENT`: Đóng tiền THÀNH CÔNG (Icon tick xanh xác nhận, màu xanh lá).
+  - `ELECTRIC_FEE`, `ACCOMMODATION_FEE`, `PENALTY_FEE`: Thông báo BÁO NỢ cần đóng tiền (Icon tia sét/cảnh báo, màu đỏ để sinh viên chú ý).
+- Text hiển thị cần rõ ràng, Title in đậm, Message hiển thị 2-3 dòng, Time được format thân thiện (vd: 2 giờ trước).
 
 **4. Xử lý tương tác (Action):**
 - Khi bấm vào 1 thông báo, ngay lập tức gọi API đánh dấu đã đọc (PUT `/{id}/read`) và cập nhật lại UI state.

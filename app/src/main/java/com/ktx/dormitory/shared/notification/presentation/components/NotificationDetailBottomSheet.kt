@@ -76,7 +76,7 @@ fun NotificationDetailBottomSheet(
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            text = DateTimeUtils.formatIsoDate(notification.createdAt),
+                            text = DateTimeUtils.formatRelativeTime(notification.createdAt),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.outline
                         )

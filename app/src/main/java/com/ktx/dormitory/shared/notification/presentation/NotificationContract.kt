@@ -13,7 +13,9 @@ data class NotificationUiState(
     val selectedType: NotificationType = NotificationType.ALL,
     val unreadCount: Int = 0,
     val error: String? = null,
-    val selectedNotification: Notification? = null
+    val selectedNotification: Notification? = null,
+    val readIds: Set<Long> = emptySet(),
+    val isAllReadMarked: Boolean = false
 ) : BaseContract.State
 
 sealed class NotificationUiEvent : BaseContract.Event {

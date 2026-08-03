@@ -9,11 +9,9 @@ import com.ktx.dormitory.shared.notification.domain.model.Notification
 import com.ktx.dormitory.shared.notification.domain.model.NotificationType
 import com.ktx.dormitory.shared.notification.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.paging.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,6 +24,9 @@ class NotificationViewModel @Inject constructor(
     private val markAllReadUseCase: MarkAllNotificationsReadUseCase,
 ) : BaseViewModel<NotificationUiState, NotificationUiEvent, NotificationUiEffect>(NotificationUiState()) {
 
+    private val readIdsFlow = MutableStateFlow<Set<Long>>(emptySet())
+    private val isAllReadFlow = MutableStateFlow(false)
+
     init {
         loadNotifications()
         fetchUnreadCount()
@@ -33,7 +34,6 @@ class NotificationViewModel @Inject constructor(
 
     fun refresh() {
         fetchUnreadCount()
-        // Paging 3 manages its own refresh, but we can re-trigger the flow if needed
     }
 
     override fun onEvent(event: NotificationUiEvent) {
@@ -56,13 +56,18 @@ class NotificationViewModel @Inject constructor(
 
     private fun loadNotifications() {
         val pagingFlow = uiState.map { it.selectedType }
+            .distinctUntilChanged()
             .flatMapLatest { type ->
                 getNotificationsUseCase()
                     .map { pagingData ->
-                        pagingData.filter { notification ->
-                            applyFilterLogic(notification, type)
-                        }
+                        pagingData.filter { applyFilterLogic(it, type) }
                     }
+            }
+            .combine(readIdsFlow) { pagingData, readIds ->
+                pagingData.map { it.copy(isRead = it.isRead || readIds.contains(it.id)) }
+            }
+            .combine(isAllReadFlow) { pagingData, isAllRead ->
+                if (isAllRead) pagingData.map { it.copy(isRead = true) } else pagingData
             }
             .cachedIn(viewModelScope)
 
@@ -72,27 +77,38 @@ class NotificationViewModel @Inject constructor(
     private fun fetchUnreadCount() {
         viewModelScope.launch {
             getUnreadCountUseCase().onSuccess { count ->
-                updateState { it.copy(unreadCount = count.toInt()) }
+                val localReadCount = readIdsFlow.value.size
+                val finalCount = if (isAllReadFlow.value) 0 else (count.toInt() - localReadCount).coerceAtLeast(0)
+                updateState { it.copy(unreadCount = finalCount) }
             }
         }
     }
 
     private fun markAsRead(id: Long) {
-        // Optimistic UI Update (limited in Paging 3, usually we wait for refresh or use a local state wrapper)
-        // For simplicity with Paging 3, we'll decrease count and wait for list refresh if necessary
-        updateState { it.copy(unreadCount = (it.unreadCount - 1).coerceAtLeast(0)) }
+        if (readIdsFlow.value.contains(id)) return
+
+        // Update Local State for instant UI feedback
+        readIdsFlow.value = readIdsFlow.value + id
+        updateState { it.copy(
+            readIds = readIdsFlow.value,
+            unreadCount = (it.unreadCount - 1).coerceAtLeast(0)
+        ) }
 
         viewModelScope.launch {
             markReadUseCase(id).onFailure {
-                fetchUnreadCount()
+                // On failure, we could potentially remove it from readIds, 
+                // but usually, we just let the next real refresh handle it.
             }
         }
     }
 
     private fun markAllAsRead() {
-        updateState { it.copy(unreadCount = 0) }
+        isAllReadFlow.value = true
+        updateState { it.copy(isAllReadMarked = true, unreadCount = 0) }
+        
         viewModelScope.launch {
             markAllReadUseCase().onFailure {
+                isAllReadFlow.value = false
                 fetchUnreadCount()
             }
         }

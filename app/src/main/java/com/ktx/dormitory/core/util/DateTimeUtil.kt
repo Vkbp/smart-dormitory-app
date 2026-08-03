@@ -105,4 +105,28 @@ object DateTimeUtils {
         }
         return isoDateTimeFormat.format(calendar.time)
     }
+
+    fun formatRelativeTime(isoDateTime: String?): String {
+        if (isoDateTime.isNullOrBlank()) return "N/A"
+        return try {
+            val date = isoDateTimeFormat.parse(isoDateTime) ?: isoDateFormat.parse(isoDateTime) ?: return isoDateTime
+            val now = Date()
+            val diff = now.time - date.time
+
+            val seconds = diff / 1000
+            val minutes = seconds / 60
+            val hours = minutes / 60
+            val days = hours / 24
+
+            when {
+                seconds < 60 -> "Vừa xong"
+                minutes < 60 -> "$minutes phút trước"
+                hours < 24 -> "$hours giờ trước"
+                days < 7 -> "$days ngày trước"
+                else -> displayDateFormat.format(date)
+            }
+        } catch (e: Exception) {
+            formatIsoDate(isoDateTime)
+        }
+    }
 }
