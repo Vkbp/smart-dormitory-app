@@ -109,10 +109,13 @@ fun NotificationScreen(
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
                     pagingItems.loadState.refresh is LoadState.Loading -> LoadingView()
-                    pagingItems.loadState.refresh is LoadState.Error -> ErrorView(
-                        message = "Lỗi tải thông báo",
-                        onRetry = { pagingItems.refresh() }
-                    )
+                    pagingItems.loadState.refresh is LoadState.Error -> {
+                        val e = pagingItems.loadState.refresh as LoadState.Error
+                        ErrorView(
+                            message = e.error.message ?: "Lỗi tải thông báo",
+                            onRetry = { pagingItems.refresh() }
+                        )
+                    }
                     pagingItems.itemCount == 0 && pagingItems.loadState.refresh !is LoadState.Loading -> EmptyView(
                         message = if (uiState.selectedType == NotificationType.ALL) "Chưa có thông báo nào" 
                                   else "Không có thông báo ${uiState.selectedType.displayName.lowercase()}",

@@ -24,14 +24,14 @@ class NotificationPagingSource(
         return try {
             val response = apiService.getNotificationsPaged(page, size)
             if (response.isSuccessful && response.body()?.success == true) {
-                val pagedData = response.body()!!.data!!
+                val list = response.body()?.data ?: emptyList()
                 LoadResult.Page(
-                    data = pagedData.content?.map { it.toDomain() } ?: emptyList(),
+                    data = list.map { it.toDomain() },
                     prevKey = if (page == 0) null else page - 1,
-                    nextKey = if (pagedData.last) null else page + 1
+                    nextKey = if (list.size < size) null else page + 1
                 )
             } else {
-                LoadResult.Error(Exception("Lỗi tải thông báo"))
+                LoadResult.Error(Exception("Lỗi tải thông báo từ server"))
             }
         } catch (e: Exception) {
             LoadResult.Error(e)
