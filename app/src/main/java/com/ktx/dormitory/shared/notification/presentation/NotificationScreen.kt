@@ -138,8 +138,9 @@ fun NotificationScreen(
                             ) { index ->
                                 val notification = pagingItems[index]
                                 if (notification != null) {
+                                    val isReadLocally = uiState.readIds.contains(notification.id) || uiState.isAllReadMarked
                                     NotificationCard(
-                                        notification = notification,
+                                        notification = notification.copy(isRead = notification.isRead || isReadLocally),
                                         onClick = { 
                                             if (!notification.isRead) {
                                                 viewModel.onEvent(NotificationUiEvent.MarkAsRead(notification.id))

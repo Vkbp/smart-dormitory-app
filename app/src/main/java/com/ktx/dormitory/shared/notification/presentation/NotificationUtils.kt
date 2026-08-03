@@ -13,13 +13,13 @@ object NotificationUtils {
         val typeUpper = type?.uppercase() ?: ""
         return when (typeUpper) {
             "APPLICATION" -> Icons.AutoMirrored.Filled.Assignment
-            "ROOM" -> Icons.Default.MeetingRoom
-            "SYSTEM" -> Icons.Default.SettingsSuggest
+            "ROOM" -> Icons.Default.Key
+            "SYSTEM" -> Icons.Default.SmartToy
             "ANNOUNCEMENT" -> Icons.Default.Campaign
             "MAINTENANCE" -> Icons.Default.Build
             "PAYMENT" -> Icons.Default.CheckCircle
             "ELECTRIC_FEE", "ACCOMMODATION_FEE", "PENALTY_FEE" -> Icons.Default.FlashOn
-            else -> Icons.Default.Notifications
+            else -> Icons.Default.Notifications // Fallback
         }
     }
 
@@ -31,10 +31,10 @@ object NotificationUtils {
             "ROOM" -> Color(0xFF9C27B0) // Purple
             "SYSTEM" -> Color(0xFF9E9E9E) // Grey
             "ANNOUNCEMENT" -> Color(0xFF4CAF50) // Green
-            "MAINTENANCE" -> Color(0xFFFFEB3B) // Yellow
+            "MAINTENANCE" -> Color(0xFFFFC107) // Amber/Yellow
             "PAYMENT" -> Color(0xFF4CAF50) // Green (Success)
             "ELECTRIC_FEE", "ACCOMMODATION_FEE", "PENALTY_FEE" -> Color(0xFFF44336) // Red (Báo nợ)
-            else -> Color(0xFF2196F3)
+            else -> Color(0xFF757575) // Fallback default grey
         }
     }
 }

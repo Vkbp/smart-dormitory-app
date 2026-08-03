@@ -24,9 +24,6 @@ class NotificationViewModel @Inject constructor(
     private val markAllReadUseCase: MarkAllNotificationsReadUseCase,
 ) : BaseViewModel<NotificationUiState, NotificationUiEvent, NotificationUiEffect>(NotificationUiState()) {
 
-    private val readIdsFlow = MutableStateFlow<Set<Long>>(emptySet())
-    private val isAllReadFlow = MutableStateFlow(false)
-
     init {
         loadNotifications()
         fetchUnreadCount()
@@ -38,9 +35,8 @@ class NotificationViewModel @Inject constructor(
 
     override fun onEvent(event: NotificationUiEvent) {
         when (event) {
-            NotificationUiEvent.LoadNotifications -> loadNotifications()
+            NotificationUiEvent.LoadNotifications -> { /* Paging 3 handles initial load */ }
             NotificationUiEvent.Refresh -> {
-                loadNotifications()
                 fetchUnreadCount()
             }
             is NotificationUiEvent.MarkAsRead -> markAsRead(event.notificationId)
@@ -63,12 +59,6 @@ class NotificationViewModel @Inject constructor(
                         pagingData.filter { applyFilterLogic(it, type) }
                     }
             }
-            .combine(readIdsFlow) { pagingData, readIds ->
-                pagingData.map { it.copy(isRead = it.isRead || readIds.contains(it.id)) }
-            }
-            .combine(isAllReadFlow) { pagingData, isAllRead ->
-                if (isAllRead) pagingData.map { it.copy(isRead = true) } else pagingData
-            }
             .cachedIn(viewModelScope)
 
         updateState { it.copy(pagingFlow = pagingFlow) }
@@ -77,38 +67,37 @@ class NotificationViewModel @Inject constructor(
     private fun fetchUnreadCount() {
         viewModelScope.launch {
             getUnreadCountUseCase().onSuccess { count ->
-                val localReadCount = readIdsFlow.value.size
-                val finalCount = if (isAllReadFlow.value) 0 else (count.toInt() - localReadCount).coerceAtLeast(0)
+                val serverCount = count.toInt()
+                val localReadCount = currentState.readIds.size
+                val finalCount = if (currentState.isAllReadMarked) 0 
+                                else (serverCount - localReadCount).coerceAtLeast(0)
                 updateState { it.copy(unreadCount = finalCount) }
             }
         }
     }
 
     private fun markAsRead(id: Long) {
-        if (readIdsFlow.value.contains(id)) return
+        if (currentState.readIds.contains(id)) return
 
-        // Update Local State for instant UI feedback
-        readIdsFlow.value = readIdsFlow.value + id
+        // Update Local State for instant UI feedback without breaking Paging flow
+        val newReadIds = currentState.readIds + id
         updateState { it.copy(
-            readIds = readIdsFlow.value,
+            readIds = newReadIds,
             unreadCount = (it.unreadCount - 1).coerceAtLeast(0)
         ) }
 
         viewModelScope.launch {
             markReadUseCase(id).onFailure {
-                // On failure, we could potentially remove it from readIds, 
-                // but usually, we just let the next real refresh handle it.
+                // Optional: handle revert if critical, but usually server eventually syncs
             }
         }
     }
 
     private fun markAllAsRead() {
-        isAllReadFlow.value = true
         updateState { it.copy(isAllReadMarked = true, unreadCount = 0) }
-        
         viewModelScope.launch {
             markAllReadUseCase().onFailure {
-                isAllReadFlow.value = false
+                updateState { it.copy(isAllReadMarked = false) }
                 fetchUnreadCount()
             }
         }
