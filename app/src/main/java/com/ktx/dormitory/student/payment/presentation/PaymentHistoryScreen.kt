@@ -111,9 +111,7 @@ fun BillHistoryItem(bill: Bill) {
                     text = when(bill.type) {
                         BillType.ACCOMMODATION_FEE -> "Tiền phòng"
                         BillType.ELECTRIC_FEE -> "Tiền điện"
-                        BillType.APPLICATION_FEE -> "Lệ phí hồ sơ"
                         BillType.PENALTY_FEE -> "Phí phạt"
-                        BillType.DEPOSIT_FEE -> "Tiền cọc"
                         else -> "Hóa đơn"
                     }, 
                     fontWeight = FontWeight.Bold

@@ -19,11 +19,9 @@ fun BillDto.toDomain(): Bill {
         id = id,
         billCode = billCode,
         type = when (type?.uppercase()) {
-            "APPLICATION_FEE" -> BillType.APPLICATION_FEE
             "ACCOMMODATION_FEE" -> BillType.ACCOMMODATION_FEE
             "ELECTRIC_FEE" -> BillType.ELECTRIC_FEE
             "PENALTY_FEE" -> BillType.PENALTY_FEE
-            "DEPOSIT_FEE" -> BillType.DEPOSIT_FEE
             else -> null
         },
         amount = amount,
@@ -95,11 +93,9 @@ fun InvoiceEntity.toDomain(): Bill {
         id = id,
         billCode = billCode,
         type = when (type?.uppercase()) {
-            "APPLICATION_FEE" -> BillType.APPLICATION_FEE
             "ACCOMMODATION_FEE" -> BillType.ACCOMMODATION_FEE
             "ELECTRIC_FEE" -> BillType.ELECTRIC_FEE
             "PENALTY_FEE" -> BillType.PENALTY_FEE
-            "DEPOSIT_FEE" -> BillType.DEPOSIT_FEE
             else -> null
         },
         amount = amount?.toBigDecimal(),

@@ -181,9 +181,7 @@ fun BillCard(bill: Bill, isProcessing: Boolean, onPay: () -> Unit) {
                 val icon = when (bill.type) {
                     BillType.ACCOMMODATION_FEE -> Icons.Default.Home
                     BillType.ELECTRIC_FEE -> Icons.Default.FlashOn
-                    BillType.APPLICATION_FEE -> Icons.AutoMirrored.Filled.Assignment
                     BillType.PENALTY_FEE -> Icons.Default.ReportProblem
-                    BillType.DEPOSIT_FEE -> Icons.Default.AccountBalanceWallet
                     else -> Icons.Default.Description
                 }
 

@@ -16,7 +16,6 @@ object NotificationUtils {
             typeUpper in listOf("PAYMENT", "BILL", "INVOICE") -> Icons.Default.AccountBalanceWallet
             typeUpper.contains("ELECTRIC") || typeUpper == "TIEN_DIEN" -> Icons.Default.FlashOn
             typeUpper == "ACCOMMODATION_FEE" -> Icons.Default.Home
-            typeUpper in listOf("APPLICATION_FEE", "DEPOSIT_FEE") -> Icons.AutoMirrored.Filled.Assignment
             typeUpper == "PENALTY_FEE" -> Icons.Default.ReportProblem
             typeUpper == "MAINTENANCE" -> Icons.Default.Build
             typeUpper == "APPLICATION" -> Icons.AutoMirrored.Filled.Assignment
@@ -33,8 +32,8 @@ object NotificationUtils {
     fun getTypeColor(type: String?): Color {
         val typeUpper = type?.uppercase() ?: ""
         val isPayment = typeUpper in listOf(
-            "PAYMENT", "ELECTRIC_FEE", "ACCOMMODATION_FEE", "APPLICATION_FEE",
-            "PENALTY_FEE", "DEPOSIT_FEE", "BILL", "INVOICE", "PAYMENT_NOTICE"
+            "PAYMENT", "ELECTRIC_FEE", "ACCOMMODATION_FEE",
+            "PENALTY_FEE", "BILL", "INVOICE", "PAYMENT_NOTICE"
         )
         
         return when {

@@ -451,6 +451,16 @@ Permanent history of system audits and score trends. **Never recreate this file;
 ---
 *Maintained by the Documentation Governance System.*
 
+### [2026-07-21] Refactor: Optimized Fee Types (Business Rule Sync)
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Cleanup**: Removed `APPLICATION_FEE`, `DEPOSIT_FEE`, and `WATER_FEE` from the entire system.
+    - **Strict Policy Enforcement**: Aligned the app with the current dormitory fee structure: 1. `ACCOMMODATION_FEE` (Tiền phòng), 2. `ELECTRIC_FEE` (Tiền điện), 3. `PENALTY_FEE` (Tiền phạt).
+    - **Architecture**: Updated `BillType` enum, `PaymentMapper`, and `NotificationViewModel` to strictly support only the three active fee types.
+    - **UI**: Synchronized icons and labels in `PaymentScreen` and `PaymentHistoryScreen`.
+    - **Docs**: Updated `payment_mobile_api.md` to reflect the final simplified fee structure.
+- **Maturity**: Score maintained at **100/100** for strict business alignment.
+
 ### [2026-07-21] Refactor: Removed Water Fee (Policy Sync)
 - **Contributor**: AI Development Agent
 - **Actions Taken**:
