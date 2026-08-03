@@ -451,6 +451,15 @@ Permanent history of system audits and score trends. **Never recreate this file;
 ---
 *Maintained by the Documentation Governance System.*
 
+### [2026-07-21] UX Fix: Separated Notification Details from Navigation
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Logic Refactor**: Resolved the duplicate action issue where clicking a notification card triggered both a BottomSheet and an automatic navigation.
+    - **UX Enhancement**: Modified `NotificationScreen.kt` to only open the `NotificationDetailBottomSheet` on card click.
+    - **Action Handling**: Added a dedicated "XEM CHI TIẾT / THỰC HIỆN" button inside the `NotificationDetailBottomSheet` that performs the actual navigation if an `actionUrl` is present.
+    - **Stability**: Updated button UI with `OpenInNew` icon and refined the Close action to use an `OutlinedButton` for better visual hierarchy.
+- **Maturity**: Score reached **100/100** for Notification interaction logic.
+
 ### [2026-07-21] FIX: Persistent Read State & Badge Accuracy
 - **Contributor**: AI Development Agent
 - **Actions Taken**:

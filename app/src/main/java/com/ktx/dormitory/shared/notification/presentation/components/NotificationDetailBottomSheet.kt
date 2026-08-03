@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ConfirmationNumber
@@ -24,6 +25,7 @@ import com.ktx.dormitory.shared.notification.presentation.NotificationUtils
 @Composable
 fun NotificationDetailBottomSheet(
     notification: Notification,
+    onActionClick: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -155,18 +157,40 @@ fun NotificationDetailBottomSheet(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Action Button
-            Button(
+            // Action Button if Url exists
+            if (!notification.actionUrl.isNullOrBlank()) {
+                Button(
+                    onClick = { onActionClick(notification.actionUrl) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "XEM CHI TIẾT / THỰC HIỆN",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            // Close Button
+            OutlinedButton(
                 onClick = onDismiss,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
             ) {
                 Text(
-                    "ĐÃ ĐỌC & ĐÓNG",
-                    style = MaterialTheme.typography.titleMedium,
+                    "ĐÓNG",
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
                 )
             }

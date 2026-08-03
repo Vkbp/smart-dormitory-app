@@ -55,6 +55,10 @@ fun NotificationScreen(
     if (uiState.selectedNotification != null) {
         NotificationDetailBottomSheet(
             notification = uiState.selectedNotification!!,
+            onActionClick = { actionUrl ->
+                handleNotificationNavigation(actionUrl, navController)
+                viewModel.onEvent(NotificationUiEvent.SelectNotification(null))
+            }
         ) { 
             viewModel.onEvent(NotificationUiEvent.SelectNotification(null)) 
             pagingItems.refresh() // Refresh list to update read status visually if needed
@@ -141,9 +145,6 @@ fun NotificationScreen(
                                                 viewModel.onEvent(NotificationUiEvent.MarkAsRead(notification.id))
                                             }
                                             viewModel.onEvent(NotificationUiEvent.SelectNotification(notification))
-                                            
-                                            // Action Navigation logic
-                                            handleNotificationNavigation(notification.actionUrl, navController)
                                         }
                                     )
                                 }
