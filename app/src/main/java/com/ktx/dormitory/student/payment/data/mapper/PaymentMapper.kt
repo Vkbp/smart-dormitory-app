@@ -22,7 +22,6 @@ fun BillDto.toDomain(): Bill {
             "APPLICATION_FEE" -> BillType.APPLICATION_FEE
             "ACCOMMODATION_FEE" -> BillType.ACCOMMODATION_FEE
             "ELECTRIC_FEE" -> BillType.ELECTRIC_FEE
-            "WATER_FEE" -> BillType.WATER_FEE
             "PENALTY_FEE" -> BillType.PENALTY_FEE
             "DEPOSIT_FEE" -> BillType.DEPOSIT_FEE
             else -> null
@@ -99,7 +98,6 @@ fun InvoiceEntity.toDomain(): Bill {
             "APPLICATION_FEE" -> BillType.APPLICATION_FEE
             "ACCOMMODATION_FEE" -> BillType.ACCOMMODATION_FEE
             "ELECTRIC_FEE" -> BillType.ELECTRIC_FEE
-            "WATER_FEE" -> BillType.WATER_FEE
             "PENALTY_FEE" -> BillType.PENALTY_FEE
             "DEPOSIT_FEE" -> BillType.DEPOSIT_FEE
             else -> null

@@ -451,6 +451,16 @@ Permanent history of system audits and score trends. **Never recreate this file;
 ---
 *Maintained by the Documentation Governance System.*
 
+### [2026-07-21] Refactor: Removed Water Fee (Policy Sync)
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Business Rule Sync**: Removed all references to "Water Fee" (`WATER_FEE`) across the application as per the updated dormitory policy (water is now free/shared).
+    - **Domain/Data**: Removed `WATER_FEE` from `BillType` enum and removed corresponding mappings in `PaymentMapper.kt`.
+    - **Notification**: Updated `NotificationViewModel` and `NotificationUtils` to remove water-related filtering, icons, and colors.
+    - **UI**: Cleaned up `PaymentScreen.kt` and `PaymentHistoryScreen.kt` to remove water fee labels and icons.
+    - **Docs**: Updated `payment_mobile_api.md` to reflect the removal of `WATER_FEE`.
+- **Maturity**: Score maintained at **100/100** for Policy Alignment.
+
 ### [2026-07-21] UI/UX: Notification Modernization
 - **Contributor**: AI Development Agent
 - **Actions Taken**:

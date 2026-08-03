@@ -81,7 +81,6 @@ Bill bất kỳ ──(Admin hủy)──→ CANCELLED
 | `APPLICATION_FEE` | Phí đăng ký hồ sơ |
 | `ACCOMMODATION_FEE` | Phí ở KTX (hóa đơn chính) |
 | `ELECTRIC_FEE` | Phí điện |
-| `WATER_FEE` | Phí nước |
 | `PENALTY_FEE` | Phí phạt / bồi thường |
 | `DEPOSIT_FEE` | Tiền đặt cọc |
 

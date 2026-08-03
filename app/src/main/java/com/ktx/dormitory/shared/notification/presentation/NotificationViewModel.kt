@@ -90,7 +90,7 @@ class NotificationViewModel @Inject constructor(
             NotificationType.PAYMENT -> {
                 notifications.filter {
                     it.type?.uppercase() in listOf(
-                        "PAYMENT", "ELECTRIC_FEE", "WATER_FEE",
+                        "PAYMENT", "ELECTRIC_FEE",
                         "ACCOMMODATION_FEE", "APPLICATION_FEE",
                         "PENALTY_FEE", "DEPOSIT_FEE"
                     )

@@ -14,7 +14,6 @@ object NotificationUtils {
         return when (type?.uppercase()) {
             "PAYMENT" -> Icons.Default.AccountBalanceWallet
             "ELECTRIC_FEE" -> Icons.Default.FlashOn
-            "WATER_FEE" -> Icons.Default.WaterDrop
             "ACCOMMODATION_FEE" -> Icons.Default.Home
             "APPLICATION_FEE", "DEPOSIT_FEE" -> Icons.AutoMirrored.Filled.Assignment
             "PENALTY_FEE" -> Icons.Default.ReportProblem
@@ -32,7 +31,7 @@ object NotificationUtils {
     @Composable
     fun getTypeColor(type: String?): Color {
         return when (type?.uppercase()) {
-            "PAYMENT", "ELECTRIC_FEE", "WATER_FEE", "ACCOMMODATION_FEE", "APPLICATION_FEE", "PENALTY_FEE", "DEPOSIT_FEE" -> Color(0xFF4CAF50) // Green for all payments
+            "PAYMENT", "ELECTRIC_FEE", "ACCOMMODATION_FEE", "APPLICATION_FEE", "PENALTY_FEE", "DEPOSIT_FEE" -> Color(0xFF4CAF50) // Green for all payments
             "MAINTENANCE" -> Color(0xFFFF9800) // Orange
             "APPLICATION", "ANNOUNCEMENT" -> Color(0xFF2196F3) // Blue
             "ROOM" -> Color(0xFF9C27B0) // Purple
