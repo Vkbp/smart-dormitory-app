@@ -46,13 +46,22 @@ class NotificationViewModel @Inject constructor(
 
             if (notificationsResult.isSuccess && unreadResult.isSuccess) {
                 val notifications = notificationsResult.getOrThrow()
+                val serverUnreadCount = unreadResult.getOrThrow().toInt()
+                val listUnreadCount = notifications.count { !it.isRead }
+                
+                // Nếu số lượng chưa đọc trong list (vừa tải về) là 0, 
+                // thì dù server trả về > 0 (do lag đồng bộ), ta vẫn nên ưu tiên hiển thị 0 
+                // để tránh gây khó chịu cho người dùng (vừa đọc xong lại thấy hiện số).
+                val displayUnreadCount = if (listUnreadCount == 0 && notifications.isNotEmpty()) 0 else serverUnreadCount
+
                 updateState { it.copy(
                     notifications = notifications,
                     filteredNotifications = applyFilter(notifications, it.selectedType),
-                    unreadCount = unreadResult.getOrThrow().toInt(),
+                    unreadCount = displayUnreadCount,
                     isLoading = false
                 ) }
-            } else {
+            }
+else {
                 updateState { it.copy(
                     error = notificationsResult.exceptionOrNull()?.message ?: "Lỗi tải thông báo",
                     isLoading = false
@@ -62,16 +71,37 @@ class NotificationViewModel @Inject constructor(
     }
 
     private fun markAsRead(id: Long) {
+        // Optimistic UI Update
+        val updatedNotifications = currentState.notifications.map {
+            if (it.id == id && !it.isRead) it.copy(isRead = true) else it
+        }
+        val unreadCountDelta = if (currentState.notifications.find { it.id == id }?.isRead == false) 1 else 0
+        
+        updateState { it.copy(
+            notifications = updatedNotifications,
+            filteredNotifications = applyFilter(updatedNotifications, it.selectedType),
+            unreadCount = (it.unreadCount - unreadCountDelta).coerceAtLeast(0)
+        ) }
+
         viewModelScope.launch {
-            markReadUseCase(id).onSuccess {
+            markReadUseCase(id).onFailure {
+                // If failed, reload to sync with server state
                 loadNotifications()
             }
         }
     }
 
     private fun markAllAsRead() {
+        // Optimistic UI Update
+        val updatedNotifications = currentState.notifications.map { it.copy(isRead = true) }
+        updateState { it.copy(
+            notifications = updatedNotifications,
+            filteredNotifications = applyFilter(updatedNotifications, it.selectedType),
+            unreadCount = 0
+        ) }
+
         viewModelScope.launch {
-            markAllReadUseCase().onSuccess {
+            markAllReadUseCase().onFailure {
                 loadNotifications()
             }
         }

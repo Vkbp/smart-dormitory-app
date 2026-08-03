@@ -46,7 +46,10 @@ fun HomeScreen(
     var showIssueReport by remember { mutableStateOf(value = false) }
 
     LifecycleResumeEffect(Unit) {
-        notificationViewModel.refresh()
+        // Chỉ refresh nếu chưa có dữ liệu hoặc đã bị lỗi trước đó
+        if (notificationState.notifications.isEmpty() || notificationState.error != null) {
+            notificationViewModel.refresh()
+        }
         onPauseOrDispose { }
     }
 
