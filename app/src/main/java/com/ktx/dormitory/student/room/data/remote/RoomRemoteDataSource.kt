@@ -10,4 +10,5 @@ interface RoomRemoteDataSource {
     suspend fun getAvailableRooms(): BaseResponse<List<RoomInfoDto>>
     suspend fun submitTransferRequest(request: RoomTransferRequest): BaseResponse<Unit>
     suspend fun getTransferHistory(): BaseResponse<List<RoomTransferHistoryDto>>
+    suspend fun getMyRoommates(): BaseResponse<List<RoommateDto>>
 }

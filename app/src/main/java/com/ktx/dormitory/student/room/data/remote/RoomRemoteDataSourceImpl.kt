@@ -16,4 +16,6 @@ class RoomRemoteDataSourceImpl @Inject constructor(
         api.submitTransferRequest(request)
 
     override suspend fun getTransferHistory() = api.getTransferHistory()
+
+    override suspend fun getMyRoommates() = api.getMyRoommates()
 }

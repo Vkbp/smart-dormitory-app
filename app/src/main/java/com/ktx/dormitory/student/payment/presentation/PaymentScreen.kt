@@ -27,6 +27,7 @@ import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.student.payment.domain.model.Bill
 import com.ktx.dormitory.student.payment.domain.model.BillStatus
 import com.ktx.dormitory.student.payment.domain.model.BillType
+import com.ktx.dormitory.student.payment.presentation.components.BillDetailBottomSheet
 import com.ktx.dormitory.student.payment.presentation.components.SmartQRBottomSheet
 import com.ktx.dormitory.ui.components.EmptyView
 import com.ktx.dormitory.ui.components.ErrorView
@@ -96,8 +97,24 @@ fun PaymentScreen(
                             navController = navController,
                             onPayClick = { bill -> 
                                 viewModel.createSmartQR(bill.id, bill.billCode ?: "", bill.remainingAmount ?: bill.amount ?: BigDecimal.ZERO)
+                            },
+                            onCardClick = { bill ->
+                                viewModel.selectBill(bill)
                             }
                         )
+
+                        // Hiển thị BottomSheet chi tiết & tách nợ
+                        state.selectedBill?.let { bill ->
+                            BillDetailBottomSheet(
+                                bill = bill,
+                                roommates = state.roommates,
+                                isSplitLoading = state.isSplitBillLoading,
+                                onSplitSubmit = { ids, amount ->
+                                    viewModel.splitElectricBill(bill.id, ids, amount)
+                                },
+                                onDismiss = { viewModel.selectBill(null) }
+                            )
+                        }
 
                         // Hiển thị BottomSheet QR nếu có kết quả
                         state.smartQR?.let { qrResult ->
@@ -117,7 +134,8 @@ fun PaymentScreen(
 fun PaymentContent(
     state: PaymentUiState.Success,
     navController: NavController,
-    onPayClick: (Bill) -> Unit
+    onPayClick: (Bill) -> Unit,
+    onCardClick: (Bill) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -141,7 +159,8 @@ fun PaymentContent(
             BillCard(
                 bill = bill,
                 isProcessing = state.isProcessing,
-                onPay = { onPayClick(bill) }
+                onPay = { onPayClick(bill) },
+                onClick = { onCardClick(bill) }
             )
         }
         
@@ -162,7 +181,7 @@ fun PaymentContent(
 }
 
 @Composable
-fun BillCard(bill: Bill, isProcessing: Boolean, onPay: () -> Unit) {
+fun BillCard(bill: Bill, isProcessing: Boolean, onPay: () -> Unit, onClick: () -> Unit) {
     val statusColor = when (bill.status) {
         BillStatus.PAID -> Color(0xFF4CAF50)
         BillStatus.PARTIALLY_PAID -> Color(0xFFFFC107)
@@ -174,7 +193,8 @@ fun BillCard(bill: Bill, isProcessing: Boolean, onPay: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        onClick = onClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

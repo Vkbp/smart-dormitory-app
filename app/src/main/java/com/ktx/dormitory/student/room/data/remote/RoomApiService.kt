@@ -1,5 +1,6 @@
 package com.ktx.dormitory.student.room.data.remote
 
+import com.google.gson.annotations.SerializedName
 import com.ktx.dormitory.core.common.BaseResponse
 import com.ktx.dormitory.student.room.data.dto.request.RoomTransferRequest
 import com.ktx.dormitory.student.room.data.dto.response.RoomInfoDto
@@ -22,4 +23,14 @@ interface RoomApiService {
 
     @GET("v1/student/change-room")
     suspend fun getTransferHistory(): BaseResponse<List<RoomTransferHistoryDto>>
+
+    @GET("v1/student/room/roommates")
+    suspend fun getMyRoommates(): BaseResponse<List<RoommateDto>>
 }
+
+data class RoommateDto(
+    @SerializedName("studentId") val id: String,
+    @SerializedName("studentCode") val studentCode: String,
+    @SerializedName("fullName") val fullName: String,
+    @SerializedName("avatarUrl") val avatarUrl: String? = null
+)

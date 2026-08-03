@@ -2,8 +2,10 @@ package com.ktx.dormitory.student.room.data.mapper
 
 import com.ktx.dormitory.student.room.data.dto.response.RoomInfoDto
 import com.ktx.dormitory.student.room.data.dto.response.RoomTransferHistoryDto
+import com.ktx.dormitory.student.room.data.remote.RoommateDto
 import com.ktx.dormitory.student.room.domain.model.RoomInfo
 import com.ktx.dormitory.student.room.domain.model.RoomTransferHistory
+import com.ktx.dormitory.student.room.domain.model.Roommate
 
 fun RoomInfoDto.toDomain(): RoomInfo {
     return RoomInfo(
@@ -30,5 +32,14 @@ fun RoomTransferHistoryDto.toDomain(): RoomTransferHistory {
         adminNote = adminNote,
         createdAt = createdAt,
         updatedAt = updatedAt
+    )
+}
+
+fun RoommateDto.toDomain(): Roommate {
+    return Roommate(
+        id = id,
+        studentCode = studentCode,
+        fullName = fullName,
+        avatarUrl = avatarUrl
     )
 }

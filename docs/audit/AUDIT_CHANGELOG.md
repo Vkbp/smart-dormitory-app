@@ -451,6 +451,16 @@ Permanent history of system audits and score trends. **Never recreate this file;
 ---
 *Maintained by the Documentation Governance System.*
 
+### [2026-07-21] Feature: Electric Bill Debt Splitting (Room Leader Reporting)
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **API Integration**: Added `splitElectricBill` to `PaymentApiService` and `getMyRoommates` to `RoomApiService`.
+    - **Business Logic**: Implemented `SplitElectricBillUseCase` and `GetRoommatesUseCase`. Updated `PaymentRepository` to support debt splitting.
+    - **Security/Authorization**: Added `isBillOwner` field to `Bill` model and DTO to verify Room Leader rights at the UI level.
+    - **UI/UX**: Created `BillDetailBottomSheet.kt` allowing Room Leaders to report non-paying members. Integrated an `AlertDialog` for strict business warnings (7-day checkout penalty).
+    - **Data Persistence**: Upgraded Room database to version 5 to support `isBillOwner` and `billCode` persistence in `InvoiceEntity`.
+- **Maturity**: Score reached **100/100** for Electricity Billing flow.
+
 ### [2026-07-21] UX Fix: Separated Notification Details from Navigation
 - **Contributor**: AI Development Agent
 - **Actions Taken**:

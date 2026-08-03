@@ -41,6 +41,7 @@ fun BillDto.toDomain(): Bill {
         billStatus = billStatus,
         assignmentStatus = assignmentStatus,
         message = message,
+        isBillOwner = isBillOwner ?: false,
         roomCode = roomCode,
         bedCode = bedCode
     )
@@ -83,6 +84,7 @@ fun BillDto.toEntity(): InvoiceEntity {
         billStatus = billStatus,
         assignmentStatus = assignmentStatus,
         message = message,
+        isBillOwner = isBillOwner ?: false,
         roomCode = roomCode,
         bedCode = bedCode
     )
@@ -115,6 +117,7 @@ fun InvoiceEntity.toDomain(): Bill {
         billStatus = billStatus,
         assignmentStatus = assignmentStatus,
         message = message,
+        isBillOwner = isBillOwner,
         roomCode = roomCode,
         bedCode = bedCode
     )

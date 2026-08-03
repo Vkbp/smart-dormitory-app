@@ -21,6 +21,7 @@ data class BillDto(
     @SerializedName("billStatus") val billStatus: String? = null,
     @SerializedName("assignmentStatus") val assignmentStatus: String? = null,
     @SerializedName("message") val message: String? = null,
+    @SerializedName("isBillOwner") val isBillOwner: Boolean? = false,
     @SerializedName("roomCode") val roomCode: String? = null,
     @SerializedName("bedCode") val bedCode: String? = null
 )

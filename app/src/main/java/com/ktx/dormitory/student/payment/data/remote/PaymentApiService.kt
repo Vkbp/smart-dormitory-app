@@ -1,5 +1,6 @@
 package com.ktx.dormitory.student.payment.data.remote
 
+import com.google.gson.annotations.SerializedName
 import com.ktx.dormitory.core.common.BaseResponse
 import com.ktx.dormitory.core.common.PageResponse
 import com.ktx.dormitory.student.payment.data.dto.request.OnlinePaymentRequestDto
@@ -48,4 +49,18 @@ interface PaymentApiService {
      */
     @GET("v1/public/payment-instructions")
     suspend fun getPaymentInstructions(): BaseResponse<PaymentInstructionDto>
+
+    /**
+     * Tách nợ tiền điện cho các thành viên không đóng tiền.
+     */
+    @POST("v1/bills/{billId}/split")
+    suspend fun splitElectricBill(
+        @Path("billId") billId: String,
+        @Body request: SplitBillRequest
+    ): BaseResponse<Unit>
 }
+
+data class SplitBillRequest(
+    @SerializedName("nonPayingStudentIds") val nonPayingStudentIds: List<String>,
+    @SerializedName("amountPerStudent") val amountPerStudent: java.math.BigDecimal
+)

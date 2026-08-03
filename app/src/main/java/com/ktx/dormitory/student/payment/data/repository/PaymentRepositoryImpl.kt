@@ -9,6 +9,7 @@ import com.ktx.dormitory.student.payment.data.local.InvoiceDao
 import com.ktx.dormitory.student.payment.data.mapper.*
 import com.ktx.dormitory.student.payment.data.paging.PaymentHistoryPagingSource
 import com.ktx.dormitory.student.payment.data.remote.PaymentApiService
+import com.ktx.dormitory.student.payment.data.remote.SplitBillRequest
 import com.ktx.dormitory.student.payment.domain.model.*
 import com.ktx.dormitory.student.payment.domain.repository.PaymentRepository
 import kotlinx.coroutines.flow.Flow
@@ -91,6 +92,24 @@ class PaymentRepositoryImpl @Inject constructor(
             val response = apiService.getPaymentInstructions()
             if (response.success && response.data != null) {
                 Result.success(response.data.toDomain())
+            } else {
+                Result.failure(Exception(response.message))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception(e.toUserFriendlyMessage()))
+        }
+    }
+
+    override suspend fun splitElectricBill(
+        billId: String,
+        nonPayingStudentIds: List<String>,
+        amountPerStudent: BigDecimal
+    ): Result<Unit> {
+        return try {
+            val request = SplitBillRequest(nonPayingStudentIds, amountPerStudent)
+            val response = apiService.splitElectricBill(billId, request)
+            if (response.success) {
+                Result.success(Unit)
             } else {
                 Result.failure(Exception(response.message))
             }

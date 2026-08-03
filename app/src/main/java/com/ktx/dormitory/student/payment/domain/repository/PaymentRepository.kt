@@ -30,4 +30,9 @@ interface PaymentRepository {
      * Lấy hướng dẫn thanh toán.
      */
     suspend fun getPaymentInstructions(): Result<PaymentInstruction>
+
+    /**
+     * Tách nợ tiền điện cho các thành viên.
+     */
+    suspend fun splitElectricBill(billId: String, nonPayingStudentIds: List<String>, amountPerStudent: BigDecimal): Result<Unit>
 }

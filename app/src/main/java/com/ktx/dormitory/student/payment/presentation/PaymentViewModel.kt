@@ -3,6 +3,7 @@ package com.ktx.dormitory.student.payment.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ktx.dormitory.student.payment.domain.model.Bill
 import com.ktx.dormitory.student.payment.domain.model.BillStatus
 import com.ktx.dormitory.student.payment.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,8 @@ class PaymentViewModel @Inject constructor(
     private val getUnpaidInvoicesUseCase: GetUnpaidInvoicesUseCase,
     private val createSmartQRUseCase: CreateSmartQRUseCase,
     private val getBillByApplicationUseCase: GetBillByApplicationUseCase,
+    private val getRoommatesUseCase: com.ktx.dormitory.student.room.domain.usecase.GetRoommatesUseCase,
+    private val splitElectricBillUseCase: SplitElectricBillUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -115,6 +118,50 @@ class PaymentViewModel @Inject constructor(
         val currentState = uiState.value
         if (currentState is PaymentUiState.Success) {
             updateUiState(currentState.copy(smartQR = null))
+        }
+    }
+
+    fun selectBill(bill: Bill?) {
+        val currentState = uiState.value
+        if (currentState is PaymentUiState.Success) {
+            updateUiState(currentState.copy(selectedBill = bill, roommates = null))
+            if (bill != null) {
+                loadRoommates()
+            }
+        }
+    }
+
+    private fun loadRoommates() {
+        viewModelScope.launch {
+            val currentState = uiState.value
+            if (currentState is PaymentUiState.Success) {
+                getRoommatesUseCase()
+                    .onSuccess { roommates ->
+                        updateUiState(currentState.copy(roommates = roommates))
+                    }
+                    .onFailure {
+                        _uiEffect.emit(PaymentUiEffect.ShowToast("Không thể lấy danh sách thành viên"))
+                    }
+            }
+        }
+    }
+
+    fun splitElectricBill(billId: String, studentIds: List<String>, amountPerStudent: BigDecimal) {
+        viewModelScope.launch {
+            val currentState = uiState.value
+            if (currentState is PaymentUiState.Success) {
+                updateUiState(currentState.copy(isSplitBillLoading = true))
+                splitElectricBillUseCase(billId, studentIds, amountPerStudent)
+                    .onSuccess {
+                        updateUiState(currentState.copy(isSplitBillLoading = false, selectedBill = null))
+                        _uiEffect.emit(PaymentUiEffect.ShowToast("Báo cáo thành công"))
+                        loadInvoices()
+                    }
+                    .onFailure { e ->
+                        updateUiState(currentState.copy(isSplitBillLoading = false))
+                        _uiEffect.emit(PaymentUiEffect.ShowToast(e.message ?: "Lỗi tách nợ"))
+                    }
+            }
         }
     }
 
