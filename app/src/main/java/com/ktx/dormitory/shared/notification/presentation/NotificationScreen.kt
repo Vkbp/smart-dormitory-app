@@ -30,6 +30,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
+import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.shared.notification.domain.model.Notification
 import com.ktx.dormitory.shared.notification.domain.model.NotificationType
@@ -45,11 +49,15 @@ fun NotificationScreen(
     viewModel: NotificationViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val pagingItems = uiState.pagingFlow.collectAsLazyPagingItems()
 
     if (uiState.selectedNotification != null) {
         NotificationDetailBottomSheet(
             notification = uiState.selectedNotification!!
-        ) { viewModel.onEvent(NotificationUiEvent.SelectNotification(null)) }
+        ) { 
+            viewModel.onEvent(NotificationUiEvent.SelectNotification(null)) 
+            pagingItems.refresh() // Refresh list to update read status visually if needed
+        }
     }
 
     Scaffold(
@@ -62,7 +70,10 @@ fun NotificationScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.onEvent(NotificationUiEvent.Refresh) }) {
+                    IconButton(onClick = { 
+                        pagingItems.refresh()
+                        viewModel.refresh()
+                    }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Tải lại")
                     }
                     if (uiState.unreadCount > 0) {
@@ -97,12 +108,12 @@ fun NotificationScreen(
 
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
-                    uiState.isLoading && uiState.notifications.isEmpty() -> LoadingView()
-                    (uiState.error != null && uiState.notifications.isEmpty()) -> ErrorView(
-                        message = uiState.error,
-                        onRetry = { viewModel.onEvent(NotificationUiEvent.Refresh) }
+                    pagingItems.loadState.refresh is LoadState.Loading -> LoadingView()
+                    pagingItems.loadState.refresh is LoadState.Error -> ErrorView(
+                        message = "Lỗi tải thông báo",
+                        onRetry = { pagingItems.refresh() }
                     )
-                    uiState.filteredNotifications.isEmpty() -> EmptyView(
+                    pagingItems.itemCount == 0 && pagingItems.loadState.refresh !is LoadState.Loading -> EmptyView(
                         message = if (uiState.selectedType == NotificationType.ALL) "Chưa có thông báo nào" 
                                   else "Không có thông báo ${uiState.selectedType.displayName.lowercase()}",
                         icon = Icons.Default.NotificationsNone
@@ -113,22 +124,60 @@ fun NotificationScreen(
                             contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            items(uiState.filteredNotifications, key = { it.id }) { notification ->
-                                NotificationCard(
-                                    notification = notification,
-                                    onClick = { 
-                                        if (!notification.isRead) {
-                                            viewModel.onEvent(NotificationUiEvent.MarkAsRead(notification.id))
+                            items(
+                                count = pagingItems.itemCount,
+                                key = pagingItems.itemKey { it.id }
+                            ) { index ->
+                                val notification = pagingItems[index]
+                                if (notification != null) {
+                                    NotificationCard(
+                                        notification = notification,
+                                        onClick = { 
+                                            if (!notification.isRead) {
+                                                viewModel.onEvent(NotificationUiEvent.MarkAsRead(notification.id))
+                                            }
+                                            viewModel.onEvent(NotificationUiEvent.SelectNotification(notification))
+                                            
+                                            // Action Navigation logic
+                                            handleNotificationNavigation(notification.actionUrl, navController)
                                         }
-                                        viewModel.onEvent(NotificationUiEvent.SelectNotification(notification))
+                                    )
+                                }
+                            }
+                            
+                            if (pagingItems.loadState.append is LoadState.Loading) {
+                                item {
+                                    Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
+                                        CircularProgressIndicator(Modifier.size(24.dp))
                                     }
-                                )
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+private fun handleNotificationNavigation(actionUrl: String?, navController: NavController) {
+    if (actionUrl.isNullOrBlank()) return
+    
+    // Switch-case navigation based on actionUrl format
+    when {
+        actionUrl.contains("/student/bills") -> {
+            navController.navigate(Screen.Payment.route)
+        }
+        actionUrl.contains("/student/room") -> {
+            navController.navigate(Screen.RoomInfo.route)
+        }
+        actionUrl.contains("/student/face") -> {
+            navController.navigate(Screen.FaceStatus.route)
+        }
+        actionUrl.contains("/student/checkout") -> {
+            navController.navigate(Screen.Checkout.route)
+        }
+        // Add more routes as needed
     }
 }
 

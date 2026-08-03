@@ -1,11 +1,16 @@
 package com.ktx.dormitory.shared.notification.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.ktx.dormitory.core.network.toUserFriendlyMessage
 import com.ktx.dormitory.shared.notification.data.mapper.toDomain
+import com.ktx.dormitory.shared.notification.data.paging.NotificationPagingSource
 import com.ktx.dormitory.shared.notification.data.remote.IssueReportRequest
 import com.ktx.dormitory.shared.notification.data.remote.NotificationApiService
 import com.ktx.dormitory.shared.notification.domain.model.Notification
 import com.ktx.dormitory.shared.notification.domain.repository.NotificationRepository
+import kotlinx.coroutines.flow.Flow
 import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,18 +33,11 @@ class NotificationRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getNotifications(): Result<List<Notification>> {
-        return try {
-            val response = apiService.getNotifications()
-            if (response.isSuccessful) {
-                val list = response.body()?.data?.map { it.toDomain() } ?: emptyList()
-                Result.success(list)
-            } else {
-                Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
-            }
-        } catch (e: Exception) {
-            Result.failure(Exception(e.toUserFriendlyMessage()))
-        }
+    override fun getNotificationsPaging(): Flow<PagingData<Notification>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            pagingSourceFactory = { NotificationPagingSource(apiService) }
+        ).flow
     }
 
     override suspend fun markAsRead(id: Long): Result<Unit> {
