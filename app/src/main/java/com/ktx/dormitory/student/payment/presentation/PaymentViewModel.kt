@@ -55,12 +55,12 @@ class PaymentViewModel @Inject constructor(
     /**
      * Tạo mã QR thông minh và bắt đầu Polling để kiểm tra trạng thái thanh toán.
      */
-    fun createSmartQR(billId: String, amount: BigDecimal) {
+    fun createSmartQR(billId: String, billCode: String, amount: BigDecimal) {
         viewModelScope.launch {
             val currentState = uiState.value
             if (currentState is PaymentUiState.Success) {
                 updateUiState(currentState.copy(isProcessing = true))
-                createSmartQRUseCase(billId, amount)
+                createSmartQRUseCase(billId, billCode, amount)
                     .onSuccess { result ->
                         updateUiState(currentState.copy(isProcessing = false, smartQR = result))
                         startPolling(billId)

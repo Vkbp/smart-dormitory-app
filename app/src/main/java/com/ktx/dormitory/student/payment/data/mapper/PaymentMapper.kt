@@ -17,6 +17,7 @@ fun PaymentInstructionDto.toDomain(): PaymentInstruction {
 fun BillDto.toDomain(): Bill {
     return Bill(
         id = id,
+        billCode = billCode,
         type = when (type?.uppercase()) {
             "APPLICATION_FEE" -> BillType.APPLICATION_FEE
             "ACCOMMODATION_FEE" -> BillType.ACCOMMODATION_FEE
@@ -40,6 +41,9 @@ fun BillDto.toDomain(): Bill {
         dueDate = dueDate,
         description = description,
         assignmentId = assignmentId,
+        billStatus = billStatus,
+        assignmentStatus = assignmentStatus,
+        message = message,
         roomCode = roomCode,
         bedCode = bedCode
     )
@@ -49,6 +53,7 @@ fun PaymentResponseDto.toDomain(): PaymentResult {
     return PaymentResult(
         paymentId = paymentId,
         billId = billId,
+        billCode = billCode,
         transactionCode = transactionCode,
         amount = amount,
         paymentMethod = when (paymentMethod?.uppercase()) {
@@ -69,6 +74,7 @@ fun PaymentResponseDto.toDomain(): PaymentResult {
 fun BillDto.toEntity(): InvoiceEntity {
     return InvoiceEntity(
         id = id,
+        billCode = billCode,
         type = type,
         amount = amount?.toDouble(),
         paidAmount = paidAmount?.toDouble(),
@@ -77,6 +83,9 @@ fun BillDto.toEntity(): InvoiceEntity {
         dueDate = dueDate,
         description = description,
         assignmentId = assignmentId,
+        billStatus = billStatus,
+        assignmentStatus = assignmentStatus,
+        message = message,
         roomCode = roomCode,
         bedCode = bedCode
     )
@@ -85,6 +94,7 @@ fun BillDto.toEntity(): InvoiceEntity {
 fun InvoiceEntity.toDomain(): Bill {
     return Bill(
         id = id,
+        billCode = billCode,
         type = when (type?.uppercase()) {
             "APPLICATION_FEE" -> BillType.APPLICATION_FEE
             "ACCOMMODATION_FEE" -> BillType.ACCOMMODATION_FEE
@@ -108,6 +118,9 @@ fun InvoiceEntity.toDomain(): Bill {
         dueDate = dueDate,
         description = description,
         assignmentId = assignmentId,
+        billStatus = billStatus,
+        assignmentStatus = assignmentStatus,
+        message = message,
         roomCode = roomCode,
         bedCode = bedCode
     )

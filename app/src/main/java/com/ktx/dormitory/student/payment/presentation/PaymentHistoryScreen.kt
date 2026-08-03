@@ -119,6 +119,9 @@ fun BillHistoryItem(bill: Bill) {
                     }, 
                     fontWeight = FontWeight.Bold
                 )
+                if (!bill.billCode.isNullOrBlank()) {
+                    Text("Mã: ${bill.billCode}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                }
                 if (!bill.description.isNullOrBlank()) {
                     Text(bill.description, style = MaterialTheme.typography.bodySmall)
                 }
@@ -127,6 +130,14 @@ fun BillHistoryItem(bill: Bill) {
                     style = MaterialTheme.typography.bodySmall, 
                     color = Color.Gray
                 )
+                if ((bill.paidAmount ?: BigDecimal.ZERO) > BigDecimal.ZERO) {
+                    Text(
+                        text = "Đã đóng: ${formatCurrency(bill.paidAmount!!)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color(0xFF4CAF50),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(

@@ -8,7 +8,7 @@ import javax.inject.Inject
 class CreateSmartQRUseCase @Inject constructor(
     private val repository: PaymentRepository
 ) {
-    suspend operator fun invoke(billId: String, amount: BigDecimal): Result<PaymentResult> {
-        return repository.createSmartQR(billId, amount)
+    suspend operator fun invoke(billId: String, billCode: String, amount: BigDecimal): Result<PaymentResult> {
+        return repository.createSmartQR(billId, billCode, amount)
     }
 }

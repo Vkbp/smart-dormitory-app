@@ -238,12 +238,28 @@ fun NotificationCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = DateTimeUtils.formatIsoDate(notification.createdAt),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline,
-                    fontSize = 11.sp
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = DateTimeUtils.formatIsoDate(notification.createdAt),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        fontSize = 11.sp
+                    )
+                    
+                    if (!notification.eventId.isNullOrBlank()) {
+                        Text(
+                            text = "Ref: ${notification.eventId}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp
+                        )
+                    }
+                }
             }
         }
     }

@@ -10,6 +10,7 @@ import java.math.BigDecimal
 data class PaymentResponseDto(
     @SerializedName("paymentId") val paymentId: String?,
     @SerializedName("billId") val billId: String?,
+    @SerializedName("billCode") val billCode: String? = null,
     @SerializedName("transactionCode") val transactionCode: String?,
     @SerializedName("amount") val amount: BigDecimal?,
     @SerializedName("paymentMethod") val paymentMethod: String?,

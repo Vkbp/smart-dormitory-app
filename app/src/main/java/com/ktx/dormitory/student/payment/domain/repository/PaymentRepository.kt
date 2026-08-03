@@ -19,7 +19,7 @@ interface PaymentRepository {
     /**
      * Khởi tạo thanh toán Online (Smart QR).
      */
-    suspend fun createSmartQR(billId: String, amount: BigDecimal): Result<PaymentResult>
+    suspend fun createSmartQR(billId: String, billCode: String, amount: BigDecimal): Result<PaymentResult>
 
     /**
      * Lấy lịch sử thanh toán phân trang.

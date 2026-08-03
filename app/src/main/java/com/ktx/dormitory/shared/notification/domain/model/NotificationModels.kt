@@ -8,6 +8,7 @@ data class Notification(
     val id: Long,
     val title: String,
     val message: String,
+    val eventId: String? = null,
     val actionUrl: String?,
     val type: String?,
     val isRead: Boolean,

@@ -57,10 +57,10 @@ class PaymentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun createSmartQR(billId: String, amount: BigDecimal): Result<PaymentResult> {
+    override suspend fun createSmartQR(billId: String, billCode: String, amount: BigDecimal): Result<PaymentResult> {
         return try {
-            // Quy chuẩn Mã Giao Dịch: SDMS + 8 ký tự đầu của billId (viết hoa)
-            val transactionCode = "SDMS${billId.take(8).uppercase()}"
+            // Quy chuẩn Mã Giao Dịch: SDMS + billCode
+            val transactionCode = "SDMS$billCode"
             
             val request = OnlinePaymentRequestDto(
                 billId = billId,

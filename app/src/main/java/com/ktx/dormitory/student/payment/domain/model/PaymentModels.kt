@@ -11,6 +11,7 @@ import java.math.BigDecimal
 @Parcelize
 data class Bill(
     val id: String,
+    val billCode: String?,
     val type: BillType?,
     val amount: BigDecimal?,
     val paidAmount: BigDecimal? = BigDecimal.ZERO,
@@ -19,6 +20,9 @@ data class Bill(
     val dueDate: String?,
     val description: String?,
     val assignmentId: String? = null,
+    val billStatus: String? = null,
+    val assignmentStatus: String? = null,
+    val message: String? = null,
     val roomCode: String? = null,
     val bedCode: String? = null
 ) : Parcelable
@@ -30,6 +34,7 @@ data class Bill(
 data class PaymentResult(
     val paymentId: String?,
     val billId: String?,
+    val billCode: String? = null,
     val transactionCode: String?,
     val amount: BigDecimal?,
     val paymentMethod: PaymentMethod?,

@@ -8,6 +8,7 @@ fun NotificationResponse.toDomain(): Notification {
         id = id,
         title = title,
         message = message,
+        eventId = eventId,
         actionUrl = actionUrl,
         type = type,
         isRead = isRead,

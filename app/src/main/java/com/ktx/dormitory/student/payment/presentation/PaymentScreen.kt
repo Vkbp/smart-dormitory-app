@@ -95,7 +95,7 @@ fun PaymentScreen(
                             state = state,
                             navController = navController,
                             onPayClick = { bill -> 
-                                viewModel.createSmartQR(bill.id, bill.remainingAmount ?: bill.amount ?: BigDecimal.ZERO)
+                                viewModel.createSmartQR(bill.id, bill.billCode ?: "", bill.remainingAmount ?: bill.amount ?: BigDecimal.ZERO)
                             }
                         )
 
@@ -199,7 +199,17 @@ fun BillCard(bill: Bill, isProcessing: Boolean, onPay: () -> Unit) {
 
                 Column(Modifier.weight(1f)) {
                     Text(bill.description ?: "Hóa đơn KTX", fontWeight = FontWeight.Bold)
+                    if (!bill.billCode.isNullOrBlank()) {
+                        Text("Mã: ${bill.billCode}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                    }
                     Text("Hạn: ${bill.dueDate ?: "N/A"}", style = MaterialTheme.typography.bodySmall)
+                    if ((bill.paidAmount ?: BigDecimal.ZERO) > BigDecimal.ZERO) {
+                        Text(
+                            text = "Đã đóng: ${formatCurrency(bill.paidAmount!!)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color(0xFF4CAF50)
+                        )
+                    }
                 }
 
                 Column(horizontalAlignment = Alignment.End) {

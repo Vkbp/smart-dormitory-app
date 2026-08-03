@@ -113,6 +113,14 @@ BẮT BUỘC Agent phải xuất bảng sau ở cuối mỗi task có thay đổ
 - [ ] **Documentation**: List of updated files (e.g., `ROOM_AUDIT.md`, `API_INDEX.md`).
 - [ ] **Project Health**: New Score & Trend.
 - [ ] **GitHub Push**: Latest code pushed with conventional commit message?
+- [ ] **Pre-Completion Checklist**:
+    - [ ] Build thành công (không lỗi compile).
+    - [ ] Test thành công (nếu có).
+    - [ ] Tài liệu kỹ thuật đã được đồng bộ (Sync).
+    - [ ] `AUDIT_CHANGELOG.md` đã được cập nhật.
+    - [ ] `TECH_DEBT.md` / `REFACTOR_HISTORY.md` đã được cập nhật (nếu cần).
+    - [ ] Các liên kết chéo (Cross-references) đã được kiểm tra (Relative paths).
+    - [ ] GitHub: Đã `git add .`, `git commit -m "..."` và `git push`.
 - [ ] **Next Action**: What should be done next?
 ---
 
