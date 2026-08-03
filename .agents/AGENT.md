@@ -32,6 +32,8 @@ Xác minh (Verification)
 Cập nhật nhật ký Audit (Audit Update)
 ↓
 Hoàn thành (Finish)
+↓
+Đẩy mã nguồn lên GitHub (GitHub Push & Commit)
 
 ### 1.2. Bảng điều hướng tác vụ (Task Routing Table)
 
@@ -93,6 +95,15 @@ Sau mỗi task, Agent PHẢI thực hiện:
 - **Traceability**: Mỗi thay đổi tài liệu phải tham chiếu đến Feature/Audit/API liên quan.
 - **Project Health SSOT**: `docs/PROJECT_HEALTH.md` phải luôn phản ánh trạng thái thực tế nhất.
 
+### 2.4. Quy chuẩn Git & GitHub (MANDATORY PUSH)
+Mọi thay đổi code PHẢI được đẩy lên GitHub ngay sau khi hoàn thành task:
+1. **Commit Message**: Tuân thủ [Conventional Commits](https://www.conventionalcommits.org/).
+    - Cấu trúc: `<type>(scope): <description>`
+    - Type: `feat`, `fix`, `docs`, `refactor`, `perf`, `chore`, `ci`.
+    - Ví dụ: `feat(payment): migrate double to bigdecimal for precision`
+2. **Branching**: Tuyệt đối không commit trực tiếp vào `main` nếu đang phát triển tính năng lớn. Sử dụng nhánh feature.
+3. **Sync**: Đảm bảo đã `pull` code mới nhất trước khi `push` để tránh xung đột.
+
 ### 2.5. Chữ ký xác thực hoàn tất (Mandatory Completion Signature)
 BẮT BUỘC Agent phải xuất bảng sau ở cuối mỗi task có thay đổi code:
 
@@ -101,6 +112,7 @@ BẮT BUỘC Agent phải xuất bảng sau ở cuối mỗi task có thay đổ
 - [ ] **Code Integrity**: Build/Logic verified?
 - [ ] **Documentation**: List of updated files (e.g., `ROOM_AUDIT.md`, `API_INDEX.md`).
 - [ ] **Project Health**: New Score & Trend.
+- [ ] **GitHub Push**: Latest code pushed with conventional commit message?
 - [ ] **Next Action**: What should be done next?
 ---
 
@@ -140,6 +152,7 @@ Vì đây là dự án Đồ án tốt nghiệp, Agent phải tuân thủ các q
 - [ ] `AUDIT_CHANGELOG.md` đã được cập nhật.
 - [ ] `TECH_DEBT.md` / `REFACTOR_HISTORY.md` đã được cập nhật (nếu cần).
 - [ ] Các liên kết chéo (Cross-references) đã được kiểm tra (Relative paths).
+- [ ] **GitHub**: Đã `git add .`, `git commit -m "..."` và `git push`.
 
 ---
 

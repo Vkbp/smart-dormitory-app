@@ -13,6 +13,7 @@ import com.ktx.dormitory.student.payment.domain.model.*
 import com.ktx.dormitory.student.payment.domain.repository.PaymentRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -56,7 +57,7 @@ class PaymentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun createSmartQR(billId: String, amount: Double): Result<PaymentResult> {
+    override suspend fun createSmartQR(billId: String, amount: BigDecimal): Result<PaymentResult> {
         return try {
             // Quy chuẩn Mã Giao Dịch: SDMS + 8 ký tự đầu của billId (viết hoa)
             val transactionCode = "SDMS${billId.take(8).uppercase()}"

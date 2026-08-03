@@ -3,6 +3,7 @@ package com.ktx.dormitory.student.payment.domain.repository
 import androidx.paging.PagingData
 import com.ktx.dormitory.student.payment.domain.model.*
 import kotlinx.coroutines.flow.Flow
+import java.math.BigDecimal
 
 interface PaymentRepository {
     /**
@@ -18,7 +19,7 @@ interface PaymentRepository {
     /**
      * Khởi tạo thanh toán Online (Smart QR).
      */
-    suspend fun createSmartQR(billId: String, amount: Double): Result<PaymentResult>
+    suspend fun createSmartQR(billId: String, amount: BigDecimal): Result<PaymentResult>
 
     /**
      * Lấy lịch sử thanh toán phân trang.

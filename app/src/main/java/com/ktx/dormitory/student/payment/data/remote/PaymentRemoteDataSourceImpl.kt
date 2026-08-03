@@ -6,6 +6,7 @@ import com.ktx.dormitory.student.payment.data.dto.response.PaymentResponseDto
 import com.ktx.dormitory.student.payment.data.dto.response.PaymentInstructionDto
 import com.ktx.dormitory.core.common.BaseResponse
 import com.ktx.dormitory.core.common.PageResponse
+import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,7 +23,7 @@ class PaymentRemoteDataSourceImpl @Inject constructor(
         return api.getInvoices()
     }
 
-    override suspend fun createSmartQR(billId: String, amount: Double, paymentMethod: String, transactionCode: String?): BaseResponse<PaymentResponseDto> {
+    override suspend fun createSmartQR(billId: String, amount: BigDecimal, paymentMethod: String, transactionCode: String?): BaseResponse<PaymentResponseDto> {
         return api.createSmartQR(
             OnlinePaymentRequestDto(
                 billId = billId,

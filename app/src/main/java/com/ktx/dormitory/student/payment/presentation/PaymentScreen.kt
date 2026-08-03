@@ -31,6 +31,7 @@ import com.ktx.dormitory.student.payment.presentation.components.SmartQRBottomSh
 import com.ktx.dormitory.ui.components.EmptyView
 import com.ktx.dormitory.ui.components.ErrorView
 import com.ktx.dormitory.ui.components.LoadingView
+import java.math.BigDecimal
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,7 +95,7 @@ fun PaymentScreen(
                             state = state,
                             navController = navController,
                             onPayClick = { bill -> 
-                                viewModel.createSmartQR(bill.id, bill.remainingAmount ?: bill.amount ?: 0.0)
+                                viewModel.createSmartQR(bill.id, bill.remainingAmount ?: bill.amount ?: BigDecimal.ZERO)
                             }
                         )
 
@@ -203,7 +204,7 @@ fun BillCard(bill: Bill, isProcessing: Boolean, onPay: () -> Unit) {
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = formatCurrency(bill.remainingAmount ?: bill.amount ?: 0.0),
+                        text = formatCurrency(bill.remainingAmount ?: bill.amount ?: BigDecimal.ZERO),
                         fontWeight = FontWeight.ExtraBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -242,7 +243,7 @@ fun BillCard(bill: Bill, isProcessing: Boolean, onPay: () -> Unit) {
 }
 
 @Composable
-fun TotalAmountCard(total: Double) {
+fun TotalAmountCard(total: BigDecimal) {
     Surface(
         color = MaterialTheme.colorScheme.primary,
         shape = RoundedCornerShape(16.dp),
@@ -261,4 +262,4 @@ fun TotalAmountCard(total: Double) {
     }
 }
 
-private fun formatCurrency(amount: Double): String = String.format(Locale.getDefault(), "%,.0f VNĐ", amount)
+private fun formatCurrency(amount: BigDecimal): String = String.format(Locale.getDefault(), "%,.0f VNĐ", amount)

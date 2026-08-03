@@ -1,6 +1,7 @@
 package com.ktx.dormitory.student.payment.data.dto.response
 
 import com.google.gson.annotations.SerializedName
+import java.math.BigDecimal
 
 /**
  * DTO đại diện cho hóa đơn (Bill).
@@ -9,9 +10,9 @@ import com.google.gson.annotations.SerializedName
 data class BillDto(
     @SerializedName("billId") val id: String,
     @SerializedName("billType") val type: String?,
-    @SerializedName("amount") val amount: Double?,
-    @SerializedName("paidAmount") val paidAmount: Double? = 0.0,
-    @SerializedName("remainingAmount") val remainingAmount: Double? = 0.0,
+    @SerializedName("amount") val amount: BigDecimal?,
+    @SerializedName("paidAmount") val paidAmount: BigDecimal? = BigDecimal.ZERO,
+    @SerializedName("remainingAmount") val remainingAmount: BigDecimal? = BigDecimal.ZERO,
     @SerializedName("status") val status: String?,
     @SerializedName("dueDate") val dueDate: String?,
     @SerializedName("description") val description: String? = null,

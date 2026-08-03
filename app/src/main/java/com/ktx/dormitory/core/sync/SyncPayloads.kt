@@ -1,5 +1,7 @@
 package com.ktx.dormitory.core.sync
 
+import java.math.BigDecimal
+
 data class CreateRequestPayload(
     val type: String,
     val content: String
@@ -29,7 +31,7 @@ data class VerifyQrPayload(
  */
 data class VerifyPaymentPayload(
     val billId: String,
-    val amount: Double,
+    val amount: BigDecimal,
     val method: String,
     val transactionCode: String
 )

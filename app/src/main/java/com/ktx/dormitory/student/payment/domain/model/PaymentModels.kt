@@ -2,6 +2,7 @@ package com.ktx.dormitory.student.payment.domain.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 /**
  * Model đại diện cho Hóa đơn (Bill).
@@ -11,9 +12,9 @@ import kotlinx.parcelize.Parcelize
 data class Bill(
     val id: String,
     val type: BillType?,
-    val amount: Double?,
-    val paidAmount: Double? = 0.0,
-    val remainingAmount: Double? = 0.0,
+    val amount: BigDecimal?,
+    val paidAmount: BigDecimal? = BigDecimal.ZERO,
+    val remainingAmount: BigDecimal? = BigDecimal.ZERO,
     val status: BillStatus?,
     val dueDate: String?,
     val description: String?,
@@ -30,11 +31,15 @@ data class PaymentResult(
     val paymentId: String?,
     val billId: String?,
     val transactionCode: String?,
-    val amount: Double?,
+    val amount: BigDecimal?,
     val paymentMethod: PaymentMethod?,
     val paymentStatus: String?,
     val paymentUrl: String?,
-    val paidAt: String? = null
+    val paidAt: String? = null,
+    val billStatus: String? = null,
+    val assignmentStatus: String? = null,
+    val paidAmount: BigDecimal? = null,
+    val message: String? = null
 ) : Parcelable
 
 /**

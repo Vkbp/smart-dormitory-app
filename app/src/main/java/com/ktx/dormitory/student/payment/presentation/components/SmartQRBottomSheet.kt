@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.ktx.dormitory.student.payment.domain.model.PaymentResult
+import java.math.BigDecimal
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,7 +85,7 @@ fun SmartQRBottomSheet(
                     CopyableRow("Ngân hàng", "MBBank", context)
                     CopyableRow("Số tài khoản", "0819281512", context)
                     CopyableRow("Người nhận", "SDMS - KY TUC XA", context)
-                    CopyableRow("Số tiền", formatCurrency(paymentResult.amount ?: 0.0), context)
+                    CopyableRow("Số tiền", formatCurrency(paymentResult.amount ?: BigDecimal.ZERO), context)
                     CopyableRow("Nội dung", paymentResult.transactionCode ?: "", context, isRequired = true)
                 }
             }
@@ -144,4 +145,4 @@ fun CopyableRow(label: String, value: String, context: Context, isRequired: Bool
     }
 }
 
-private fun formatCurrency(amount: Double): String = String.format(Locale.getDefault(), "%,.0f VNĐ", amount)
+private fun formatCurrency(amount: BigDecimal): String = String.format(Locale.getDefault(), "%,.0f VNĐ", amount)

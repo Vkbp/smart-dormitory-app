@@ -23,6 +23,7 @@ import com.ktx.dormitory.student.payment.domain.model.BillType
 import com.ktx.dormitory.ui.components.EmptyView
 import com.ktx.dormitory.ui.components.ErrorView
 import com.ktx.dormitory.ui.components.LoadingView
+import java.math.BigDecimal
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,7 +130,7 @@ fun BillHistoryItem(bill: Bill) {
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = formatCurrency(bill.amount ?: 0.0),
+                    text = formatCurrency(bill.amount ?: BigDecimal.ZERO),
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -151,4 +152,4 @@ fun BillHistoryItem(bill: Bill) {
     }
 }
 
-private fun formatCurrency(amount: Double): String = String.format(Locale.getDefault(), "%,.0f VNĐ", amount)
+private fun formatCurrency(amount: BigDecimal): String = String.format(Locale.getDefault(), "%,.0f VNĐ", amount)

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,7 +55,7 @@ class PaymentViewModel @Inject constructor(
     /**
      * Tạo mã QR thông minh và bắt đầu Polling để kiểm tra trạng thái thanh toán.
      */
-    fun createSmartQR(billId: String, amount: Double) {
+    fun createSmartQR(billId: String, amount: BigDecimal) {
         viewModelScope.launch {
             val currentState = uiState.value
             if (currentState is PaymentUiState.Success) {

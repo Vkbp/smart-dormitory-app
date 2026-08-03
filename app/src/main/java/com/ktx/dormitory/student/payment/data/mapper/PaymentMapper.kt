@@ -58,7 +58,11 @@ fun PaymentResponseDto.toDomain(): PaymentResult {
         },
         paymentStatus = paymentStatus,
         paymentUrl = paymentUrl,
-        paidAt = paidAt
+        paidAt = paidAt,
+        billStatus = billStatus,
+        assignmentStatus = assignmentStatus,
+        paidAmount = paidAmount,
+        message = message
     )
 }
 
@@ -66,9 +70,9 @@ fun BillDto.toEntity(): InvoiceEntity {
     return InvoiceEntity(
         id = id,
         type = type,
-        amount = amount,
-        paidAmount = paidAmount,
-        remainingAmount = remainingAmount,
+        amount = amount?.toDouble(),
+        paidAmount = paidAmount?.toDouble(),
+        remainingAmount = remainingAmount?.toDouble(),
         status = status,
         dueDate = dueDate,
         description = description,
@@ -90,9 +94,9 @@ fun InvoiceEntity.toDomain(): Bill {
             "DEPOSIT_FEE" -> BillType.DEPOSIT_FEE
             else -> null
         },
-        amount = amount,
-        paidAmount = paidAmount,
-        remainingAmount = remainingAmount,
+        amount = amount?.toBigDecimal(),
+        paidAmount = paidAmount?.toBigDecimal(),
+        remainingAmount = remainingAmount?.toBigDecimal(),
         status = when (status?.uppercase()) {
             "UNPAID" -> BillStatus.UNPAID
             "PARTIALLY_PAID" -> BillStatus.PARTIALLY_PAID
