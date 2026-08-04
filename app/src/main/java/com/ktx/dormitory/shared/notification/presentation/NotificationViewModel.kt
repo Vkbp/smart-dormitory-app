@@ -30,6 +30,7 @@ class NotificationViewModel @Inject constructor(
     }
 
     fun refresh() {
+        // Chỉ cập nhật số lượng, không xóa trạng thái đã đọc tạm thời để tránh nhảy UI khi chuyển trang
         fetchUnreadCount()
     }
 
@@ -37,6 +38,8 @@ class NotificationViewModel @Inject constructor(
         when (event) {
             NotificationUiEvent.LoadNotifications -> { /* Paging 3 handles initial load */ }
             NotificationUiEvent.Refresh -> {
+                // Khi chủ động Refresh danh sách, ta mới đồng bộ lại từ đầu với Server
+                updateState { it.copy(isAllReadMarked = false, readIds = emptySet()) }
                 fetchUnreadCount()
             }
             is NotificationUiEvent.MarkAsRead -> markAsRead(event.notificationId)

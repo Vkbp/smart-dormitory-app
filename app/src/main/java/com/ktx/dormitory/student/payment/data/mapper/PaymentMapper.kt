@@ -10,7 +10,8 @@ fun PaymentInstructionDto.toDomain(): PaymentInstruction {
         accountNumber = accountNumber,
         accountHolder = accountHolder,
         qrCodeUrl = qrCodeUrl,
-        contentPrefix = contentPrefix
+        contentPrefix = content,
+        amount = amount
     )
 }
 
@@ -43,7 +44,10 @@ fun BillDto.toDomain(): Bill {
         message = message,
         isBillOwner = isBillOwner ?: false,
         roomCode = roomCode,
-        bedCode = bedCode
+        bedCode = bedCode,
+        requiresRefund = requiresRefund ?: false,
+        isSplittable = isSplittable ?: false,
+        reportedStudentIds = reportedStudentIds ?: emptyList()
     )
 }
 
@@ -86,7 +90,9 @@ fun BillDto.toEntity(): InvoiceEntity {
         message = message,
         isBillOwner = isBillOwner ?: false,
         roomCode = roomCode,
-        bedCode = bedCode
+        bedCode = bedCode,
+        requiresRefund = requiresRefund ?: false,
+        isSplittable = isSplittable ?: false
     )
 }
 
@@ -119,6 +125,8 @@ fun InvoiceEntity.toDomain(): Bill {
         message = message,
         isBillOwner = isBillOwner,
         roomCode = roomCode,
-        bedCode = bedCode
+        bedCode = bedCode,
+        requiresRefund = requiresRefund,
+        isSplittable = isSplittable
     )
 }

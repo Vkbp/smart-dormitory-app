@@ -29,7 +29,7 @@ interface PaymentRepository {
     /**
      * Lấy hướng dẫn thanh toán.
      */
-    suspend fun getPaymentInstructions(): Result<PaymentInstruction>
+    suspend fun getPaymentInstructions(billId: String? = null): Result<PaymentInstruction>
 
     /**
      * Tách nợ tiền điện cho các thành viên.

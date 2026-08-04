@@ -7,9 +7,10 @@ import com.google.gson.annotations.SerializedName
  * Khớp với PaymentInstructionResponse.java từ Backend.
  */
 data class PaymentInstructionDto(
-    @SerializedName("bankName") val bankName: String,
-    @SerializedName("accountNumber") val accountNumber: String,
-    @SerializedName("accountHolder") val accountHolder: String,
+    @SerializedName("bankName") val bankName: String?,
+    @SerializedName("bankAccount") val accountNumber: String?,
+    @SerializedName("accountHolder") val accountHolder: String?,
     @SerializedName("qrCodeUrl") val qrCodeUrl: String?,
-    @SerializedName("contentPrefix") val contentPrefix: String?
+    @SerializedName("content") val content: String?,
+    @SerializedName("amount") val amount: java.math.BigDecimal?
 )

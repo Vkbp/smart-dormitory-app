@@ -19,12 +19,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ktx.dormitory.core.util.ValidationUtils
 import com.ktx.dormitory.navigation.Screen
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 @Composable
 fun ChangePasswordScreen(
@@ -34,6 +40,8 @@ fun ChangePasswordScreen(
 ) {
     var oldPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
+    var oldPasswordVisible by remember { mutableStateOf(false) }
+    var newPasswordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val uiState by accountViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -64,7 +72,13 @@ fun ChangePasswordScreen(
             value = oldPassword,
             onValueChange = { oldPassword = it },
             label = { Text("Mật khẩu cũ") },
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (oldPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (oldPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                IconButton(onClick = { oldPasswordVisible = !oldPasswordVisible }) {
+                    Icon(imageVector = image, contentDescription = "Hiện/Ẩn mật khẩu")
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -75,7 +89,13 @@ fun ChangePasswordScreen(
             supportingText = {
                 Text("Tối thiểu 8 ký tự, bao gồm chữ hoa, thường, số và ký hiệu.")
             },
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (newPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (newPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                IconButton(onClick = { newPasswordVisible = !newPasswordVisible }) {
+                    Icon(imageVector = image, contentDescription = "Hiện/Ẩn mật khẩu")
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             isError = newPassword.isNotEmpty() && !ValidationUtils.isValidPassword(newPassword)
         )

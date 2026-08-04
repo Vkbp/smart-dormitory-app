@@ -1,10 +1,13 @@
 package com.ktx.dormitory.navigation.graphs
 
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.student.access.presentation.AccessHistoryScreen
@@ -18,8 +21,13 @@ import com.ktx.dormitory.student.home.presentation.HomeScreen
 import com.ktx.dormitory.shared.profile.presentation.ProfileScreen
 import com.ktx.dormitory.student.room.presentation.RoomScreen
 import com.ktx.dormitory.student.room.presentation.RoomViewModel
+import com.ktx.dormitory.student.room.presentation.RoomUtilitiesScreen
+import com.ktx.dormitory.student.room.presentation.RoomUtilitiesViewModel
 import com.ktx.dormitory.student.room.presentation.RoomTransferScreen
 import com.ktx.dormitory.student.room.presentation.RoomTransferViewModel
+import com.ktx.dormitory.student.maintenance.presentation.MaintenanceScreen
+import com.ktx.dormitory.student.maintenance.presentation.MaintenanceViewModel
+import com.ktx.dormitory.student.maintenance.presentation.CreateMaintenanceScreen
 import com.ktx.dormitory.student.payment.presentation.PaymentScreen
 import com.ktx.dormitory.student.payment.presentation.PaymentHistoryScreen
 import com.ktx.dormitory.student.payment.presentation.PaymentHistoryViewModel
@@ -40,11 +48,9 @@ fun NavGraphBuilder.studentNavGraph(
         startDestination = Screen.StudentHome.route,
         route = "student_graph"
     ) {
-        composable(Screen.StudentHome.route) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry("student_graph")
-            }
-            val notificationViewModel: NotificationViewModel = hiltViewModel(parentEntry)
+        composable(Screen.StudentHome.route) {
+            val activity = LocalContext.current as FragmentActivity
+            val notificationViewModel: NotificationViewModel = hiltViewModel(activity)
             HomeScreen(navController, notificationViewModel = notificationViewModel)
         }
 
@@ -55,6 +61,10 @@ fun NavGraphBuilder.studentNavGraph(
         composable(Screen.RoomInfo.route) {
             val roomViewModel: RoomViewModel = hiltViewModel()
             RoomScreen(navController, roomViewModel)
+        }
+
+        composable(Screen.RoomUtilities.route) {
+            RoomUtilitiesScreen(navController)
         }
 
         composable(Screen.PaymentHistory.route) {
@@ -94,11 +104,9 @@ fun NavGraphBuilder.studentNavGraph(
             CheckoutScreen(navController, checkoutViewModel)
         }
 
-        composable(Screen.Notifications.route) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry("student_graph")
-            }
-            val notificationViewModel: NotificationViewModel = hiltViewModel(parentEntry)
+        composable(Screen.Notifications.route) {
+            val activity = LocalContext.current as FragmentActivity
+            val notificationViewModel: NotificationViewModel = hiltViewModel(activity)
             NotificationScreen(navController, notificationViewModel)
         }
 
@@ -110,13 +118,32 @@ fun NavGraphBuilder.studentNavGraph(
             FaceVerificationHistoryScreen(navController)
         }
 
-        composable(Screen.PaymentInstruction.route) {
+        composable(
+            route = Screen.PaymentInstruction.route + "?billId={billId}",
+            arguments = listOf(
+                navArgument("billId") {
+                    type = androidx.navigation.NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) {
             PaymentInstructionScreen(navController)
         }
 
         composable(Screen.RoomTransfer.route) {
             val roomTransferViewModel: RoomTransferViewModel = hiltViewModel()
             RoomTransferScreen(navController, roomTransferViewModel)
+        }
+
+        composable(Screen.Maintenance.route) {
+            val maintenanceViewModel: MaintenanceViewModel = hiltViewModel()
+            MaintenanceScreen(navController, maintenanceViewModel)
+        }
+
+        composable(Screen.CreateMaintenance.route) {
+            val maintenanceViewModel: MaintenanceViewModel = hiltViewModel()
+            CreateMaintenanceScreen(navController, maintenanceViewModel)
         }
     }
 }

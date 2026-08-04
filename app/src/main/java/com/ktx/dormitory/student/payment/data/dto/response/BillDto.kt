@@ -23,5 +23,8 @@ data class BillDto(
     @SerializedName("message") val message: String? = null,
     @SerializedName("isBillOwner") val isBillOwner: Boolean? = false,
     @SerializedName("roomCode") val roomCode: String? = null,
-    @SerializedName("bedCode") val bedCode: String? = null
+    @SerializedName("bedCode") val bedCode: String? = null,
+    @SerializedName("requiresRefund") val requiresRefund: Boolean? = false,
+    @SerializedName("isSplittable") val isSplittable: Boolean? = false,
+    @SerializedName("reportedStudentIds") val reportedStudentIds: List<String>? = emptyList()
 )

@@ -16,10 +16,17 @@ class GetUnpaidInvoicesUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<UnpaidBillsResult> {
         return repository.getInvoices().map { list ->
-            val unpaid = list.filter { it.status != BillStatus.PAID && it.status != BillStatus.CANCELLED }
-            val total = unpaid.mapNotNull { it.remainingAmount ?: it.amount }
+            // Bao gồm cả các hóa đơn đã đóng (PAID) nhưng cần hoàn phí (requiresRefund)
+            val filtered = list.filter { 
+                (it.status != BillStatus.PAID && it.status != BillStatus.CANCELLED) || it.requiresRefund 
+            }
+            
+            // Tổng dư nợ chỉ tính trên các hóa đơn chưa hoàn thành
+            val total = filtered.filter { it.status != BillStatus.PAID }
+                .mapNotNull { it.remainingAmount ?: it.amount }
                 .fold(BigDecimal.ZERO) { acc, amount -> acc.add(amount) }
-            UnpaidBillsResult(unpaid, total)
+                
+            UnpaidBillsResult(filtered, total)
         }
     }
 }

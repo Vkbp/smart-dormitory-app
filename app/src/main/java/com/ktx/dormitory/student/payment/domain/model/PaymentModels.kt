@@ -25,7 +25,10 @@ data class Bill(
     val message: String? = null,
     val isBillOwner: Boolean = false,
     val roomCode: String? = null,
-    val bedCode: String? = null
+    val bedCode: String? = null,
+    val requiresRefund: Boolean = false,
+    val isSplittable: Boolean = false,
+    val reportedStudentIds: List<String> = emptyList()
 ) : Parcelable
 
 /**

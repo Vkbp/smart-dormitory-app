@@ -6,7 +6,6 @@ import androidx.paging.PagingData
 import com.ktx.dormitory.core.network.toUserFriendlyMessage
 import com.ktx.dormitory.shared.notification.data.mapper.toDomain
 import com.ktx.dormitory.shared.notification.data.paging.NotificationPagingSource
-import com.ktx.dormitory.shared.notification.data.remote.IssueReportRequest
 import com.ktx.dormitory.shared.notification.data.remote.NotificationApiService
 import com.ktx.dormitory.shared.notification.domain.model.Notification
 import com.ktx.dormitory.shared.notification.domain.repository.NotificationRepository
@@ -58,27 +57,6 @@ class NotificationRepositoryImpl @Inject constructor(
             val response = apiService.markAllRead()
             if (response.isSuccessful) {
                 Result.success(Unit)
-            } else {
-                Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
-            }
-        } catch (e: Exception) {
-            Result.failure(Exception(e.toUserFriendlyMessage()))
-        }
-    }
-
-    override suspend fun reportIssue(
-        description: String,
-        isCommonArea: Boolean
-    ): Result<String> {
-        return try {
-            val response = apiService.reportIssue(IssueReportRequest(description, isCommonArea))
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.success == true) {
-                    Result.success(body.message ?: "Đã gửi báo cáo vấn đề thành công")
-                } else {
-                    Result.failure(Exception(body?.message ?: "Gửi báo cáo thất bại"))
-                }
             } else {
                 Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
             }

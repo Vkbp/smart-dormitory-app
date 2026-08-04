@@ -9,12 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.core.security.checkBiometricSupport
 import com.ktx.dormitory.core.security.ShowBiometricPrompt
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -29,6 +33,7 @@ fun LoginScreen(navController: NavController,
 
     var mssv by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     var isBiometricAvailable by remember { mutableStateOf(false) }
     var showBiometricDialog by remember { mutableStateOf(false) }
     val hasSession = remember { loginViewModel.hasLocalSession() }
@@ -105,7 +110,18 @@ fun LoginScreen(navController: NavController,
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Mật khẩu") },
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff
+
+                    val description = if (passwordVisible) "Ẩn mật khẩu" else "Hiện mật khẩu"
+
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = description)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth().testTag("login_password_field"),
                 isError = uiState.passwordError != null,
                 supportingText = {

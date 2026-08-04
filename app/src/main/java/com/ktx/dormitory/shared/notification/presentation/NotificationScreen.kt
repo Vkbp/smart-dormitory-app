@@ -81,7 +81,12 @@ fun NotificationScreen(
                     }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Tải lại")
                     }
-                    if (uiState.unreadCount > 0) {
+                    // Kiểm tra xem trong danh sách hiện tại có tin nào chưa đọc không
+                    val hasUnreadInList = remember(pagingItems.itemCount) {
+                        (0 until pagingItems.itemCount).any { pagingItems[it]?.isRead == false }
+                    }
+
+                    if (uiState.unreadCount > 0 || hasUnreadInList) {
                         IconButton(onClick = { viewModel.onEvent(NotificationUiEvent.MarkAllAsRead) }) {
                             Icon(Icons.Default.DoneAll, contentDescription = "Đọc tất cả")
                         }
@@ -188,6 +193,9 @@ private fun handleNotificationNavigation(actionUrl: String?, navController: NavC
         }
         actionUrl.contains("/student/access") || actionUrl.contains("/access-history") -> {
             navController.navigate(Screen.AccessHistory.route)
+        }
+        actionUrl.contains("/student/maintenance") || actionUrl.contains("/maintenance") -> {
+            navController.navigate(Screen.Maintenance.route)
         }
     }
 }

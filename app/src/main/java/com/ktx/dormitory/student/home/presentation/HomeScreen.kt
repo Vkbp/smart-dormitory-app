@@ -26,7 +26,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.ui.components.BottomNavBar
-import com.ktx.dormitory.shared.notification.presentation.components.IssueReportBottomSheet
 import com.ktx.dormitory.shared.notification.presentation.NotificationUiEvent
 import com.ktx.dormitory.shared.notification.presentation.NotificationViewModel
 
@@ -42,16 +41,10 @@ fun HomeScreen(
     val userData = state.userData
     val roomInfo = state.roomInfo
     val scrollState = rememberScrollState()
-    
-    var showIssueReport by remember { mutableStateOf(value = false) }
 
     LifecycleResumeEffect(Unit) {
         notificationViewModel.refresh()
         onPauseOrDispose { }
-    }
-
-    if (showIssueReport) {
-        IssueReportBottomSheet(onDismiss = { showIssueReport = false })
     }
 
     Scaffold(
@@ -100,8 +93,7 @@ fun HomeScreen(
 
             Column(modifier = Modifier.padding(16.dp)) {
                 StudentDashboard(
-                    navController = navController, 
-                    onIssueReportClick = { showIssueReport = true },
+                    navController = navController,
                     isResident = state.isResident,
                     isLoading = state.isLoading
                 )
@@ -193,14 +185,13 @@ fun WelcomeSection(name: String, room: String?, onRoomClick: () -> Unit) {
 
 @Composable
 fun StudentDashboard(
-    navController: NavController, 
-    onIssueReportClick: () -> Unit,
+    navController: NavController,
     isResident: Boolean,
     isLoading: Boolean
 ) {
     val allItems = listOf(
         DashboardItem("Quản lý AI", Icons.Default.Face, Screen.FaceStatus.route, isResidentOnly = true),
-        DashboardItem("Báo hỏng", Icons.Default.Build, "", onClick = onIssueReportClick, isResidentOnly = true),
+        DashboardItem("Báo hỏng", Icons.Default.Build, Screen.Maintenance.route, isResidentOnly = true),
         DashboardItem("Thanh toán", Icons.Default.Payments, Screen.Payment.route, isResidentOnly = true),
         DashboardItem("Đổi phòng", Icons.Default.SwapHoriz, Screen.RoomTransfer.route, isResidentOnly = true),
         DashboardItem("Gia hạn", Icons.Default.Update, Screen.QuickExtend.route, isResidentOnly = true),

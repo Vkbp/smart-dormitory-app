@@ -11,6 +11,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ktx.dormitory.navigation.Screen
 
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ktx.dormitory.shared.auth.presentation.LoginViewModel
@@ -26,8 +28,16 @@ data class BottomNavItem(
 fun BottomNavBar(
     navController: NavController,
     loginViewModel: LoginViewModel = hiltViewModel(),
-    notificationViewModel: NotificationViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val activity = context as? FragmentActivity
+    
+    val notificationViewModel: NotificationViewModel = if (activity != null) {
+        hiltViewModel(activity)
+    } else {
+        hiltViewModel()
+    }
+
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
     val notificationState by notificationViewModel.uiState.collectAsStateWithLifecycle()

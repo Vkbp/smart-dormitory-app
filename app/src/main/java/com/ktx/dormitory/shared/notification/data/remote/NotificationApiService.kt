@@ -16,19 +16,9 @@ interface NotificationApiService {
         @Query("size") size: Int = 20
     ): Response<BaseResponse<List<NotificationResponse>>>
 
-    @PUT("v1/notifications/{id}/read")
+    @PATCH("v1/notifications/{id}/read")
     suspend fun markAsRead(@Path("id") id: Long): Response<BaseResponse<Unit>>
 
-    @PUT("v1/notifications/read-all")
+    @PATCH("v1/notifications/read-all")
     suspend fun markAllRead(): Response<BaseResponse<Unit>>
-
-    @POST("v1/notifications/issues")
-    suspend fun reportIssue(
-        @Body request: IssueReportRequest
-    ): Response<BaseResponse<Unit>>
 }
-
-data class IssueReportRequest(
-    @SerializedName("description") val description: String,
-    @SerializedName("isCommonArea") val isCommonArea: Boolean = false
-)

@@ -12,5 +12,6 @@ interface PaymentRemoteDataSource {
     suspend fun getInvoices(): BaseResponse<List<BillDto>>
     suspend fun createSmartQR(billId: String, amount: BigDecimal, paymentMethod: String, transactionCode: String?): BaseResponse<PaymentResponseDto>
     suspend fun getPaymentHistoryPaged(page: Int, size: Int): BaseResponse<PageResponse<BillDto>>
-    suspend fun getPaymentInstructions(): BaseResponse<PaymentInstructionDto>
+    suspend fun getPaymentInstructions(billId: String?): BaseResponse<PaymentInstructionDto>
+    suspend fun splitElectricBill(billId: String, nonPayingStudentIds: List<String>, amountPerStudent: BigDecimal): BaseResponse<Unit>
 }

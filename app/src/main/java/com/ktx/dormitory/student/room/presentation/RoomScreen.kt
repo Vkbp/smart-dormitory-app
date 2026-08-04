@@ -1,6 +1,7 @@
 package com.ktx.dormitory.student.room.presentation
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,8 +50,20 @@ fun RoomScreen(navController: NavController, viewModel: RoomViewModel) {
                     onRetry = { viewModel.loadRoomInfo() }
                 )
                 room != null -> {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .verticalScroll(androidx.compose.foundation.rememberScrollState())
+                    ) {
                         StayProgressSection(room.expectedCheckOutAt)
+                        
+                        uiState.latestUtility?.let { utility ->
+                            Spacer(modifier = Modifier.height(16.dp))
+                            UtilitySummaryCard(utility) {
+                                navController.navigate(Screen.RoomUtilities.route)
+                            }
+                        }
+
                         Spacer(modifier = Modifier.height(16.dp))
                         RoomDetailCard("Tòa nhà", room.building, Icons.Default.Business)
                         RoomDetailCard("Tầng", room.floor?.toString(), Icons.Default.Layers)
@@ -127,6 +141,32 @@ fun StayProgressSection(expectedCheckOutAt: String?) {
 }
 
 @Composable
+fun UtilitySummaryCard(utility: com.ktx.dormitory.student.room.domain.model.UtilityReading, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f))
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(Icons.Default.ElectricBolt, contentDescription = null, tint = Color(0xFFFFC107))
+            Spacer(Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Chỉ số điện (Tháng này)", style = MaterialTheme.typography.labelMedium)
+                Text(
+                    text = "${utility.oldReading} -> ${utility.newReading ?: "Đang sử dụng..."}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Icon(Icons.Default.ChevronRight, contentDescription = null)
+        }
+    }
+}
+
+@Composable
 fun RoomDetailCard(label: String, value: String?, icon: ImageVector) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -160,6 +200,12 @@ fun QuickActionSection(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            QuickActionButton(
+                "Điện nước",
+                Icons.Default.ElectricBolt,
+                Modifier.weight(1f)
+            ) { navController.navigate(Screen.RoomUtilities.route) }
+
             QuickActionButton(
                 "Đổi phòng",
                 Icons.Default.SwapHoriz,

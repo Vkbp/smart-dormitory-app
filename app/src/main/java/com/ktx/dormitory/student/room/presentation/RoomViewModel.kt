@@ -12,6 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RoomViewModel @Inject constructor(
     private val getRoomInfoUseCase: GetRoomInfoUseCase,
+    private val getRoomUtilitiesUseCase: com.ktx.dormitory.student.room.domain.usecase.GetRoomUtilitiesUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -22,9 +23,12 @@ class RoomViewModel @Inject constructor(
     }
 
     init {
-        if (uiState.value.roomInfo == null) {
-            loadRoomInfo()
-        }
+        loadData()
+    }
+
+    fun loadData() {
+        loadRoomInfo()
+        loadLatestUtility()
     }
 
     fun loadRoomInfo() {
@@ -36,6 +40,15 @@ class RoomViewModel @Inject constructor(
                 }
                 .onFailure { e ->
                     updateUiState { it.copy(isLoading = false, error = e.message) }
+                }
+        }
+    }
+
+    private fun loadLatestUtility() {
+        viewModelScope.launch {
+            getRoomUtilitiesUseCase()
+                .onSuccess { utilities ->
+                    updateUiState { it.copy(latestUtility = utilities.firstOrNull()) }
                 }
         }
     }

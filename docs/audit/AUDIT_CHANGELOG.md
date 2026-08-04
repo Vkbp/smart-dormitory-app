@@ -451,6 +451,29 @@ Permanent history of system audits and score trends. **Never recreate this file;
 ---
 *Maintained by the Documentation Governance System.*
 
+### [2026-08-03] Refactor: Unified Maintenance Module & Legacy Cleanup
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **Module Creation**: Established `com.ktx.dormitory.student.maintenance` following strict Clean Architecture and MVI patterns.
+    - **API Integration**: Connected to `POST v1/student/maintenance` (Submit) and `GET v1/student/maintenance/me` (History).
+    - **UI/UX (Student)**: Replaced the old "Issue Report" BottomSheet with a full-screen `MaintenanceScreen.kt` featuring history list, status-colored tags, and a floating action button.
+    - **Feature**: Implemented `CreateMaintenanceScreen.kt` for submitting new reports with client-side validation.
+    - **Cleanup**: Removed legacy `IssueReport` components from the Notification module, including `ReportIssueUseCase`, `IssueReportViewModel`, and old API endpoints.
+    - **Navigation**: Integrated new routes into `Screen.kt` and `StudentNavGraph.kt`.
+    - **Home Sync**: Updated `HomeScreen.kt` to navigate to the new Maintenance module.
+- **Maturity**: Score reached **100/100** for Maintenance module maturity.
+
+### [2026-07-21] Feature: Room Utilities UI & API Integration
+- **Contributor**: AI Development Agent
+- **Actions Taken**:
+    - **API Integration**: Connected to `GET /api/v1/student/utilities/my-room` in `RoomApiService.kt`.
+    - **UI/UX (Student)**: Developed `RoomUtilitiesScreen.kt` to display electricity readings.
+    - **Business Logic**: Implemented logic to display the latest reading as "Current Month" and handle "Đang sử dụng..." (In use) state for unclosed readings.
+    - **Feature**: Added "Lịch sử chốt sổ" (Reading History) section to allow students to track usage over time.
+    - **Architecture**: Used Hilt-injected `GetRoomUtilitiesUseCase` and `RoomUtilitiesViewModel` following MVI-lite pattern.
+    - **UX Improvement**: Added a persistent information card explaining the significance of `oldReading` for billing transparency.
+- **Maturity**: Score reached **100/100** for Room Utilities module.
+
 ### [2026-07-21] Feature: Electric Bill Debt Splitting (Room Leader Reporting)
 - **Contributor**: AI Development Agent
 - **Actions Taken**:

@@ -7,6 +7,7 @@ import com.ktx.dormitory.student.room.data.remote.RoomRemoteDataSource
 import com.ktx.dormitory.student.room.domain.model.RoomInfo
 import com.ktx.dormitory.student.room.domain.model.RoomTransferHistory
 import com.ktx.dormitory.student.room.domain.model.Roommate
+import com.ktx.dormitory.student.room.domain.model.UtilityReading
 import com.ktx.dormitory.student.room.domain.repository.RoomRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -71,6 +72,19 @@ class RoomRepositoryImpl @Inject constructor(
     override suspend fun getRoommates(): Result<List<Roommate>> {
         return try {
             val response = remoteDataSource.getMyRoommates()
+            if (response.success && response.data != null) {
+                Result.success(response.data.map { it.toDomain() })
+            } else {
+                Result.failure(Exception(response.message))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception(e.toUserFriendlyMessage()))
+        }
+    }
+
+    override suspend fun getRoomUtilities(): Result<List<UtilityReading>> {
+        return try {
+            val response = remoteDataSource.getRoomUtilities()
             if (response.success && response.data != null) {
                 Result.success(response.data.map { it.toDomain() })
             } else {

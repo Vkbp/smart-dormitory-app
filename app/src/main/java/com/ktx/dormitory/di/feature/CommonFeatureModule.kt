@@ -18,6 +18,10 @@ import com.ktx.dormitory.shared.notification.data.remote.NotificationApiService
 import com.ktx.dormitory.shared.notification.data.repository.NotificationRepositoryImpl
 import com.ktx.dormitory.shared.notification.domain.repository.NotificationRepository
 
+import com.ktx.dormitory.student.maintenance.data.remote.MaintenanceApiService
+import com.ktx.dormitory.student.maintenance.data.repository.MaintenanceRepositoryImpl
+import com.ktx.dormitory.student.maintenance.domain.repository.MaintenanceRepository
+
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -57,6 +61,11 @@ abstract class CommonFeatureModule {
     @Singleton
     abstract fun bindNotificationRepository(impl: NotificationRepositoryImpl): NotificationRepository
 
+    // Maintenance
+    @Binds
+    @Singleton
+    abstract fun bindMaintenanceRepository(impl: MaintenanceRepositoryImpl): MaintenanceRepository
+
     companion object {
         @Provides
         @Singleton
@@ -69,5 +78,9 @@ abstract class CommonFeatureModule {
         @Provides
         @Singleton
         fun provideNotificationApi(retrofit: Retrofit): NotificationApiService = retrofit.create(NotificationApiService::class.java)
+
+        @Provides
+        @Singleton
+        fun provideMaintenanceApi(retrofit: Retrofit): MaintenanceApiService = retrofit.create(MaintenanceApiService::class.java)
     }
 }

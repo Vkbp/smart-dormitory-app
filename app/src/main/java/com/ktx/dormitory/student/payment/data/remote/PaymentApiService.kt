@@ -45,10 +45,13 @@ interface PaymentApiService {
     ): BaseResponse<PageResponse<BillDto>>
 
     /**
-     * Lấy hướng dẫn thanh toán công khai (Static QR).
+     * Lấy hướng dẫn thanh toán (Static QR hoặc Dynamic QR cho hóa đơn cụ thể).
+     * Endpoint công khai, không cần token.
      */
     @GET("v1/public/payment-instructions")
-    suspend fun getPaymentInstructions(): BaseResponse<PaymentInstructionDto>
+    suspend fun getPaymentInstructions(
+        @Query("billId") billId: String?
+    ): BaseResponse<PaymentInstructionDto>
 
     /**
      * Tách nợ tiền điện cho các thành viên không đóng tiền.

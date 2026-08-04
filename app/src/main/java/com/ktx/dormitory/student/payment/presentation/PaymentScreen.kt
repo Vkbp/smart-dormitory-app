@@ -112,6 +112,9 @@ fun PaymentScreen(
                                 onSplitSubmit = { ids, amount ->
                                     viewModel.splitElectricBill(bill.id, ids, amount)
                                 },
+                                onManualPaymentClick = { id ->
+                                    navController.navigate("${Screen.PaymentInstruction.route}?billId=$id")
+                                },
                                 onDismiss = { viewModel.selectBill(null) }
                             )
                         }
@@ -167,7 +170,10 @@ fun PaymentContent(
         item {
             Spacer(Modifier.height(16.dp))
             OutlinedCard(
-                onClick = { navController.navigate(Screen.PaymentInstruction.route) },
+                onClick = { 
+                    // Luôn luôn vào trường hợp 1 (Hướng dẫn chung), không tự ý gán billId
+                    navController.navigate(Screen.PaymentInstruction.route)
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -182,21 +188,46 @@ fun PaymentContent(
 
 @Composable
 fun BillCard(bill: Bill, isProcessing: Boolean, onPay: () -> Unit, onClick: () -> Unit) {
+    val isOverdue = bill.status == BillStatus.OVERDUE
     val statusColor = when (bill.status) {
         BillStatus.PAID -> Color(0xFF4CAF50)
         BillStatus.PARTIALLY_PAID -> Color(0xFFFFC107)
-        BillStatus.OVERDUE -> Color(0xFFF44336)
+        BillStatus.OVERDUE -> Color(0xFFFF5722)
         BillStatus.CANCELLED -> Color.Gray
         else -> MaterialTheme.colorScheme.error
     }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(if (isOverdue) 4.dp else 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isOverdue) Color(0xFFFFF7F5) else MaterialTheme.colorScheme.surface
+        ),
+        border = if (isOverdue) androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFF5722).copy(alpha = 0.5f)) else null,
         onClick = onClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            if (isOverdue) {
+                Row(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = Color(0xFFFF5722),
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = "THANH TOÁN NGAY ĐỂ TRÁNH BỊ PHẠT",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color(0xFFFF5722),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val icon = when (bill.type) {
                     BillType.ACCOMMODATION_FEE -> Icons.Default.Home
@@ -208,60 +239,116 @@ fun BillCard(bill: Bill, isProcessing: Boolean, onPay: () -> Unit, onClick: () -
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = if (isOverdue) Color(0xFFFF5722) else MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(32.dp)
                 )
 
                 Spacer(Modifier.width(16.dp))
 
                 Column(Modifier.weight(1f)) {
-                    Text(bill.description ?: "Hóa đơn KTX", fontWeight = FontWeight.Bold)
+                    Text(
+                        text = bill.description ?: "Hóa đơn KTX",
+                        fontWeight = FontWeight.Bold,
+                        color = if (isOverdue) Color(0xFFFF5722) else MaterialTheme.colorScheme.onSurface
+                    )
                     if (!bill.billCode.isNullOrBlank()) {
                         Text("Mã: ${bill.billCode}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
                     }
-                    Text("Hạn: ${bill.dueDate ?: "N/A"}", style = MaterialTheme.typography.bodySmall)
-                    if ((bill.paidAmount ?: BigDecimal.ZERO) > BigDecimal.ZERO) {
-                        Text(
-                            text = "Đã đóng: ${formatCurrency(bill.paidAmount!!)}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFF4CAF50)
-                        )
+                    Text(
+                        text = "Hạn: ${bill.dueDate ?: "N/A"}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (isOverdue) Color(0xFFFF5722) else MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = if (isOverdue) FontWeight.Bold else FontWeight.Normal
+                    )
+
+                    // Hiển thị chi tiết thanh toán một phần
+                    if (bill.status == BillStatus.PARTIALLY_PAID) {
+                        Spacer(Modifier.height(4.dp))
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "Tổng: ${formatCurrency(bill.amount ?: BigDecimal.ZERO)}",
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                            Text(
+                                text = "Đã đóng: ${formatCurrency(bill.paidAmount ?: BigDecimal.ZERO)}",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color(0xFF4CAF50),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = formatCurrency(bill.remainingAmount ?: bill.amount ?: BigDecimal.ZERO),
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Black,
+                        color = if (isOverdue) Color(0xFFFF5722) else MaterialTheme.colorScheme.onSurface
                     )
-                    Text(
-                        text = when (bill.status) {
-                            BillStatus.UNPAID -> "Chưa thanh toán"
-                            BillStatus.PARTIALLY_PAID -> "Thanh toán một phần"
-                            BillStatus.OVERDUE -> "Quá hạn"
-                            else -> bill.status.toString()
-                        },
-                        style = MaterialTheme.typography.labelSmall,
-                        color = statusColor
-                    )
+                    Surface(
+                        color = statusColor.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = when (bill.status) {
+                                BillStatus.UNPAID -> "Chưa thanh toán"
+                                BillStatus.PARTIALLY_PAID -> "Đóng thiếu"
+                                BillStatus.OVERDUE -> "QUÁ HẠN"
+                                BillStatus.PAID -> if (bill.requiresRefund) "CHỜ HOÀN TIỀN" else "Đã thanh toán"
+                                else -> bill.status.toString()
+                            },
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = statusColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 
-            if (bill.status == BillStatus.UNPAID || bill.status == BillStatus.PARTIALLY_PAID) {
-                Spacer(Modifier.height(16.dp))
-                Button(
-                    onClick = onPay,
-                    modifier = Modifier.fillMaxWidth(),
+            // Cảnh báo thanh toán dư
+            if (bill.requiresRefund) {
+                Spacer(Modifier.height(12.dp))
+                Surface(
+                    color = Color(0xFFFFF3E0),
                     shape = RoundedCornerShape(8.dp),
-                    enabled = !isProcessing
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFF9800))
                 ) {
-                    if (isProcessing) {
-                        CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
-                    } else {
-                        Icon(Icons.Default.QrCodeScanner, contentDescription = null)
+                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Warning, contentDescription = null, tint = Color(0xFFFF9800), modifier = Modifier.size(16.dp))
                         Spacer(Modifier.width(8.dp))
-                        Text("TẠO MÃ QR THÔNG MINH", fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "Hóa đơn dư tiền. Đang xử lý hoàn tiền.",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color(0xFFE65100)
+                        )
+                    }
+                }
+            }
+
+            if (bill.status == BillStatus.UNPAID || bill.status == BillStatus.PARTIALLY_PAID || bill.status == BillStatus.OVERDUE) {
+                if (!bill.requiresRefund) { // Chỉ hiện nút nếu không phải hóa đơn dư tiền (đề phòng trạng thái PARTIALLY_PAID nhưng lại dư tiền do lỗi logic)
+                    Spacer(Modifier.height(16.dp))
+                    Button(
+                        onClick = onPay,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = if (isOverdue) ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722)) else ButtonDefaults.buttonColors(),
+                        enabled = !isProcessing
+                    ) {
+                        if (isProcessing) {
+                            CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
+                        } else {
+                            Icon(Icons.Default.QrCodeScanner, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            val payAmount = bill.remainingAmount ?: bill.amount ?: BigDecimal.ZERO
+                            Text(
+                                if (isOverdue) "THANH TOÁN CẤP BÁCH ${formatCurrency(payAmount)}" 
+                                else "THANH TOÁN ${formatCurrency(payAmount)}", 
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }

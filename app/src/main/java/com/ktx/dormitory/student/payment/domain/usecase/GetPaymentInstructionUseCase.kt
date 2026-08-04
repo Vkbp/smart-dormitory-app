@@ -7,7 +7,7 @@ import javax.inject.Inject
 class GetPaymentInstructionUseCase @Inject constructor(
     private val repository: PaymentRepository
 ) {
-    suspend operator fun invoke(): Result<PaymentInstruction> {
-        return repository.getPaymentInstructions()
+    suspend operator fun invoke(billId: String? = null): Result<PaymentInstruction> {
+        return repository.getPaymentInstructions(billId)
     }
 }

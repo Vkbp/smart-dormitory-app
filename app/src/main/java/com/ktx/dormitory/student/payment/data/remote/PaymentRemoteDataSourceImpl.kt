@@ -38,7 +38,15 @@ class PaymentRemoteDataSourceImpl @Inject constructor(
         return api.getPaymentHistoryPaged(page, size)
     }
 
-    override suspend fun getPaymentInstructions(): BaseResponse<PaymentInstructionDto> {
-        return api.getPaymentInstructions()
+    override suspend fun getPaymentInstructions(billId: String?): BaseResponse<PaymentInstructionDto> {
+        return api.getPaymentInstructions(billId)
+    }
+
+    override suspend fun splitElectricBill(
+        billId: String,
+        nonPayingStudentIds: List<String>,
+        amountPerStudent: BigDecimal
+    ): BaseResponse<Unit> {
+        return api.splitElectricBill(billId, SplitBillRequest(nonPayingStudentIds, amountPerStudent))
     }
 }

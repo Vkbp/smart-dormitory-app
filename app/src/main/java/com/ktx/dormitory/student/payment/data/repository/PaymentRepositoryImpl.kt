@@ -87,9 +87,10 @@ class PaymentRepositoryImpl @Inject constructor(
         ).flow
     }
 
-    override suspend fun getPaymentInstructions(): Result<PaymentInstruction> {
+    override suspend fun getPaymentInstructions(billId: String?): Result<PaymentInstruction> {
         return try {
-            val response = apiService.getPaymentInstructions()
+            val response = apiService.getPaymentInstructions(billId)
+
             if (response.success && response.data != null) {
                 Result.success(response.data.toDomain())
             } else {

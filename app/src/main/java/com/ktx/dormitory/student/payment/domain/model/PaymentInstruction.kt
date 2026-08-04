@@ -5,9 +5,10 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PaymentInstruction(
-    val bankName: String,
-    val accountNumber: String,
-    val accountHolder: String,
+    val bankName: String?,
+    val accountNumber: String?,
+    val accountHolder: String?,
     val qrCodeUrl: String?,
-    val contentPrefix: String?
+    val contentPrefix: String?,
+    val amount: java.math.BigDecimal?
 ) : Parcelable
