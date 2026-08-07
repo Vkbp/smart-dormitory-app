@@ -16,5 +16,5 @@ data class UserResponse(
     @SerializedName("faculty") val faculty: String? = null,
     @SerializedName("academicYear") val academicYear: String? = null,
     @SerializedName("status") val status: String? = null,
-    @SerializedName("role") val role: String? = null
+    @SerializedName("roomRole") val roomRole: String? = null
 )

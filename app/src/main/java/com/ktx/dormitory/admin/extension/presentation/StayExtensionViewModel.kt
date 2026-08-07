@@ -2,8 +2,9 @@ package com.ktx.dormitory.admin.extension.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
-import com.ktx.dormitory.admin.common.domain.usecase.GetStayExtensionsUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.ReviewStayExtensionUseCase
+import com.ktx.dormitory.admin.extension.domain.usecase.GetStayExtensionsUseCase
+import com.ktx.dormitory.admin.extension.domain.usecase.ReviewStayExtensionUseCase
+import com.ktx.dormitory.admin.extension.domain.usecase.GetDetailedStudentProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -13,7 +14,7 @@ import javax.inject.Inject
 class StayExtensionViewModel @Inject constructor(
     private val getExtensionsUseCase: GetStayExtensionsUseCase,
     private val reviewUseCase: ReviewStayExtensionUseCase,
-    private val getStudentProfileUseCase: com.ktx.dormitory.admin.common.domain.usecase.GetDetailedStudentProfileUseCase
+    private val getStudentProfileUseCase: GetDetailedStudentProfileUseCase
 ) : BaseViewModel<StayExtensionUiState, StayExtensionUiEvent, StayExtensionUiEffect>(StayExtensionUiState()) {
 
     init {

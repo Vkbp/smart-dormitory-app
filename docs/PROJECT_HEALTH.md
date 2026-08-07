@@ -27,8 +27,8 @@
 
 - **Critical Debt (P0)**: Missing FCM Infrastructure, Low Unit Test coverage.
 - **High Priority (P1)**: Placeholder TLS Pins (Instructions added).
+- **Medium Priority (P2)**: UI Customization (Non-standard components used per project requirements).
 - **Deferred Debt**: FCM Integration (Backend pending), Offline QR Algorithm.
-- **Note**: WebSocket requirement for Admin Dashboard has been mitigated using 30s Auto-Polling.
 
 --------------------------------------------------
 

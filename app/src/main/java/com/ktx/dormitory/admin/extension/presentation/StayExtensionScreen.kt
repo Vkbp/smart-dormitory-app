@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.ktx.dormitory.ui.components.LoadingView
-import com.ktx.dormitory.ui.components.ErrorView
-import com.ktx.dormitory.ui.components.EmptyView
+import com.ktx.dormitory.navigation.components.LoadingView
+import com.ktx.dormitory.navigation.components.ErrorView
+import com.ktx.dormitory.navigation.components.EmptyView
 import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)

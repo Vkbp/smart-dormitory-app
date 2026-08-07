@@ -22,8 +22,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.student.room.domain.model.UtilityReading
-import com.ktx.dormitory.ui.components.ErrorView
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.ErrorView
+import com.ktx.dormitory.navigation.components.LoadingView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

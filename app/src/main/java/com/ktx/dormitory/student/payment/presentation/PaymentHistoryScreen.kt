@@ -20,9 +20,9 @@ import androidx.paging.compose.itemKey
 import com.ktx.dormitory.student.payment.domain.model.Bill
 import com.ktx.dormitory.student.payment.domain.model.BillStatus
 import com.ktx.dormitory.student.payment.domain.model.BillType
-import com.ktx.dormitory.ui.components.EmptyView
-import com.ktx.dormitory.ui.components.ErrorView
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.EmptyView
+import com.ktx.dormitory.navigation.components.ErrorView
+import com.ktx.dormitory.navigation.components.LoadingView
 import java.math.BigDecimal
 import java.util.Locale
 

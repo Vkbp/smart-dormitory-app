@@ -2,9 +2,9 @@ package com.ktx.dormitory.admin.face.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
-import com.ktx.dormitory.admin.common.domain.usecase.ApproveFaceUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.GetPendingFaceProfilesUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.RejectFaceUseCase
+import com.ktx.dormitory.admin.face.domain.usecase.ApproveFaceUseCase
+import com.ktx.dormitory.admin.face.domain.usecase.GetPendingFaceProfilesUseCase
+import com.ktx.dormitory.admin.face.domain.usecase.RejectFaceUseCase
 import com.ktx.dormitory.admin.common.data.mapper.toDomain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

@@ -1,6 +1,6 @@
 package com.ktx.dormitory.student.access.presentation
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -23,9 +22,9 @@ import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.student.access.domain.model.CurfewRequest
 import com.ktx.dormitory.student.access.domain.model.CurfewRequestType
 import com.ktx.dormitory.student.access.domain.model.CurfewStatus
-import com.ktx.dormitory.ui.components.EmptyView
-import com.ktx.dormitory.ui.components.ErrorView
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.EmptyView
+import com.ktx.dormitory.navigation.components.ErrorView
+import com.ktx.dormitory.navigation.components.LoadingView
 import com.ktx.dormitory.core.util.DateTimeUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,7 +79,9 @@ fun CurfewRequestScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(uiState.curfewRequests, key = { it.id }) { request ->
-                            CurfewRequestItem(request)
+                            CurfewRequestItem(request) {
+                                navController.navigate(Screen.CurfewDetail.createRoute(request.id))
+                            }
                         }
                         item { Spacer(modifier = Modifier.height(80.dp)) }
                     }
@@ -91,7 +92,7 @@ fun CurfewRequestScreen(
 }
 
 @Composable
-fun CurfewRequestItem(request: CurfewRequest) {
+fun CurfewRequestItem(request: CurfewRequest, onClick: () -> Unit) {
     val statusColor = when (request.status) {
         CurfewStatus.PENDING -> Color(0xFFFFA000)
         CurfewStatus.APPROVED -> Color(0xFF4CAF50)
@@ -99,7 +100,9 @@ fun CurfewRequestItem(request: CurfewRequest) {
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

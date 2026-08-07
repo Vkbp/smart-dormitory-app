@@ -23,8 +23,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.ktx.dormitory.admin.common.domain.model.FaceProfile
-import com.ktx.dormitory.ui.components.EmptyView
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.EmptyView
+import com.ktx.dormitory.navigation.components.LoadingView
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)

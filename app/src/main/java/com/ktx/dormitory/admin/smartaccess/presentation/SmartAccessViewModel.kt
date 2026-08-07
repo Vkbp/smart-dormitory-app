@@ -2,10 +2,10 @@ package com.ktx.dormitory.admin.smartaccess.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
-import com.ktx.dormitory.admin.common.domain.usecase.EmergencyOverrideUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.GetSmartAccessResourcesUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.RemoteUnlockUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.SearchStudentsUseCase
+import com.ktx.dormitory.admin.smartaccess.domain.usecase.EmergencyOverrideUseCase
+import com.ktx.dormitory.admin.smartaccess.domain.usecase.GetSmartAccessResourcesUseCase
+import com.ktx.dormitory.admin.smartaccess.domain.usecase.RemoteUnlockUseCase
+import com.ktx.dormitory.admin.smartaccess.domain.usecase.SearchStudentsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

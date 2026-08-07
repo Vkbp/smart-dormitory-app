@@ -19,7 +19,8 @@ sealed class PaymentUiState : Parcelable {
         val smartQR: PaymentResult? = null, // Thông tin QR thông minh nếu đang mở
         val selectedBill: Bill? = null,
         val roommates: List<Roommate>? = null,
-        val isSplitBillLoading: Boolean = false
+        val isSplitBillLoading: Boolean = false,
+        val currentStudentId: String? = null
     ) : PaymentUiState()
     
     @Parcelize

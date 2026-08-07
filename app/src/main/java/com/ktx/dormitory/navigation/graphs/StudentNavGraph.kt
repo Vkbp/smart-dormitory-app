@@ -10,6 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.ktx.dormitory.navigation.Screen
+import com.ktx.dormitory.student.access.domain.model.UnifiedTimelineEvent
+import com.ktx.dormitory.student.face.data.dto.response.VerificationAttemptDto
 import com.ktx.dormitory.student.access.presentation.AccessHistoryScreen
 import com.ktx.dormitory.student.access.presentation.AccessViewModel
 import com.ktx.dormitory.student.access.presentation.CurfewRequestScreen
@@ -28,6 +30,11 @@ import com.ktx.dormitory.student.room.presentation.RoomTransferViewModel
 import com.ktx.dormitory.student.maintenance.presentation.MaintenanceScreen
 import com.ktx.dormitory.student.maintenance.presentation.MaintenanceViewModel
 import com.ktx.dormitory.student.maintenance.presentation.CreateMaintenanceScreen
+import com.ktx.dormitory.student.maintenance.presentation.MaintenanceDetailScreen
+import com.ktx.dormitory.student.access.presentation.AccessDetailScreen
+import com.ktx.dormitory.student.access.presentation.CurfewDetailScreen
+import com.ktx.dormitory.student.face.presentation.FaceVerificationDetailScreen
+import com.ktx.dormitory.student.room.presentation.RoomTransferDetailScreen
 import com.ktx.dormitory.student.payment.presentation.PaymentScreen
 import com.ktx.dormitory.student.payment.presentation.PaymentHistoryScreen
 import com.ktx.dormitory.student.payment.presentation.PaymentHistoryViewModel
@@ -144,6 +151,50 @@ fun NavGraphBuilder.studentNavGraph(
         composable(Screen.CreateMaintenance.route) {
             val maintenanceViewModel: MaintenanceViewModel = hiltViewModel()
             CreateMaintenanceScreen(navController, maintenanceViewModel)
+        }
+
+        composable(
+            route = Screen.MaintenanceDetail.route,
+            arguments = listOf(navArgument("id") { type = androidx.navigation.NavType.StringType })
+        ) {
+            val maintenanceViewModel: MaintenanceViewModel = hiltViewModel()
+            MaintenanceDetailScreen(navController, it.arguments?.getString("id") ?: "", maintenanceViewModel)
+        }
+
+        composable(
+            route = Screen.AccessDetail.route,
+            arguments = listOf(navArgument("id") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val event = backStackEntry.savedStateHandle.get<UnifiedTimelineEvent>("event")
+            AccessDetailScreen(navController, event)
+        }
+
+        composable(
+            route = Screen.CurfewDetail.route,
+            arguments = listOf(navArgument("id") { type = androidx.navigation.NavType.StringType })
+        ) {
+            val accessViewModel: AccessViewModel = hiltViewModel()
+            CurfewDetailScreen(navController, it.arguments?.getString("id") ?: "", accessViewModel)
+        }
+
+        composable(
+            route = Screen.FaceVerificationDetail.route,
+            arguments = listOf(navArgument("id") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val attempt = backStackEntry.savedStateHandle.get<VerificationAttemptDto>("attempt")
+            FaceVerificationDetailScreen(navController, attempt)
+        }
+
+        composable(
+            route = Screen.RoomTransferDetail.route,
+            arguments = listOf(navArgument("id") { type = androidx.navigation.NavType.LongType })
+        ) {
+            val roomTransferViewModel: RoomTransferViewModel = hiltViewModel()
+            RoomTransferDetailScreen(
+                navController, 
+                it.arguments?.getLong("id") ?: 0L,
+                roomTransferViewModel
+            )
         }
     }
 }

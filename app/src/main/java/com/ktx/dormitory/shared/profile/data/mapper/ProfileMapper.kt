@@ -27,7 +27,8 @@ fun StudentResponse.toDomain(): UserProfile {
         rfidCode = rfidCode,
         gender = gender,
         birthDate = birthDate,
-        course = course
+        course = course,
+        roomRole = roomRole
     )
 }
 
@@ -49,7 +50,8 @@ fun StudentResponse.toEntity(): UserProfileEntity {
         motherPhone = motherPhone,
         emergencyContact = emergencyContact,
         status = status,
-        rfidCode = rfidCode
+        rfidCode = rfidCode,
+        roomRole = roomRole
     )
 }
 
@@ -71,7 +73,8 @@ fun UserProfileEntity.toDomain(): UserProfile {
         motherPhone = motherPhone,
         emergencyContact = emergencyContact,
         status = status,
-        rfidCode = rfidCode
+        rfidCode = rfidCode,
+        roomRole = roomRole
     )
 }
 

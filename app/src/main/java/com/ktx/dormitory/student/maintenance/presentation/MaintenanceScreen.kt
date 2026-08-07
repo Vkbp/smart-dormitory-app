@@ -1,6 +1,6 @@
 package com.ktx.dormitory.student.maintenance.presentation
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -25,8 +24,8 @@ import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.student.maintenance.domain.model.MaintenanceRequest
 import com.ktx.dormitory.student.maintenance.domain.model.MaintenanceStatus
-import com.ktx.dormitory.ui.components.ErrorView
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.ErrorView
+import com.ktx.dormitory.navigation.components.LoadingView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +79,9 @@ fun MaintenanceScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(uiState.history) { request ->
-                            MaintenanceItem(request)
+                            MaintenanceItem(request) {
+                                navController.navigate(Screen.MaintenanceDetail.createRoute(request.id ?: ""))
+                            }
                         }
                     }
                 }
@@ -90,9 +91,11 @@ fun MaintenanceScreen(
 }
 
 @Composable
-fun MaintenanceItem(request: MaintenanceRequest) {
+fun MaintenanceItem(request: MaintenanceRequest, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {

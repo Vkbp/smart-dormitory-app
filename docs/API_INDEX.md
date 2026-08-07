@@ -4,7 +4,7 @@
 
 | Feature | API Interface | Repository | Primary UseCases |
 | :--- | :--- | :--- | :--- |
-| **Auth** | `AuthApiService` | `AuthRepository` | `LoginUseCase`, `RefreshTokenUseCase` |
+| **Auth** | `AuthApiService` | `AuthRepository` | `LoginUseCase`, `RefreshTokenUseCase`, `ForgotPasswordUseCase`, `ResetPasswordUseCase` |
 | **Face** | `FaceApiService` | `FaceRepository` | `RegisterFaceUseCase`, `GetFaceProfileUseCase` |
 | **Payment** | `PaymentApiService` | `PaymentRepository` | `GetInvoicesUseCase`, `VerifyPaymentUseCase`, `GetPaymentHistoryPagingUseCase`, `GetUnpaidInvoicesUseCase` |
 | **Room** | `RoomApiService` | `RoomRepository` | `GetRoomInfoUseCase`, `GetGroupedAvailableRoomsUseCase`, `SubmitTransferRequestUseCase` |

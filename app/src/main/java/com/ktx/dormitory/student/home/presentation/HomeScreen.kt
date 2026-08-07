@@ -25,8 +25,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ktx.dormitory.navigation.Screen
-import com.ktx.dormitory.ui.components.BottomNavBar
-import com.ktx.dormitory.shared.notification.presentation.NotificationUiEvent
+import com.ktx.dormitory.navigation.components.BottomNavBar
 import com.ktx.dormitory.shared.notification.presentation.NotificationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

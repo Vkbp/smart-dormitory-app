@@ -12,7 +12,6 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -51,7 +50,7 @@ import com.ktx.dormitory.student.face.presentation.components.FaceErrorPopup
 import com.ktx.dormitory.student.face.presentation.components.FaceOverlay
 import com.ktx.dormitory.core.util.resizeAndCompress
 import com.ktx.dormitory.core.util.cropFace
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.LoadingView
 import com.ktx.dormitory.shared.auth.presentation.LoginViewModel
 import com.google.mlkit.vision.face.Face
 import java.io.File

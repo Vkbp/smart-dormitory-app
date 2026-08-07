@@ -1,7 +1,10 @@
 package com.ktx.dormitory.admin.dashboard.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.ktx.dormitory.admin.common.domain.usecase.*
+import com.ktx.dormitory.admin.dashboard.domain.usecase.GetDashboardStatsUseCase
+import com.ktx.dormitory.admin.face.domain.usecase.GetPendingFaceProfilesUseCase
+import com.ktx.dormitory.admin.checkout.domain.usecase.GetCheckoutRequestsUseCase
+import com.ktx.dormitory.admin.extension.domain.usecase.GetStayExtensionsUseCase
 import com.ktx.dormitory.core.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job

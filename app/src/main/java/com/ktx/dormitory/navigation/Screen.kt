@@ -24,6 +24,21 @@ sealed class Screen(val route: String, val title: String) {
     data object FaceVerificationHistory : Screen("face_verification_history", "Lịch sử xác thực")
     data object PaymentInstruction : Screen("payment_instruction", "Hướng dẫn chuyển khoản")
     data object RoomTransfer : Screen("room_transfer", "Đổi phòng")
+    data object MaintenanceDetail : Screen("maintenance_detail/{id}", "Chi tiết bảo trì") {
+        fun createRoute(id: String) = "maintenance_detail/$id"
+    }
+    data object AccessDetail : Screen("access_detail/{id}", "Chi tiết ra vào") {
+        fun createRoute(id: String) = "access_detail/$id"
+    }
+    data object CurfewDetail : Screen("curfew_detail/{id}", "Chi tiết yêu cầu") {
+        fun createRoute(id: String) = "curfew_detail/$id"
+    }
+    data object FaceVerificationDetail : Screen("face_verification_detail/{id}", "Chi tiết xác thực") {
+        fun createRoute(id: String) = "face_verification_detail/$id"
+    }
+    data object RoomTransferDetail : Screen("room_transfer_detail/{id}", "Chi tiết đổi phòng") {
+        fun createRoute(id: Long) = "room_transfer_detail/$id"
+    }
 
     // --- ADMIN ROUTES ---
     data object AdminDashboard : Screen("admin_dashboard", "Hệ thống")

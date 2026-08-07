@@ -34,8 +34,19 @@
             android:theme="@style/Theme.SmartDormitory">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Cấu hình Deep Link cho Reset Password -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Chấp nhận link localhost -->
+                <data android:scheme="http" android:host="localhost" android:port="5173" android:pathPrefix="/reset-password" />
+                <!-- Chấp nhận link IP tĩnh của bạn -->
+                <data android:scheme="http" android:host="192.168.137.1" android:port="5173" android:pathPrefix="/reset-password" />
             </intent-filter>
         </activity>
 

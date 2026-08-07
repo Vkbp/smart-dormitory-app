@@ -19,13 +19,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.ktx.dormitory.navigation.Screen
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.LoadingView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

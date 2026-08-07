@@ -2,8 +2,8 @@ package com.ktx.dormitory.admin.checkout.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
-import com.ktx.dormitory.admin.common.domain.usecase.GetCheckoutRequestsUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.ReviewCheckoutRequestUseCase
+import com.ktx.dormitory.admin.checkout.domain.usecase.GetCheckoutRequestsUseCase
+import com.ktx.dormitory.admin.checkout.domain.usecase.ReviewCheckoutRequestUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.UUID

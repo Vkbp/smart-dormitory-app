@@ -27,7 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ktx.dormitory.navigation.Screen
-import com.ktx.dormitory.ui.components.BottomNavBar
+import com.ktx.dormitory.navigation.components.BottomNavBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -21,7 +21,7 @@ class AccountViewModel @Inject constructor(
         when (event) {
             is AccountUiEvent.ChangePassword -> performChangePassword(event.oldPass, event.newPass)
             is AccountUiEvent.ForgotPassword -> performForgotPassword(event.email)
-            is AccountUiEvent.ResetPassword -> performResetPassword(event.token, event.newPass)
+            is AccountUiEvent.ResetPassword -> performResetPassword(event.email, event.otp, event.newPass)
             AccountUiEvent.ClearStatus -> updateState { it.copy(error = null, successMessage = null) }
         }
     }
@@ -67,7 +67,7 @@ class AccountViewModel @Inject constructor(
         }
     }
 
-    private fun performResetPassword(token: String, newPass: String) {
+    private fun performResetPassword(email: String, otp: String, newPass: String) {
         if (!ValidationUtils.isValidPassword(newPass)) {
             updateState { it.copy(error = "Mật khẩu mới không đủ mạnh") }
             return
@@ -75,7 +75,7 @@ class AccountViewModel @Inject constructor(
 
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, error = null) }
-            resetPasswordUseCase(token, newPass)
+            resetPasswordUseCase(email, otp, newPass)
                 .onSuccess {
                     updateState { it.copy(successMessage = "Đặt lại mật khẩu thành công") }
                     sendEffect(AccountUiEffect.ShowToast("Đặt lại mật khẩu thành công"))

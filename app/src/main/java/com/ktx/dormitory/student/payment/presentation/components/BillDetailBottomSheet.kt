@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -34,6 +35,7 @@ fun BillDetailBottomSheet(
     bill: Bill,
     roommates: List<Roommate>?,
     isSplitLoading: Boolean,
+    currentStudentId: String? = null,
     onSplitSubmit: (List<String>, BigDecimal) -> Unit,
     onManualPaymentClick: (String) -> Unit,
     onDismiss: () -> Unit
@@ -144,12 +146,14 @@ fun BillDetailBottomSheet(
                         LazyColumn(modifier = Modifier.heightIn(max = 250.dp)) {
                             items(roommates) { roommate ->
                                 val isReported = bill.reportedStudentIds.contains(roommate.id)
-                                val isEligible = (roommate.roomRole == "MEMBER" || roommate.roomRole == "DEPUTY") && !isReported
+                                val isMe = roommate.id == currentStudentId
+                                val isEligible = (roommate.roomRole?.uppercase() == "MEMBER" || roommate.roomRole?.uppercase() == "DEPUTY") && !isReported && !isMe
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(vertical = 4.dp)
+                                        .then(if (isMe) Modifier.alpha(0.5f) else Modifier)
                                 ) {
                                     Checkbox(
                                         checked = selectedStudentIds.contains(roommate.id) || isReported,
@@ -173,7 +177,10 @@ fun BillDetailBottomSheet(
                                     Spacer(Modifier.width(12.dp))
                                     Column(Modifier.weight(1f)) {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Text(roommate.fullName, fontWeight = FontWeight.SemiBold)
+                                            Text(
+                                                text = if (isMe) "${roommate.fullName} (Bản thân)" else roommate.fullName,
+                                                fontWeight = FontWeight.SemiBold
+                                            )
                                             if (isReported) {
                                                 Spacer(Modifier.width(8.dp))
                                                 Surface(

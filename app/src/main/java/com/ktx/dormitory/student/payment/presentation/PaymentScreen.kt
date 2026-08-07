@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,9 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -29,9 +26,9 @@ import com.ktx.dormitory.student.payment.domain.model.BillStatus
 import com.ktx.dormitory.student.payment.domain.model.BillType
 import com.ktx.dormitory.student.payment.presentation.components.BillDetailBottomSheet
 import com.ktx.dormitory.student.payment.presentation.components.SmartQRBottomSheet
-import com.ktx.dormitory.ui.components.EmptyView
-import com.ktx.dormitory.ui.components.ErrorView
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.EmptyView
+import com.ktx.dormitory.navigation.components.ErrorView
+import com.ktx.dormitory.navigation.components.LoadingView
 import java.math.BigDecimal
 import java.util.Locale
 
@@ -109,6 +106,7 @@ fun PaymentScreen(
                                 bill = bill,
                                 roommates = state.roommates,
                                 isSplitLoading = state.isSplitBillLoading,
+                                currentStudentId = state.currentStudentId,
                                 onSplitSubmit = { ids, amount ->
                                     viewModel.splitElectricBill(bill.id, ids, amount)
                                 },

@@ -1,17 +1,24 @@
 package com.ktx.dormitory.student.room.presentation
 
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MeetingRoom
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,10 +30,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ktx.dormitory.core.util.DateTimeUtils
+import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.student.room.domain.model.RoomInfo
 import com.ktx.dormitory.student.room.domain.model.RoomTransferHistory
-import com.ktx.dormitory.ui.components.EmptyView
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.EmptyView
+import com.ktx.dormitory.navigation.components.LoadingView
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,7 +76,7 @@ fun RoomTransferScreen(
 
             when (state.selectedTab) {
                 0 -> RequestForm(state, viewModel) { showRoomSheet = true }
-                1 -> HistoryList(state)
+                1 -> HistoryList(state, navController)
             }
         }
     }
@@ -113,64 +121,145 @@ fun RequestForm(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.Description,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    "Hãy mô tả chi tiết lý do bạn muốn đổi phòng để Admin có thể xem xét tốt nhất.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         OutlinedTextField(
             value = state.reason,
             onValueChange = { 
                 viewModel.onEvent(RoomTransferUiEvent.ReasonChanged(it)) 
             },
-            label = { Text("Lý do xin đổi phòng (Bắt buộc)") },
-            modifier = Modifier.fillMaxWidth().height(150.dp),
-            placeholder = { Text("Ví dụ: Phòng hiện tại quá ồn ào và hay bị dột nước") },
-            maxLines = 5,
+            label = { Text("Lý do xin đổi phòng") },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("Ví dụ: Phòng hiện tại quá ồn ào, thiết bị trong phòng hỏng hóc nhiều...") },
+            minLines = 4,
+            maxLines = 6,
             isError = state.reasonError != null,
             supportingText = {
-                if (state.reasonError != null) {
-                    Text(state.reasonError!!, color = MaterialTheme.colorScheme.error)
+                state.reasonError?.let {
+                    Text(it, color = MaterialTheme.colorScheme.error)
+                } ?: run {
+                    Text("Thông tin bắt buộc", style = MaterialTheme.typography.labelSmall)
                 }
-            }
+            },
+            shape = RoundedCornerShape(12.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = state.targetRoomCode,
-            onValueChange = { },
-            label = { Text("Phòng mong muốn (Không bắt buộc)") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onShowRooms() },
-            placeholder = { Text("Bấm để chọn phòng trống") },
-            readOnly = true,
-            trailingIcon = {
-                Icon(Icons.Default.ArrowDropDown, contentDescription = "Chọn từ danh sách")
-            },
-            enabled = false, // Vẫn clickable do Modifier.clickable phía trên
-            colors = OutlinedTextFieldDefaults.colors(
-                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledBorderColor = MaterialTheme.colorScheme.outline,
-                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        Text(
+            "Phòng mong muốn (Tùy chọn)",
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        if (state.targetRoomCode.isEmpty()) {
+            OutlinedCard(
+                onClick = onShowRooms,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.MeetingRoom, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        "Bấm để chọn phòng trống",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                }
+            }
+        } else {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.MeetingRoom, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "Phòng ${state.targetRoomCode}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Text(
+                            "Phòng đã chọn",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                        )
+                    }
+                    IconButton(onClick = { viewModel.onEvent(RoomTransferUiEvent.RoomSelected("", "")) }) {
+                        Icon(Icons.Default.Close, contentDescription = "Bỏ chọn")
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(40.dp))
 
         Button(
             onClick = { viewModel.onEvent(RoomTransferUiEvent.SubmitRequest) },
             modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            enabled = !state.isSubmitting && state.reason.isNotBlank()
+            shape = RoundedCornerShape(16.dp),
+            enabled = !state.isSubmitting && (state.reason.length >= 10),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
         ) {
             if (state.isSubmitting) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
             } else {
-                Icon(Icons.Default.Send, contentDescription = "Gửi")
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("GỬI YÊU CẦU", fontWeight = FontWeight.Bold)
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null)
+                Spacer(modifier = Modifier.width(12.dp))
+                Text("GỬI YÊU CẦU ĐỔI PHÒNG", fontWeight = FontWeight.ExtraBold)
             }
+        }
+        
+        if (state.reason.isNotEmpty() && state.reason.length < 10) {
+            Text(
+                "Lý do cần dài hơn 10 ký tự",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }
@@ -240,7 +329,7 @@ fun RoomSelectionContent(
 }
 
 @Composable
-fun HistoryList(state: RoomTransferUiState) {
+fun HistoryList(state: RoomTransferUiState, navController: NavController) {
     if (state.isLoading) {
         LoadingView()
     } else if (state.history.isEmpty()) {
@@ -252,14 +341,16 @@ fun HistoryList(state: RoomTransferUiState) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(state.history) { item ->
-                HistoryItem(item)
+                HistoryItem(item) {
+                    navController.navigate(Screen.RoomTransferDetail.createRoute(item.id))
+                }
             }
         }
     }
 }
 
 @Composable
-fun HistoryItem(item: RoomTransferHistory) {
+fun HistoryItem(item: RoomTransferHistory, onClick: () -> Unit) {
     val statusColor = when (item.status) {
         "APPROVED" -> Color(0xFF4CAF50)
         "REJECTED" -> MaterialTheme.colorScheme.error
@@ -273,7 +364,9 @@ fun HistoryItem(item: RoomTransferHistory) {
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)

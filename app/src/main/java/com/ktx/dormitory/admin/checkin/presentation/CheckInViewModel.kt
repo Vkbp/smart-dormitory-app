@@ -2,9 +2,9 @@ package com.ktx.dormitory.admin.checkin.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
-import com.ktx.dormitory.admin.common.domain.usecase.AssignRfidUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.ConfirmCheckInUseCase
-import com.ktx.dormitory.admin.common.domain.usecase.SearchStudentForCheckInUseCase
+import com.ktx.dormitory.admin.checkin.domain.usecase.AssignRfidUseCase
+import com.ktx.dormitory.admin.checkin.domain.usecase.ConfirmCheckInUseCase
+import com.ktx.dormitory.admin.checkin.domain.usecase.SearchStudentForCheckInUseCase
 import com.ktx.dormitory.admin.common.data.mapper.toDomain
 import com.ktx.dormitory.core.network.toUserFriendlyMessage
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -58,9 +58,9 @@ class AuthRepositoryImpl @Inject constructor(
                             profileLocalDataSource.saveProfile(profileResponse.data.toEntity())
                         }
 
-                        // Lưu lại Role thực tế từ profile nếu có
-                        localDataSource.saveTokens(response.data.accessToken, response.data.refreshToken, user.role)
-                        return Result.success(user)
+                        // Giữ lại System Role (STUDENT/ADMIN) từ JWT, không ghi đè bằng Room Role (LEADER)
+                        localDataSource.saveTokens(response.data.accessToken, response.data.refreshToken, role)
+                        return Result.success(user.copy(role = role))
                     }
                 } catch (e: Exception) {
                     android.util.Log.w("AUTH_REPO", "Could not fetch profile, using fallback: ${e.message}")
@@ -136,9 +136,9 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun resetPassword(token: String, newPass: String): Result<Unit> {
+    override suspend fun resetPassword(email: String, otp: String, newPass: String): Result<Unit> {
         return try {
-            val response = remoteDataSource.resetPassword(ResetPasswordRequest(token, newPass))
+            val response = remoteDataSource.resetPassword(ResetPasswordRequest(email, otp, newPass))
             if (response.success) Result.success(Unit) else Result.failure(Exception(response.message))
         } catch (e: Exception) { 
             Result.failure(Exception(e.toUserFriendlyMessage())) 

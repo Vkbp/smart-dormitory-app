@@ -1,4 +1,4 @@
-package com.ktx.dormitory.ui.components
+package com.ktx.dormitory.navigation.components
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable

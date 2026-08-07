@@ -11,7 +11,7 @@ data class AccountUiState(
 sealed class AccountUiEvent : BaseContract.Event {
     data class ChangePassword(val oldPass: String, val newPass: String) : AccountUiEvent()
     data class ForgotPassword(val email: String) : AccountUiEvent()
-    data class ResetPassword(val token: String, val newPass: String) : AccountUiEvent()
+    data class ResetPassword(val email: String, val otp: String, val newPass: String) : AccountUiEvent()
     data object ClearStatus : AccountUiEvent()
 }
 

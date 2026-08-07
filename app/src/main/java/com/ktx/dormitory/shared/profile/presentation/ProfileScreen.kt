@@ -32,7 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.ktx.dormitory.core.util.ImageUtil
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.LoadingView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -254,6 +254,16 @@ fun ProfileScreen(
                 ReadOnlyInfoField(label = "Khoa", value = uiState.profile?.faculty ?: "N/A", icon = Icons.Default.School)
                 ReadOnlyInfoField(label = "Niên khóa", value = uiState.profile?.academicYear ?: "N/A", icon = Icons.Default.DateRange)
                 ReadOnlyInfoField(label = "Mã thẻ từ (RFID)", value = uiState.profile?.rfidCode ?: "Chưa cấp", icon = Icons.Default.VpnKey)
+                
+                val roomRoleText = when (uiState.profile?.roomRole?.uppercase()) {
+                    "LEADER" -> "Trưởng phòng"
+                    "DEPUTY" -> "Phó phòng"
+                    "MEMBER" -> "Thành viên"
+                    null -> "Chưa xác định"
+                    else -> uiState.profile?.roomRole ?: "N/A"
+                }
+                ReadOnlyInfoField(label = "Chức vụ phòng", value = roomRoleText, icon = Icons.Default.Groups)
+
                 ReadOnlyInfoField(label = "Trạng thái", value = uiState.profile?.status ?: "N/A", icon = Icons.Default.Info)
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -285,6 +295,20 @@ fun ProfileScreen(
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                OutlinedButton(
+                    onClick = { navController.navigate(com.ktx.dormitory.navigation.Screen.ChangePassword.route) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.Lock, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Đổi mật khẩu")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Button(
                     onClick = { viewModel.onEvent(ProfileUiEvent.Logout) },

@@ -2,7 +2,7 @@ package com.ktx.dormitory.admin.notification.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ktx.dormitory.core.base.BaseViewModel
-import com.ktx.dormitory.admin.common.domain.usecase.BroadcastNotificationUseCase
+import com.ktx.dormitory.admin.notification.domain.usecase.BroadcastNotificationUseCase
 import com.ktx.dormitory.core.util.ValidationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

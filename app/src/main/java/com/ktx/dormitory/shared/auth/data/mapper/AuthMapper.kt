@@ -7,14 +7,12 @@ import com.ktx.dormitory.shared.auth.domain.model.UserData
  * Chuyển đổi DTO thành Domain Model cho Auth
  */
 fun UserResponse.toDomain(): UserData {
-    val rawRole = this.role ?: "STUDENT"
-    // Loại bỏ tiền tố ROLE_ nếu có (ví dụ: ROLE_STUDENT -> STUDENT)
-    val cleanRole = if (rawRole.startsWith("ROLE_")) rawRole.substring(5) else rawRole
+    val rawRoomRole = this.roomRole ?: "MEMBER"
     
     return UserData(
         id = this.id,
         username = this.studentCode ?: this.email ?: "Unknown",
-        role = cleanRole,
+        role = "STUDENT", // Mặc định role hệ thống là STUDENT cho route này
         fullName = this.fullName,
     )
 }

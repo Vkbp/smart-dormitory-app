@@ -32,7 +32,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.ktx.dormitory.student.payment.domain.model.PaymentInstruction
 import com.ktx.dormitory.student.payment.domain.usecase.GetPaymentInstructionUseCase
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.LoadingView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

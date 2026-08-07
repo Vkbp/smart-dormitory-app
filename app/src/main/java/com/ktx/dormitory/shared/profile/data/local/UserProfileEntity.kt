@@ -21,5 +21,6 @@ data class UserProfileEntity(
     val motherPhone: String? = null,
     val emergencyContact: String? = null,
     val status: String? = null,
-    val rfidCode: String? = null
+    val rfidCode: String? = null,
+    val roomRole: String? = null
 )

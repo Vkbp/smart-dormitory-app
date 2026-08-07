@@ -28,7 +28,7 @@ data class UserProfile(
     val gender: String? = null,
     val birthDate: String? = null,
     val course: String? = null,
-    val role: String? = null
+    val roomRole: String? = null
 ) : Parcelable
 
 /**

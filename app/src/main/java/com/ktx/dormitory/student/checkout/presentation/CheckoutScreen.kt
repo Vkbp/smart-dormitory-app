@@ -19,7 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.student.checkout.domain.model.CheckoutResponse
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.LoadingView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,5 +1,6 @@
 package com.ktx.dormitory.student.face.presentation
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,12 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.student.face.data.dto.response.VerificationAttemptDto
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.LoadingView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +60,10 @@ fun FaceVerificationHistoryScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(uiState.verifications) { attempt ->
-                    VerificationItem(attempt)
+                    VerificationItem(attempt) {
+                        navController.navigate(Screen.FaceVerificationDetail.createRoute(attempt.attemptId.toString()))
+                        navController.currentBackStackEntry?.savedStateHandle?.set("attempt", attempt)
+                    }
                 }
                 
                 if (!uiState.isLastPage) {
@@ -80,9 +84,11 @@ fun FaceVerificationHistoryScreen(
 }
 
 @Composable
-fun VerificationItem(attempt: VerificationAttemptDto) {
+fun VerificationItem(attempt: VerificationAttemptDto, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {

@@ -3,6 +3,7 @@ package com.ktx.dormitory.student.payment.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ktx.dormitory.shared.auth.domain.usecase.GetAuthStateUseCase
 import com.ktx.dormitory.student.payment.domain.model.Bill
 import com.ktx.dormitory.student.payment.domain.model.BillStatus
 import com.ktx.dormitory.student.payment.domain.usecase.*
@@ -24,6 +25,7 @@ class PaymentViewModel @Inject constructor(
     private val getBillByApplicationUseCase: GetBillByApplicationUseCase,
     private val getRoommatesUseCase: com.ktx.dormitory.student.room.domain.usecase.GetRoommatesUseCase,
     private val splitElectricBillUseCase: SplitElectricBillUseCase,
+    private val getAuthStateUseCase: GetAuthStateUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -45,9 +47,18 @@ class PaymentViewModel @Inject constructor(
     fun loadInvoices() {
         viewModelScope.launch {
             updateUiState(PaymentUiState.Loading)
+            
+            // Lấy ID sinh viên hiện tại trước
+            val authResult = getAuthStateUseCase()
+            val studentId = authResult.getOrNull()?.id
+
             getUnpaidInvoicesUseCase()
                 .onSuccess { result ->
-                    updateUiState(PaymentUiState.Success(result.bills, result.totalAmount))
+                    updateUiState(PaymentUiState.Success(
+                        bills = result.bills, 
+                        totalUnpaid = result.totalAmount,
+                        currentStudentId = studentId
+                    ))
                 }
                 .onFailure { e ->
                     updateUiState(PaymentUiState.Error(e.message ?: "Lỗi tải hóa đơn"))

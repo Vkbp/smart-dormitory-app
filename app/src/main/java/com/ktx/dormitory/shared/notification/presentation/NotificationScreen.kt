@@ -38,9 +38,9 @@ import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.shared.notification.domain.model.Notification
 import com.ktx.dormitory.shared.notification.domain.model.NotificationType
-import com.ktx.dormitory.ui.components.EmptyView
-import com.ktx.dormitory.ui.components.ErrorView
-import com.ktx.dormitory.ui.components.LoadingView
+import com.ktx.dormitory.navigation.components.EmptyView
+import com.ktx.dormitory.navigation.components.ErrorView
+import com.ktx.dormitory.navigation.components.LoadingView
 import com.ktx.dormitory.shared.notification.presentation.components.NotificationDetailBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)

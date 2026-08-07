@@ -2,9 +2,9 @@ package com.ktx.dormitory.student.access.presentation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -13,21 +13,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.ktx.dormitory.student.access.domain.model.UnifiedTimelineEvent
 import com.ktx.dormitory.student.access.domain.model.UnifiedEventType
-import com.ktx.dormitory.ui.components.EmptyView
-import com.ktx.dormitory.ui.components.ErrorView
-import com.ktx.dormitory.ui.components.LoadingView
-import com.ktx.dormitory.core.util.DateTimeUtils
+import com.ktx.dormitory.navigation.components.EmptyView
+import com.ktx.dormitory.navigation.components.ErrorView
+import com.ktx.dormitory.navigation.components.LoadingView
 
 import com.ktx.dormitory.navigation.Screen
 
@@ -79,9 +76,16 @@ fun AccessHistoryScreen(
                         ) { index ->
                             val log = pagingItems[index]
                             if (log != null) {
-                                UnifiedAccessLogItem(log) {
-                                    navController.navigate(Screen.CurfewRequest.route)
-                                }
+                                UnifiedAccessLogItem(
+                                    log = log,
+                                    onCurfewRequest = {
+                                        navController.navigate(Screen.CurfewRequest.route)
+                                    },
+                                    onClick = {
+                                        navController.navigate(Screen.AccessDetail.createRoute(log.id))
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("event", log)
+                                    }
+                                )
                                 HorizontalDivider(
                                     modifier = Modifier.padding(horizontal = 16.dp),
                                     thickness = 0.5.dp,
@@ -127,7 +131,11 @@ fun DateHeader(formattedDate: String) {
 }
 
 @Composable
-fun UnifiedAccessLogItem(log: UnifiedTimelineEvent, onCurfewRequest: () -> Unit) {
+fun UnifiedAccessLogItem(
+    log: UnifiedTimelineEvent,
+    onCurfewRequest: () -> Unit,
+    onClick: () -> Unit
+) {
     val statusColor = when (log.type) {
         UnifiedEventType.SUCCESS -> Color(0xFF4CAF50)
         UnifiedEventType.ACCESS_DENIED -> MaterialTheme.colorScheme.error
@@ -139,6 +147,7 @@ fun UnifiedAccessLogItem(log: UnifiedTimelineEvent, onCurfewRequest: () -> Unit)
     val location = log.gateId ?: log.buildingId ?: "Cổng KTX"
 
     ListItem(
+        modifier = Modifier.clickable { onClick() },
         headlineContent = {
             Text(
                 text = location,

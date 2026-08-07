@@ -30,5 +30,5 @@ data class StudentResponse(
     @SerializedName("gender") val gender: String? = null,
     @SerializedName("birthDate") val birthDate: String? = null,
     @SerializedName("course") val course: String? = null,
-    @SerializedName("role") val role: String? = null
+    @SerializedName("roomRole") val roomRole: String? = null
 )
