@@ -64,4 +64,18 @@ class NotificationRepositoryImpl @Inject constructor(
             Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
+
+    override suspend fun getMyViolations(): Result<List<Notification>> {
+        return try {
+            val response = apiService.getMyViolations()
+            if (response.isSuccessful) {
+                val list = response.body()?.data?.map { it.toDomain() } ?: emptyList()
+                Result.success(list)
+            } else {
+                Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception(e.toUserFriendlyMessage()))
+        }
+    }
 }

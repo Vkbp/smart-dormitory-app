@@ -209,7 +209,7 @@ fun CheckoutForm(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let {
                         date = DateTimeUtils.formatDate(it)
-                        isoDate = DateTimeUtils.formatToIso(it)
+                        isoDate = DateTimeUtils.formatToIsoDate(it)
                         dateError = null
                     }
                     showDatePicker = false
@@ -373,9 +373,10 @@ fun CheckoutHistoryList(history: List<CheckoutResponse>, isLoading: Boolean) {
 @Composable
 fun CheckoutHistoryItem(item: CheckoutResponse) {
     val statusColor = when (item.status.uppercase()) {
-        "PENDING" -> MaterialTheme.colorScheme.primary
-        "APPROVED" -> Color(0xFF4CAF50)
-        "REJECTED" -> MaterialTheme.colorScheme.error
+        "PENDING" -> Color(0xFFFFB300) // Amber
+        "APPROVED" -> Color(0xFF4CAF50) // Green
+        "REJECTED" -> Color(0xFFD32F2F) // Red
+        "COMPLETED" -> Color(0xFF2E7D32) // Dark Green
         else -> MaterialTheme.colorScheme.onSurface
     }
 
@@ -395,9 +396,10 @@ fun CheckoutHistoryItem(item: CheckoutResponse) {
                 ) {
                     Text(
                         text = when(item.status.uppercase()) {
-                            "PENDING" -> "Chờ xử lý"
-                            "APPROVED" -> "Hoàn tất Checkout"
-                            "REJECTED" -> "Bị từ chối"
+                            "PENDING" -> "🟡 Chờ xét duyệt"
+                            "APPROVED" -> "🟢 Đã được duyệt"
+                            "REJECTED" -> "🔴 Bị từ chối"
+                            "COMPLETED" -> "✅ Đã hoàn tất"
                             else -> item.status
                         },
                         color = statusColor,
@@ -420,7 +422,7 @@ fun CheckoutHistoryItem(item: CheckoutResponse) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Event, null, modifier = Modifier.size(16.dp), tint = Color.Gray)
                 Spacer(Modifier.width(8.dp))
-                Text("Ngày dự định: ${DateTimeUtils.formatIsoDateTime(item.intendedCheckoutDate)}", style = MaterialTheme.typography.bodyMedium)
+                Text("Ngày dự định: ${DateTimeUtils.formatIsoDate(item.intendedCheckoutDate)}", style = MaterialTheme.typography.bodyMedium)
             }
             
             Spacer(Modifier.height(12.dp))
@@ -428,9 +430,10 @@ fun CheckoutHistoryItem(item: CheckoutResponse) {
             Spacer(Modifier.height(12.dp))
 
             val statusNote = when (item.status.uppercase()) {
-                "PENDING" -> "Đang chờ BQL KTX kiểm tra tài sản và chốt công nợ."
-                "APPROVED" -> "Đã thu hồi giường. Hồ sơ đang được Kế toán Trường xử lý giải ngân (nếu có)."
+                "PENDING" -> "Đang chờ BQL KTX xét duyệt đơn."
+                "APPROVED" -> "Đơn đã được chấp thuận. Vui lòng bàn giao tài sản đúng hạn."
                 "REJECTED" -> "Yêu cầu không được chấp thuận."
+                "COMPLETED" -> "Quy trình trả phòng đã kết thúc."
                 else -> ""
             }
 
@@ -447,7 +450,7 @@ fun CheckoutHistoryItem(item: CheckoutResponse) {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "Lý do từ chối: ${item.rejectReason}",
-                    color = MaterialTheme.colorScheme.error,
+                    color = Color(0xFFD32F2F),
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Medium
                 )

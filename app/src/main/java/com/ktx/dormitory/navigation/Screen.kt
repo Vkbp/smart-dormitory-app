@@ -19,6 +19,7 @@ sealed class Screen(val route: String, val title: String) {
     data object QuickExtend : Screen("quick_extend", "Gia hạn lưu trú")
     data object Checkout : Screen("checkout", "Trả phòng sớm")
     data object Notifications : Screen("notifications", "Thông báo")
+    data object ViolationHistory : Screen("violation_history", "Lịch sử vi phạm")
     data object ForgotPassword : Screen("forgot_password", "Quên mật khẩu")
     data object FaceStatus : Screen("face_status", "Quản lý khuôn mặt")
     data object FaceVerificationHistory : Screen("face_verification_history", "Lịch sử xác thực")
@@ -53,4 +54,8 @@ sealed class Screen(val route: String, val title: String) {
     data object AdminExtensionApproval : Screen("admin_extension_approval", "Duyệt gia hạn")
     data object AdminCheckIn : Screen("admin_check_in", "Thủ tục nhận phòng")
     data object AdminNotificationBroadcast : Screen("admin_notification_broadcast", "Gửi thông báo")
+    data object AdminAccessHistory : Screen("admin_access_history", "Lịch sử hoạt động Admin")
+    data object AdminAccessDetail : Screen("admin_access_detail/{id}", "Chi tiết hoạt động") {
+        fun createRoute(id: String) = "admin_access_detail/$id"
+    }
 }

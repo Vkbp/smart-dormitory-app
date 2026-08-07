@@ -37,6 +37,10 @@ object DateTimeUtils {
         return isoDateTimeFormat.format(Date(timestamp))
     }
 
+    fun formatToIsoDate(timestamp: Long): String {
+        return isoDateFormat.format(Date(timestamp))
+    }
+
     /**
      * Kiểm tra xem một ngày (ISO) có phải là ngày trong tương lai hay không.
      */

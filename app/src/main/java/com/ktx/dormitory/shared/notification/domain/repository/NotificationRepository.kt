@@ -9,4 +9,5 @@ interface NotificationRepository {
     fun getNotificationsPaging(): Flow<PagingData<Notification>>
     suspend fun markAsRead(id: Long): Result<Unit>
     suspend fun markAllRead(): Result<Unit>
+    suspend fun getMyViolations(): Result<List<Notification>>
 }

@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.admin.dashboard.presentation.AdminDashboardScreen
@@ -17,6 +18,9 @@ import com.ktx.dormitory.admin.checkout.presentation.CheckoutApprovalScreen
 import com.ktx.dormitory.admin.extension.presentation.StayExtensionScreen
 import com.ktx.dormitory.admin.checkin.presentation.CheckInScreen
 import com.ktx.dormitory.admin.notification.presentation.NotificationBroadcastScreen
+import com.ktx.dormitory.admin.smartaccess.presentation.history.AdminAccessHistoryScreen
+import com.ktx.dormitory.admin.smartaccess.presentation.history.AdminAccessDetailScreen
+import com.ktx.dormitory.student.access.domain.model.AccessLog
 import com.ktx.dormitory.shared.auth.presentation.LoginViewModel
 
 fun NavGraphBuilder.adminNavGraph(
@@ -43,6 +47,16 @@ fun NavGraphBuilder.adminNavGraph(
         // --- Admin Utilities ---
         composable(Screen.AdminSmartAccess.route) {
             SmartAccessScreen(navController)
+        }
+        composable(Screen.AdminAccessHistory.route) {
+            AdminAccessHistoryScreen(navController)
+        }
+        composable(
+            route = Screen.AdminAccessDetail.route,
+            arguments = listOf(navArgument("id") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val log = backStackEntry.savedStateHandle.get<AccessLog>("log")
+            AdminAccessDetailScreen(navController, log)
         }
         composable(Screen.AdminFaceApproval.route) {
             FaceApprovalScreen(navController)

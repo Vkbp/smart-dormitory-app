@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.ktx.dormitory.core.util.DataFormatter
 import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.navigation.components.LoadingView
 import com.ktx.dormitory.student.access.domain.model.UnifiedTimelineEvent
@@ -120,7 +121,7 @@ fun AccessDetailScreen(
 
                     DetailRow(
                         label = "Phương thức",
-                        value = event.method ?: "Thẻ RFID"
+                        value = DataFormatter.formatAccessMethod(event.method)
                     )
                     
                     if (event.confidenceScore != null) {

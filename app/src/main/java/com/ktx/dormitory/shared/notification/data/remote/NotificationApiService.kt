@@ -21,4 +21,7 @@ interface NotificationApiService {
 
     @PATCH("v1/notifications/read-all")
     suspend fun markAllRead(): Response<BaseResponse<Unit>>
+
+    @GET("v1/notifications/my-violations")
+    suspend fun getMyViolations(): Response<BaseResponse<List<NotificationResponse>>>
 }

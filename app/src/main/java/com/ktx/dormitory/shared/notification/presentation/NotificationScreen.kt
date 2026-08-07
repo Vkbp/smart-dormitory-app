@@ -56,7 +56,7 @@ fun NotificationScreen(
         NotificationDetailBottomSheet(
             notification = uiState.selectedNotification!!,
             onActionClick = { actionUrl ->
-                handleNotificationNavigation(actionUrl, navController)
+                NotificationUtils.navigate(actionUrl, navController)
                 viewModel.onEvent(NotificationUiEvent.SelectNotification(null))
             }
         ) { 
@@ -113,6 +113,8 @@ fun NotificationScreen(
         ) {
             FilterChips(
                 selectedType = uiState.selectedType,
+                userRole = uiState.userRole,
+                navController = navController,
                 onTypeSelected = { viewModel.onEvent(NotificationUiEvent.FilterByType(it)) }
             )
 
@@ -171,40 +173,40 @@ fun NotificationScreen(
     }
 }
 
-private fun handleNotificationNavigation(actionUrl: String?, navController: NavController) {
-    if (actionUrl.isNullOrBlank()) return
-    
-    // Switch-case navigation based on actionUrl format
-    when {
-        actionUrl.contains("/student/bills") || actionUrl.contains("/payment") -> {
-            navController.navigate(Screen.Payment.route)
-        }
-        actionUrl.contains("/student/room") || actionUrl.contains("/room-info") -> {
-            navController.navigate(Screen.RoomInfo.route)
-        }
-        actionUrl.contains("/student/face") || actionUrl.contains("/face-status") -> {
-            navController.navigate(Screen.FaceStatus.route)
-        }
-        actionUrl.contains("/student/checkout") || actionUrl.contains("/checkout") -> {
-            navController.navigate(Screen.Checkout.route)
-        }
-        actionUrl.contains("/student/extension") || actionUrl.contains("/quick-extend") -> {
-            navController.navigate(Screen.QuickExtend.route)
-        }
-        actionUrl.contains("/student/access") || actionUrl.contains("/access-history") -> {
-            navController.navigate(Screen.AccessHistory.route)
-        }
-        actionUrl.contains("/student/maintenance") || actionUrl.contains("/maintenance") -> {
-            navController.navigate(Screen.Maintenance.route)
-        }
-    }
-}
-
 @Composable
 fun FilterChips(
     selectedType: NotificationType,
+    userRole: String,
+    navController: NavController,
     onTypeSelected: (NotificationType) -> Unit
 ) {
+    val filteredTypes = remember(userRole) {
+        val allTypes = NotificationType.entries.toTypedArray()
+        if (userRole == "ADMIN" || userRole == "STAFF") {
+            allTypes.filter { 
+                it in listOf(
+                    NotificationType.ALL, 
+                    NotificationType.SYSTEM, 
+                    NotificationType.MAINTENANCE, 
+                    NotificationType.APPLICATION
+                )
+            }
+        } else {
+            // STUDENT (Mặc định)
+            allTypes.filter {
+                it in listOf(
+                    NotificationType.ALL,
+                    NotificationType.PAYMENT,
+                    NotificationType.VIOLATION,
+                    NotificationType.ROOM,
+                    NotificationType.SMART_ACCESS,
+                    NotificationType.FACE,
+                    NotificationType.ANNOUNCEMENT
+                )
+            }
+        }
+    }
+
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,10 +214,16 @@ fun FilterChips(
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(NotificationType.entries.toTypedArray()) { type ->
+        items(filteredTypes) { type ->
             FilterChip(
                 selected = selectedType == type,
-                onClick = { onTypeSelected(type) },
+                onClick = { 
+                    if (type == NotificationType.VIOLATION) {
+                        navController.navigate(Screen.ViolationHistory.route)
+                    } else {
+                        onTypeSelected(type)
+                    }
+                },
                 label = { Text(type.displayName) },
                 leadingIcon = if (selectedType == type) {
                     { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }

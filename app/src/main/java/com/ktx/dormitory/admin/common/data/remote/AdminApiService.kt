@@ -108,6 +108,14 @@ interface AdminApiService {
     @POST("v1/admin/notifications/broadcast")
     suspend fun broadcastNotification(@Body request: BroadcastRequest): Response<BaseResponse<BroadcastResponse>>
 
+    // --- Admin Smart Access History ---
+    @GET("v1/access/history")
+    suspend fun getAdminAccessHistory(
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("methods") methods: String = "REMOTE_UNLOCK,MANUAL_OVERRIDE"
+    ): Response<BaseResponse<PageResponse<com.ktx.dormitory.student.access.data.dto.response.AccessLogDto>>>
+
     // --- Selection Resources ---
     @GET("v1/admin/buildings")
     suspend fun getBuildings(): Response<BaseResponse<List<BuildingResponseDto>>>

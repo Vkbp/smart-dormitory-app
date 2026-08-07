@@ -9,5 +9,6 @@ enum class NotificationType(val displayName: String) {
     SYSTEM("Cảnh báo"),
     ROOM("Phòng ở"),
     SMART_ACCESS("Cửa ra vào"),
-    FACE("Khuôn mặt")
+    FACE("Khuôn mặt"),
+    VIOLATION("Kỷ luật")
 }

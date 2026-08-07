@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +23,9 @@ import com.ktx.dormitory.core.network.NetworkMonitor
 import com.ktx.dormitory.navigation.AppNavigation
 import com.ktx.dormitory.core.util.AuthEvent
 import com.ktx.dormitory.core.util.AuthEventBus
+import com.ktx.dormitory.core.util.GlobalEvent
+import com.ktx.dormitory.core.util.GlobalEventBus
+import com.ktx.dormitory.navigation.components.ConnectionErrorDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
@@ -37,6 +41,16 @@ class MainActivity : FragmentActivity() {
         setContent {
             val navController = rememberNavController()
             val isOnline by networkMonitor.isOnline.collectAsStateWithLifecycle(initialValue = true)
+            var networkErrorMessage by remember { mutableStateOf<String?>(null) }
+
+            // Lắng nghe sự kiện Network Error toàn cục
+            LaunchedEffect(Unit) {
+                GlobalEventBus.events.collectLatest { event ->
+                    if (event is GlobalEvent.NetworkError) {
+                        networkErrorMessage = event.message
+                    }
+                }
+            }
 
             // Lắng nghe sự kiện Logout toàn cục
             LaunchedEffect(Unit) {
@@ -70,6 +84,14 @@ class MainActivity : FragmentActivity() {
                 }
                 Box(modifier = Modifier.weight(1f)) {
                     AppNavigation(navController = navController)
+                    
+                    // Hiển thị Dialog lỗi kết nối
+                    networkErrorMessage?.let { message ->
+                        ConnectionErrorDialog(
+                            message = message,
+                            onDismiss = { networkErrorMessage = null }
+                        )
+                    }
                 }
             }
         }

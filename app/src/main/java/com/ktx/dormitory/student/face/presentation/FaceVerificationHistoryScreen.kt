@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.ktx.dormitory.core.util.DataFormatter
+import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.navigation.Screen
 import com.ktx.dormitory.student.face.data.dto.response.VerificationAttemptDto
 import com.ktx.dormitory.navigation.components.LoadingView
@@ -96,9 +98,9 @@ fun VerificationItem(attempt: VerificationAttemptDto, onClick: () -> Unit) {
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val (icon, color) = when (attempt.status) {
+            val (icon, color) = when (attempt.status.uppercase()) {
                 "SUCCESS" -> Icons.Default.CheckCircle to Color(0xFF4CAF50)
-                "FAIL" -> Icons.Default.Error to Color(0xFFF44336)
+                "FAIL", "FAILED" -> Icons.Default.Error to Color(0xFFF44336)
                 else -> Icons.Default.Timer to Color(0xFFFFC107)
             }
 
@@ -118,9 +120,15 @@ fun VerificationItem(attempt: VerificationAttemptDto, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = attempt.attemptedAt.replace("T", " ").substringBefore("."),
+                    text = DateTimeUtils.formatRelativeTime(attempt.attemptedAt),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
+                )
+                Text(
+                    text = DataFormatter.formatVerificationStatus(attempt.status),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = color,
+                    fontWeight = FontWeight.Medium
                 )
             }
 

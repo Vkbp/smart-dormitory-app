@@ -37,4 +37,6 @@ interface AdminRepository {
     suspend fun getDashboardStats(): Result<DashboardStats>
 
     suspend fun getStudentProfile(studentId: UUID): Result<com.ktx.dormitory.shared.profile.domain.model.UserProfile>
+
+    suspend fun getAdminAccessHistory(page: Int, size: Int): Result<PageResponse<com.ktx.dormitory.student.access.data.dto.response.AccessLogDto>>
 }

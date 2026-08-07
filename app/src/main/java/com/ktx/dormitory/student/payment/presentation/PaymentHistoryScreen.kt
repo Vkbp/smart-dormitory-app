@@ -17,6 +17,8 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.ktx.dormitory.core.util.DataFormatter
+import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.student.payment.domain.model.Bill
 import com.ktx.dormitory.student.payment.domain.model.BillStatus
 import com.ktx.dormitory.student.payment.domain.model.BillType
@@ -24,7 +26,6 @@ import com.ktx.dormitory.navigation.components.EmptyView
 import com.ktx.dormitory.navigation.components.ErrorView
 import com.ktx.dormitory.navigation.components.LoadingView
 import java.math.BigDecimal
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -123,13 +124,13 @@ fun BillHistoryItem(bill: Bill) {
                     Text(bill.description, style = MaterialTheme.typography.bodySmall)
                 }
                 Text(
-                    text = "Hạn: ${bill.dueDate}", 
+                    text = "Hạn: ${DateTimeUtils.formatIsoDate(bill.dueDate)}", 
                     style = MaterialTheme.typography.bodySmall, 
                     color = Color.Gray
                 )
                 if ((bill.paidAmount ?: BigDecimal.ZERO) > BigDecimal.ZERO) {
                     Text(
-                        text = "Đã đóng: ${formatCurrency(bill.paidAmount!!)}",
+                        text = "Đã đóng: ${DataFormatter.formatCurrency(bill.paidAmount!!)}",
                         style = MaterialTheme.typography.labelSmall,
                         color = Color(0xFF4CAF50),
                         fontWeight = FontWeight.Bold
@@ -138,7 +139,7 @@ fun BillHistoryItem(bill: Bill) {
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = formatCurrency(bill.amount ?: BigDecimal.ZERO),
+                    text = DataFormatter.formatCurrency(bill.amount ?: BigDecimal.ZERO),
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -159,5 +160,3 @@ fun BillHistoryItem(bill: Bill) {
         }
     }
 }
-
-private fun formatCurrency(amount: BigDecimal): String = String.format(Locale.getDefault(), "%,.0f VNĐ", amount)

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.ktx.dormitory.core.util.DataFormatter
 import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.navigation.components.LoadingView
 import com.ktx.dormitory.student.maintenance.domain.model.MaintenanceStatus
@@ -113,7 +114,7 @@ fun MaintenanceDetailScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            DetailField(label = "Mã yêu cầu", value = request.id ?: "N/A")
+            DetailField(label = "Mã yêu cầu", value = DataFormatter.formatId(request.id))
             DetailField(label = "Phòng", value = request.roomId ?: "N/A")
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -185,13 +186,14 @@ fun DetailField(label: String, value: String) {
 
 @Composable
 fun StatusTagLarge(status: MaintenanceStatus) {
-    val (color, text) = when (status) {
-        MaintenanceStatus.PENDING -> Color(0xFFFF9800) to "Đang chờ xử lý"
-        MaintenanceStatus.IN_PROGRESS -> Color(0xFF2196F3) to "Đang được sửa chữa"
-        MaintenanceStatus.DONE -> Color(0xFF4CAF50) to "Đã hoàn thành"
-        MaintenanceStatus.REJECTED -> Color(0xFFF44336) to "Đã từ chối"
-        MaintenanceStatus.UNKNOWN -> Color.Gray to "Không xác định"
+    val color = when (status) {
+        MaintenanceStatus.PENDING -> Color(0xFFFF9800)
+        MaintenanceStatus.IN_PROGRESS -> Color(0xFF2196F3)
+        MaintenanceStatus.DONE -> Color(0xFF4CAF50)
+        MaintenanceStatus.REJECTED -> Color(0xFFF44336)
+        MaintenanceStatus.UNKNOWN -> Color.Gray
     }
+    val text = DataFormatter.formatMaintenanceStatus(status.name)
 
     Surface(
         color = color.copy(alpha = 0.15f),

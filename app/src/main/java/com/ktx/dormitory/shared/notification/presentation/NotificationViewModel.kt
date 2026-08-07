@@ -10,6 +10,7 @@ import com.ktx.dormitory.shared.notification.domain.model.NotificationType
 import com.ktx.dormitory.shared.notification.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import androidx.paging.map
+import com.ktx.dormitory.shared.auth.domain.repository.AuthRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,11 +23,18 @@ class NotificationViewModel @Inject constructor(
     private val getUnreadCountUseCase: GetUnreadCountUseCase,
     private val markReadUseCase: MarkNotificationReadUseCase,
     private val markAllReadUseCase: MarkAllNotificationsReadUseCase,
+    private val authRepository: AuthRepository
 ) : BaseViewModel<NotificationUiState, NotificationUiEvent, NotificationUiEffect>(NotificationUiState()) {
 
     init {
+        initUserRole()
         loadNotifications()
         fetchUnreadCount()
+    }
+
+    private fun initUserRole() {
+        val role = authRepository.getRoleSync() ?: "STUDENT"
+        updateState { it.copy(userRole = role) }
     }
 
     fun refresh() {
@@ -111,17 +119,23 @@ class NotificationViewModel @Inject constructor(
         
         val typeUpper = notification.type?.uppercase() ?: ""
         
-        return if (type == NotificationType.PAYMENT) {
-            val isPaymentType = typeUpper in listOf(
-                "PAYMENT", "ELECTRIC_FEE", "ACCOMMODATION_FEE",
-                "PENALTY_FEE", "BILL", "INVOICE", "PAYMENT_NOTICE"
-            )
-            val containsKeyword = notification.title.contains("hóa đơn", ignoreCase = true) ||
-                    notification.title.contains("thanh toán", ignoreCase = true) ||
-                    notification.message.contains("tiền điện", ignoreCase = true)
-            isPaymentType || containsKeyword
-        } else {
-            typeUpper == type.name
+        return when (type) {
+            NotificationType.PAYMENT -> {
+                val isPaymentType = typeUpper in listOf(
+                    "PAYMENT", "ELECTRIC_FEE", "ACCOMMODATION_FEE",
+                    "PENALTY_FEE", "BILL", "INVOICE", "PAYMENT_NOTICE"
+                )
+                val containsKeyword = notification.title.contains("hóa đơn", ignoreCase = true) ||
+                        notification.title.contains("thanh toán", ignoreCase = true) ||
+                        notification.message.contains("tiền điện", ignoreCase = true)
+                isPaymentType || containsKeyword
+            }
+            NotificationType.VIOLATION -> {
+                typeUpper == "VIOLATION"
+            }
+            else -> {
+                typeUpper == type.name
+            }
         }
     }
 }

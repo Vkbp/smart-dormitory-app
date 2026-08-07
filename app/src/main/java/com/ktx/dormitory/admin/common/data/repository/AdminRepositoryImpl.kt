@@ -12,6 +12,11 @@ import com.ktx.dormitory.admin.common.data.mapper.toDomain
 import com.ktx.dormitory.admin.smartaccess.domain.repository.AdminRepository
 import com.ktx.dormitory.student.face.data.dto.response.FaceProfileDto
 import com.ktx.dormitory.shared.profile.data.mapper.toDomain
+import com.ktx.dormitory.core.util.GlobalEventBus
+import com.ktx.dormitory.core.util.GlobalEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import retrofit2.Response
 import java.util.UUID
@@ -38,8 +43,13 @@ class AdminRepositoryImpl @Inject constructor(
                 Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
             }
         } catch (e: Exception) {
-            // Log.e("AdminRepository", "Network Error", e)
-            Result.failure(Exception("Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng."))
+            val message = e.toUserFriendlyMessage()
+            if (e is java.net.ConnectException || e is java.net.UnknownHostException) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    GlobalEventBus.emit(GlobalEvent.NetworkError(message))
+                }
+            }
+            Result.failure(Exception(message))
         }
     }
 
@@ -56,7 +66,13 @@ class AdminRepositoryImpl @Inject constructor(
                 Result.failure(Exception(HttpException(response).toUserFriendlyMessage()))
             }
         } catch (e: Exception) {
-            Result.failure(Exception(e.toUserFriendlyMessage()))
+            val message = e.toUserFriendlyMessage()
+            if (e is java.net.ConnectException || e is java.net.UnknownHostException) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    GlobalEventBus.emit(GlobalEvent.NetworkError(message))
+                }
+            }
+            Result.failure(Exception(message))
         }
     }
 
@@ -172,4 +188,7 @@ class AdminRepositoryImpl @Inject constructor(
             Result.failure(Exception(e.toUserFriendlyMessage()))
         }
     }
+
+    override suspend fun getAdminAccessHistory(page: Int, size: Int) =
+        handleResponse(apiService.getAdminAccessHistory(page, size))
 }

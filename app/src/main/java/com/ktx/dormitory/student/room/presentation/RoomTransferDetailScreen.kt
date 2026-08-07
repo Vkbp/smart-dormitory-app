@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.ktx.dormitory.core.util.DataFormatter
 import com.ktx.dormitory.core.util.DateTimeUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,11 +73,7 @@ fun RoomTransferDetailScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = when(request.status) {
-                            "APPROVED" -> "Yêu cầu đã được chấp thuận"
-                            "REJECTED" -> "Yêu cầu bị từ chối"
-                            else -> "Đang chờ xử lý"
-                        },
+                        text = DataFormatter.formatRoomTransferStatus(request.status),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = statusColor
@@ -100,7 +97,7 @@ fun RoomTransferDetailScreen(
 
             DetailItem(label = "Phòng hiện tại", value = request.currentRoomName ?: "N/A")
             DetailItem(label = "Phòng mong muốn", value = request.targetRoomName ?: "Admin sắp xếp")
-            DetailItem(label = "Mã yêu cầu", value = "#${request.id}")
+            DetailItem(label = "Mã yêu cầu", value = DataFormatter.formatId(request.id.toString()))
 
             Spacer(modifier = Modifier.height(16.dp))
             

@@ -7,6 +7,9 @@ import com.ktx.dormitory.admin.checkout.domain.usecase.GetCheckoutRequestsUseCas
 import com.ktx.dormitory.admin.extension.domain.usecase.GetStayExtensionsUseCase
 import com.ktx.dormitory.core.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import com.ktx.dormitory.core.util.GlobalEvent
+import com.ktx.dormitory.core.util.GlobalEventBus
+import com.ktx.dormitory.core.network.toUserFriendlyMessage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -47,37 +50,43 @@ class AdminDashboardViewModel @Inject constructor(
 
     private fun loadStats(showLoading: Boolean) {
         viewModelScope.launch {
-            if (showLoading) {
-                updateState { it.copy(isLoading = true, error = null) }
-            }
-            
-            // Gọi song song các API để lấy số lượng hồ sơ chờ xử lý cho Mobile
-            val statsDef = async { getDashboardStatsUseCase() }
-            val facesDef = async { getPendingFaceProfilesUseCase(0, 1) }
-            val checkoutsDef = async { getCheckoutRequestsUseCase("PENDING", 0, 1) }
-            val extensionsDef = async { getStayExtensionsUseCase("PENDING", 0, 1) }
+            try {
+                if (showLoading) {
+                    updateState { it.copy(isLoading = true, error = null) }
+                }
+                
+                // Gọi song song các API để lấy số lượng hồ sơ chờ xử lý cho Mobile
+                val statsDef = async { getDashboardStatsUseCase() }
+                val facesDef = async { getPendingFaceProfilesUseCase(0, 1) }
+                val checkoutsDef = async { getCheckoutRequestsUseCase("PENDING", 0, 1) }
+                val extensionsDef = async { getStayExtensionsUseCase("PENDING", 0, 1) }
 
 
-            val statsRes = statsDef.await()
-            val facesRes = facesDef.await()
-            val checkoutsRes = checkoutsDef.await()
-            val extensionsRes = extensionsDef.await()
+                val statsRes = statsDef.await()
+                val facesRes = facesDef.await()
+                val checkoutsRes = checkoutsDef.await()
+                val extensionsRes = extensionsDef.await()
 
-            updateState { state ->
-                state.copy(
-                    isLoading = false,
-                    stats = statsRes.getOrNull() ?: state.stats,
-                    pendingFaces = facesRes.getOrNull()?.totalElements?.toInt() ?: state.pendingFaces,
-                    pendingCheckouts = checkoutsRes.getOrNull()?.totalElements?.toInt() ?: state.pendingCheckouts,
-                    // Lọc thực tế số lượng PENDING từ content trả về để khớp với UI màn hình list
-                    pendingExtensions = extensionsRes.getOrNull()?.let { response ->
-                        response.content?.count { it.status.uppercase() == "PENDING" }
-                    } ?: state.pendingExtensions
-                )
-            }
+                updateState { state ->
+                    state.copy(
+                        isLoading = false,
+                        stats = statsRes.getOrNull() ?: state.stats,
+                        pendingFaces = facesRes.getOrNull()?.totalElements?.toInt() ?: state.pendingFaces,
+                        pendingCheckouts = checkoutsRes.getOrNull()?.totalElements?.toInt() ?: state.pendingCheckouts,
+                        pendingExtensions = extensionsRes.getOrNull()?.totalElements?.toInt() ?: state.pendingExtensions
+                    )
+                }
 
-            if (statsRes.isFailure && showLoading) {
-                updateState { it.copy(error = statsRes.exceptionOrNull()?.message) }
+                if (statsRes.isFailure && showLoading) {
+                    updateState { it.copy(error = statsRes.exceptionOrNull()?.message) }
+                }
+            } catch (e: Exception) {
+                if (showLoading) {
+                    updateState { it.copy(isLoading = false, error = e.toUserFriendlyMessage()) }
+                }
+                if (e is java.net.ConnectException || e is java.net.UnknownHostException) {
+                    GlobalEventBus.emit(GlobalEvent.NetworkError(e.toUserFriendlyMessage()))
+                }
             }
         }
     }

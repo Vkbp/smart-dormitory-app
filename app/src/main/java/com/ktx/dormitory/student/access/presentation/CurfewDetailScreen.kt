@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.ktx.dormitory.core.util.DataFormatter
 import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.navigation.components.LoadingView
 import com.ktx.dormitory.student.access.domain.model.CurfewRequestType
@@ -93,11 +94,7 @@ fun CurfewDetailScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
                         Text(
-                            text = when(request.status) {
-                                CurfewStatus.PENDING -> "Đang chờ duyệt"
-                                CurfewStatus.APPROVED -> "Yêu cầu đã được chấp nhận"
-                                CurfewStatus.REJECTED -> "Yêu cầu bị từ chối"
-                            },
+                            text = DataFormatter.formatCurfewStatus(request.status.name),
                             fontWeight = FontWeight.Bold,
                             color = statusColor
                         )
@@ -119,7 +116,7 @@ fun CurfewDetailScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             DetailItem(label = "Loại yêu cầu", value = if (request.requestType == CurfewRequestType.LATE_RETURN) "Về trễ" else "Vắng mặt")
-            DetailItem(label = "Mã đơn", value = request.id)
+            DetailItem(label = "Mã đơn", value = DataFormatter.formatId(request.id))
             
             if (request.requestType == CurfewRequestType.ABSENCE && request.startDate != null) {
                 DetailItem(label = "Bắt đầu từ", value = DateTimeUtils.formatIsoDateTime(request.startDate))

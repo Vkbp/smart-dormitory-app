@@ -20,6 +20,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.ktx.dormitory.core.util.DataFormatter
+import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.student.access.domain.model.UnifiedTimelineEvent
 import com.ktx.dormitory.student.access.domain.model.UnifiedEventType
 import com.ktx.dormitory.navigation.components.EmptyView
@@ -143,7 +145,7 @@ fun UnifiedAccessLogItem(
         UnifiedEventType.UNKNOWN -> Color.Gray
     }
 
-    val timeStr = (log.timestamp ?: "").substringAfter("T", "").substringBefore(".", "")
+    val timeStr = DateTimeUtils.formatRelativeTime(log.timestamp)
     val location = log.gateId ?: log.buildingId ?: "Cổng KTX"
 
     ListItem(
@@ -170,7 +172,7 @@ fun UnifiedAccessLogItem(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "$timeStr • ${log.method ?: "Thẻ"}",
+                        text = "$timeStr • ${DataFormatter.formatAccessMethod(log.method)}",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }

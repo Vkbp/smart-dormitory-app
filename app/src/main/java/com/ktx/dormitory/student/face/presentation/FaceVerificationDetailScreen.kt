@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.ktx.dormitory.core.util.DataFormatter
+import com.ktx.dormitory.core.util.DateTimeUtils
 import com.ktx.dormitory.navigation.components.LoadingView
 import com.ktx.dormitory.student.face.data.dto.response.VerificationAttemptDto
 
@@ -83,11 +85,7 @@ fun FaceVerificationDetailScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = when (attempt.status) {
-                    "SUCCESS" -> "XÁC THỰC THÀNH CÔNG"
-                    "FAIL" -> "XÁC THỰC THẤT BẠI"
-                    else -> "ĐANG XỬ LÝ"
-                },
+                text = DataFormatter.formatVerificationStatus(attempt.status).uppercase(),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.ExtraBold,
                 color = statusColor
@@ -105,7 +103,7 @@ fun FaceVerificationDetailScreen(
                 Column(modifier = Modifier.padding(20.dp)) {
                     DetailRow(
                         label = "Thời gian",
-                        value = attempt.attemptedAt.replace("T", " ").substringBefore(".")
+                        value = DateTimeUtils.formatIsoDateTime(attempt.attemptedAt)
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), thickness = 0.5.dp)
                     
@@ -124,7 +122,7 @@ fun FaceVerificationDetailScreen(
                     
                     DetailRow(
                         label = "ID Lần thử",
-                        value = attempt.attemptId.toString().take(8).uppercase()
+                        value = DataFormatter.formatId(attempt.attemptId.toString())
                     )
                 }
             }

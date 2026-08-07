@@ -196,6 +196,7 @@ fun StudentDashboard(
         DashboardItem("Gia hạn", Icons.Default.Update, Screen.QuickExtend.route, isResidentOnly = true),
         DashboardItem("Trả phòng sớm", Icons.AutoMirrored.Filled.ExitToApp, Screen.Checkout.route, isResidentOnly = true),
         DashboardItem("Lịch sử trả phòng", Icons.Default.AssignmentReturn, Screen.Checkout.route, isResidentOnly = false),
+        DashboardItem("Kỷ luật", Icons.Default.Gavel, Screen.ViolationHistory.route, isResidentOnly = false),
         DashboardItem("Lịch sử GD", Icons.AutoMirrored.Filled.ReceiptLong, Screen.PaymentHistory.route, isResidentOnly = false),
         DashboardItem("Lịch sử vào", Icons.Default.History, Screen.AccessHistory.route, isResidentOnly = true),
     )

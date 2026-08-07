@@ -200,4 +200,8 @@ class AuthRepositoryImpl @Inject constructor(
     override fun hasLocalSession(): Boolean {
         return !localDataSource.getRefreshTokenSync().isNullOrBlank()
     }
+
+    override fun getRoleSync(): String? {
+        return localDataSource.getRoleSync()
+    }
 }

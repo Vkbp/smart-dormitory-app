@@ -45,6 +45,7 @@ import com.ktx.dormitory.student.checkout.presentation.CheckoutScreen
 import com.ktx.dormitory.student.checkout.presentation.CheckoutViewModel
 import com.ktx.dormitory.shared.notification.presentation.NotificationScreen
 import com.ktx.dormitory.shared.notification.presentation.NotificationViewModel
+import com.ktx.dormitory.shared.notification.presentation.violation.ViolationHistoryScreen
 import com.ktx.dormitory.shared.auth.presentation.LoginViewModel
 
 fun NavGraphBuilder.studentNavGraph(
@@ -115,6 +116,10 @@ fun NavGraphBuilder.studentNavGraph(
             val activity = LocalContext.current as FragmentActivity
             val notificationViewModel: NotificationViewModel = hiltViewModel(activity)
             NotificationScreen(navController, notificationViewModel)
+        }
+
+        composable(Screen.ViolationHistory.route) {
+            ViolationHistoryScreen(navController)
         }
 
         composable(Screen.FaceStatus.route) {

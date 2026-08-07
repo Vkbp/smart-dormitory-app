@@ -20,4 +20,5 @@ interface AuthRepository {
     suspend fun setBiometricEnabled(enabled: Boolean)
     fun isBiometricEnabledSync(): Boolean
     fun hasLocalSession(): Boolean
+    fun getRoleSync(): String?
 }

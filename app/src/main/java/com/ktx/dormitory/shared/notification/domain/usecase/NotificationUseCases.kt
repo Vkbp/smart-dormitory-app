@@ -21,3 +21,7 @@ class MarkNotificationReadUseCase @Inject constructor(private val repository: No
 class MarkAllNotificationsReadUseCase @Inject constructor(private val repository: NotificationRepository) {
     suspend operator fun invoke(): Result<Unit> = repository.markAllRead()
 }
+
+class GetViolationsUseCase @Inject constructor(private val repository: NotificationRepository) {
+    suspend operator fun invoke(): Result<List<Notification>> = repository.getMyViolations()
+}
