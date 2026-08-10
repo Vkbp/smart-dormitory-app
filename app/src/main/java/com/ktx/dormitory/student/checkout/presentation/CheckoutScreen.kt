@@ -1,0 +1,494 @@
+package com.ktx.dormitory.student.checkout.presentation
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.ktx.dormitory.core.util.DateTimeUtils
+import com.ktx.dormitory.navigation.components.LoadingView
+import com.ktx.dormitory.student.checkout.domain.model.CheckoutResponse
+import com.ktx.dormitory.student.checkout.domain.model.CheckoutStatus
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CheckoutScreen(
+    navController: NavController,
+    viewModel: CheckoutViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    var showForm by remember { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Yêu cầu trả phòng sớm", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            if (!showForm && !uiState.hasPendingRequest && !uiState.hasUnpaidBills && uiState.isResident) {
+                ExtendedFloatingActionButton(
+                    onClick = { showForm = true },
+                    icon = { Icon(Icons.Default.Add, null) },
+                    text = { Text("Tạo yêu cầu") }
+                )
+            }
+        }
+    ) { padding ->
+        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
+            if (showForm) {
+                CheckoutForm(
+                    isLoading = uiState.isLoading,
+                    onDismiss = { showForm = false },
+                    onSubmit = { date, reason, bankAcc, bankName ->
+                        viewModel.onEvent(CheckoutUiEvent.Submit(date, reason, bankAcc, bankName))
+                    }
+                )
+            } else {
+                Column {
+                    if (uiState.hasUnpaidBills) {
+                        Surface(
+                            color = Color(0xFFFFF3E0), // Light orange pastel
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.Warning, null, tint = Color(0xFFE65100))
+                                Spacer(Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        "Bạn đang có hóa đơn quá hạn chưa thanh toán. Vui lòng thanh toán toàn bộ nợ quá hạn trước khi nộp đơn trả phòng.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFFE65100),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    TextButton(
+                                        onClick = { navController.navigate(com.ktx.dormitory.navigation.Screen.Payment.route) },
+                                        contentPadding = PaddingValues(0.dp)
+                                    ) {
+                                        Text("THANH TOÁN NGAY", fontWeight = FontWeight.Bold, color = Color(0xFFE65100))
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (uiState.hasPendingRequest) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    "Bạn đã có đơn đang chờ xử lý hoặc đã được duyệt. Vui lòng không tạo thêm yêu cầu mới.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                            }
+                        }
+                    }
+                    CheckoutHistoryList(
+                        history = uiState.history,
+                        isLoading = uiState.isLoading
+                    )
+                }
+            }
+
+            LaunchedEffect(uiState.submitSuccess) {
+                if (uiState.submitSuccess) {
+                    showForm = false
+                    viewModel.onEvent(CheckoutUiEvent.ClearStatus)
+                }
+            }
+
+            // Xử lý lỗi nợ tiền từ Backend (Cross-navigation Flow)
+            if (uiState.debtErrorMessage != null) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.onEvent(CheckoutUiEvent.ClearStatus) },
+                    icon = { Icon(Icons.Default.Error, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+                    title = { Text("Cảnh báo nợ phí", color = MaterialTheme.colorScheme.error) },
+                    text = { Text(uiState.debtErrorMessage!!, style = MaterialTheme.typography.bodyMedium) },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                viewModel.onEvent(CheckoutUiEvent.ClearStatus)
+                                navController.navigate(com.ktx.dormitory.navigation.Screen.Payment.route)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        ) {
+                            Text("Đến trang Hóa đơn")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { viewModel.onEvent(CheckoutUiEvent.ClearStatus) }) {
+                            Text("Đóng")
+                        }
+                    }
+                )
+            }
+
+            if (uiState.error != null) {
+                SnackbarHost(hostState = remember { SnackbarHostState() }.apply {
+                    LaunchedEffect(uiState.error) {
+                        showSnackbar(uiState.error!!)
+                    }
+                })
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CheckoutForm(
+    isLoading: Boolean,
+    onDismiss: () -> Unit,
+    onSubmit: (String, String, String, String) -> Unit
+) {
+    var date by remember { mutableStateOf("") }
+    var isoDate by remember { mutableStateOf("") }
+    var reason by remember { mutableStateOf("") }
+    var bankAccount by remember { mutableStateOf("") }
+    var bankName by remember { mutableStateOf("") }
+    var dateError by remember { mutableStateOf<String?>(null) }
+    
+    var showDatePicker by remember { mutableStateOf(false) }
+    
+    // Quy định: Báo trước tối thiểu 7 ngày (Min 7 days notice period)
+    val minNoticeDateMillis = remember {
+        val calendar = java.util.Calendar.getInstance()
+        // Reset về 0h để tính toán chính xác theo ngày
+        calendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
+        calendar.set(java.util.Calendar.MINUTE, 0)
+        calendar.set(java.util.Calendar.SECOND, 0)
+        calendar.set(java.util.Calendar.MILLISECOND, 0)
+        calendar.add(java.util.Calendar.DAY_OF_YEAR, 7)
+        calendar.timeInMillis
+    }
+
+    val datePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                // Chỉ cho phép chọn từ ngày hiện tại + 7 ngày trở đi
+                return utcTimeMillis >= minNoticeDateMillis
+            }
+            
+            override fun isSelectableYear(year: Int): Boolean {
+                return year >= java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+            }
+        }
+    )
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let {
+                        date = DateTimeUtils.formatDate(it)
+                        isoDate = DateTimeUtils.formatToIsoDate(it)
+                        dateError = null
+                    }
+                    showDatePicker = false
+                }) { Text("Chọn") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text("Hủy") }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Điền thông tin trả phòng", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(24.dp))
+
+        OutlinedTextField(
+            value = date,
+            onValueChange = { },
+            label = { Text("Ngày dự định trả") },
+            placeholder = { Text("Bấm để chọn ngày") },
+            modifier = Modifier.fillMaxWidth(),
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { showDatePicker = true }) {
+                    Icon(Icons.Default.CalendarToday, contentDescription = "Chọn ngày")
+                }
+            },
+            isError = dateError != null,
+            supportingText = { 
+                if (dateError != null) {
+                    Text(dateError!!)
+                } else {
+                    Text("Theo quy định, bạn cần báo trước ít nhất 7 ngày.")
+                }
+            },
+            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                .also { interactionSource ->
+                    LaunchedEffect(interactionSource) {
+                        interactionSource.interactions.collect {
+                            if (it is androidx.compose.foundation.interaction.PressInteraction.Release) {
+                                showDatePicker = true
+                            }
+                        }
+                    }
+                }
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = reason,
+            onValueChange = { reason = it },
+            label = { Text("Lý do trả phòng") },
+            modifier = Modifier.fillMaxWidth().height(120.dp)
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = bankAccount,
+            onValueChange = { bankAccount = it },
+            label = { Text("Số tài khoản nhận lại tiền cọc") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = bankName,
+            onValueChange = { bankName = it },
+            label = { Text("Tên ngân hàng") },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("Ví dụ: Vietcombank, MB Bank...") }
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        Surface(
+            color = Color(0xFFE3F2FD), // Light blue pastel
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.Info,
+                    contentDescription = null,
+                    tint = Color(0xFF1976D2),
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "Vui lòng cung cấp chính xác Số Tài Khoản Ngân hàng. Ban quản lý KTX sẽ chốt công nợ và chuyển hồ sơ sang Phòng Tài vụ của Trường để giải ngân tiền thừa (nếu có).",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF1976D2)
+                )
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        Button(
+            onClick = { 
+                if (isoDate.isNotBlank() && bankAccount.isNotBlank() && bankName.isNotBlank()) {
+                    onSubmit(isoDate, reason, bankAccount, bankName)
+                } else {
+                    if (isoDate.isBlank()) dateError = "Vui lòng chọn ngày dự định trả"
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading && date.isNotBlank() && reason.isNotBlank() && bankAccount.isNotBlank() && bankName.isNotBlank()
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text("Gửi yêu cầu")
+            }
+        }
+
+        TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+            Text("Hủy")
+        }
+    }
+}
+
+@Composable
+fun CheckoutHistoryList(history: List<CheckoutResponse>, isLoading: Boolean) {
+    if (isLoading && history.isEmpty()) {
+        LoadingView()
+    } else if (history.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Bạn chưa có yêu cầu trả phòng nào")
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(history) { item ->
+                CheckoutHistoryItem(item)
+            }
+        }
+    }
+}
+
+@Composable
+fun CheckoutHistoryItem(item: CheckoutResponse) {
+    val statusColor = when (item.status) {
+        CheckoutStatus.PENDING -> Color(0xFFFF9800) // Orange/Amber
+        CheckoutStatus.APPROVED -> Color(0xFF2196F3) // Light Blue
+        CheckoutStatus.COMPLETED -> Color(0xFF4CAF50) // Green
+        CheckoutStatus.REJECTED -> Color(0xFFF44336) // Red
+        CheckoutStatus.UNKNOWN -> Color.Gray
+    }
+
+    val statusText = when (item.status) {
+        CheckoutStatus.PENDING -> "Chờ xử lý"
+        CheckoutStatus.APPROVED -> "Đã duyệt"
+        CheckoutStatus.COMPLETED -> "Đã hoàn tiền"
+        CheckoutStatus.REJECTED -> "Từ chối"
+        CheckoutStatus.UNKNOWN -> "Không xác định"
+    }
+
+    val displayId = if (item.requestId.length >= 4) {
+        "#${item.requestId.takeLast(4)}"
+    } else {
+        "#${item.requestId}"
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(
+                    text = "Đơn trả phòng $displayId",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Surface(
+                    color = statusColor.copy(alpha = 0.1f),
+                    shape = MaterialTheme.shapes.extraSmall
+                ) {
+                    Text(
+                        text = statusText.uppercase(),
+                        color = statusColor,
+                        fontWeight = FontWeight.ExtraBold,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.MeetingRoom, null, modifier = Modifier.size(16.dp), tint = Color.Gray)
+                Spacer(Modifier.width(8.dp))
+                Text("Phòng: ${item.roomCode ?: "N/A"} - Giường: ${item.bedCode ?: "N/A"}", style = MaterialTheme.typography.bodyMedium)
+            }
+            
+            Spacer(Modifier.height(4.dp))
+            
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Event, null, modifier = Modifier.size(16.dp), tint = Color.Gray)
+                Spacer(Modifier.width(8.dp))
+                Text("Ngày dự định: ${DateTimeUtils.formatIsoDate(item.intendedCheckoutDate)}", style = MaterialTheme.typography.bodyMedium)
+            }
+            
+            if (item.status == CheckoutStatus.COMPLETED && item.estimatedRefundAmount != null) {
+                Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Payments, null, modifier = Modifier.size(16.dp), tint = Color.Gray)
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "Số tiền hoàn lại: ${com.ktx.dormitory.core.util.DataFormatter.formatCurrency(item.estimatedRefundAmount)}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2E7D32)
+                    )
+                }
+            }
+            
+            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+            Spacer(Modifier.height(12.dp))
+
+            val statusNote = when (item.status) {
+                CheckoutStatus.PENDING -> "Đang chờ BQL KTX xét duyệt đơn."
+                CheckoutStatus.APPROVED -> "Đơn đã được chấp thuận. Vui lòng bàn giao tài sản đúng hạn."
+                CheckoutStatus.REJECTED -> "Yêu cầu không được chấp thuận."
+                CheckoutStatus.COMPLETED -> "Quy trình trả phòng đã kết thúc và hoàn tất thanh toán."
+                else -> ""
+            }
+
+            if (statusNote.isNotEmpty()) {
+                Text(
+                    text = statusNote,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Normal
+                )
+            }
+            
+            if (item.status == CheckoutStatus.REJECTED && !item.rejectReason.isNullOrEmpty()) {
+                Spacer(Modifier.height(8.dp))
+                Surface(
+                    color = Color(0xFFFDECEA), // Very light red
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Lý do từ chối: ${item.rejectReason}",
+                        modifier = Modifier.padding(8.dp),
+                        color = Color(0xFFD32F2F),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+    }
+}
