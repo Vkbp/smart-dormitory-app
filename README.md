@@ -269,37 +269,6 @@ Các mục tiêu chính của đồ án bao gồm:
 
 ---
 
-## Tài liệu
-
-Các tài liệu kỹ thuật và tài liệu phục vụ phát triển dự án được tổ chức trong thư mục:
-
-```text
-docs/
-```
-
-Một số nhóm tài liệu chính:
-
-- Kiến trúc hệ thống.
-- Quy tắc phát triển.
-- Hướng dẫn tích hợp API.
-- Hướng dẫn bảo mật.
-- Quy chuẩn coding.
-- Code review checklist.
-- Báo cáo audit hệ thống.
-- Tài liệu kiểm thử.
-- Tài liệu chuẩn bị bảo vệ đồ án.
-
-Đối với việc phát triển và thay đổi source code, cần tuân thủ các quy định trong:
-
-```text
-AGENT.md
-PROJECT_RULE.md
-```
-
-và các tài liệu được chúng điều hướng đến.
-
----
-
 ## Giấy phép
 
 Dự án được phát hành theo giấy phép **MIT License**.
